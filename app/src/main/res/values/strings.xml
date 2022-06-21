@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">iLoveDog!</string>
+    <string name="title_activity_first_launch">FirstLaunchActivity</string>
+    <string name="title_activity_walk_launch">WalkLaunchActivity</string>
+</resources>
