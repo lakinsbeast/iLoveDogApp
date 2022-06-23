@@ -25,7 +25,6 @@ class TimerService : Service() {
         }.start()
         Toast.makeText(applicationContext, "This is a service running in background", Toast.LENGTH_SHORT).show()
         return START_STICKY
-//        return super.onStartCommand(intent, flags, startId)
     }
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
