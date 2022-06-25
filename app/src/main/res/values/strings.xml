@@ -5,6 +5,8 @@
     <string name="title_activity_notification">NotificationActivity</string>
     <string name="title_activity_reminder">ReminderActivity</string>
     <string name="title_activity_my_pets">MyPetsActivity</string>
+    <string name="title_activity_detailed_dog">DetailedDogActivity</string>
+    <string name="title_activity_new_pet">NewPetActivity</string>
 
 
 </resources>
