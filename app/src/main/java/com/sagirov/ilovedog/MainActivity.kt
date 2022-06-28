@@ -3,7 +3,9 @@ package com.sagirov.ilovedog
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
+import android.icu.text.DateFormat
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -17,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
@@ -33,6 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaEntity
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModel
@@ -43,9 +46,12 @@ val selectedIndex =  mutableStateOf(0)
 class MainActivity : ComponentActivity() {
     private val PREF_NAME = "first_launch"
     private val PREF_NAME_PET = "mypets"
+    private val PREF_NAME_DATES = "dates"
     private lateinit var prefs: SharedPreferences
-    private lateinit var prefsMyPet: SharedPreferences
-    val dogsEncyclopedia = mutableListOf<DogsBreedEncyclopediaEntity>()
+//    private lateinit var prefsMyPet: SharedPreferences
+
+    private var dateForVisitToVet = mutableMapOf<Long, String>()
+    private val dogsEncyclopedia = mutableListOf<DogsBreedEncyclopediaEntity>()
 
 
     private val dogsViewModel: DogsBreedEncyclopediaViewModel by viewModels {
@@ -57,21 +63,37 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
-        val edit = prefs.edit()
         val frst_lnch = prefs.getBoolean("firstOpen", true)
         if (frst_lnch) {
             startActivity(Intent(this, FirstLaunchActivity::class.java))
+            finish()
+        }
+        prefs = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
+        val myPetName = prefs.getString("mypetName", "")
+        val myPetNameBreed = prefs.getString("mypetBreed", "Нажмите сюда, чтоб добавить питомца")
+        val myPetAge = prefs.getString("mypetAge", "")
+        val myPetPaddock = prefs.getString("mypetPaddock", "")
+        val myPetPaddockStandart = prefs.getString("mypetPaddockStandart", "")
+
+        prefs = getSharedPreferences(PREF_NAME_DATES, MODE_PRIVATE)
+        val getArrayFromJson = prefs.getString("dateForVisitToVet", "")
+        if (getArrayFromJson != "") {
+            dateForVisitToVet = (Gson().fromJson(getArrayFromJson, object : TypeToken<Map<Long, String>>() {}.type))
+
+            var it = dateForVisitToVet.iterator()
+            while (it.hasNext()) {
+                var item = it.next()
+                if (item.key < System.currentTimeMillis()) {
+                    it.remove()
+                    val json: String = Gson().toJson(dateForVisitToVet)
+                    prefs.edit().putString("dateForVisitToVet", json).apply()
+                }
+            }
         }
 
-        prefsMyPet = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
-        val myPetName = prefsMyPet.getString("mypetName", "")
-        val myPetNameBreed = prefsMyPet.getString("mypetBreed", "")
-        val myPetAge = prefsMyPet.getString("mypetAge", "")
-        val myPetPaddock = prefsMyPet.getString("mypetPaddock", "")
 
         dogsViewModel.allDogs.observe(this) { list ->
-            list.forEach { it ->
-
+            list.forEach {
                 dogsEncyclopedia.add(
                     DogsBreedEncyclopediaEntity(
                         it.id,
@@ -93,8 +115,6 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-
-
         setContent {
             Scaffold(bottomBar = { BottomNav() }) {
                 if (selectedIndex.value == 0) {
@@ -109,8 +129,8 @@ class MainActivity : ComponentActivity() {
                                 Text(text = "Home", fontWeight = FontWeight.Bold, fontSize = 36.sp)
                             }
                         }
-                        Dashboard(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetPaddock!!)
-                        Stats()
+                        Dashboard(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetPaddock!!,myPetPaddockStandart!!)
+                        Stats(myPetPaddock, myPetPaddockStandart)
                         Column(Modifier.padding(top = 20.dp, bottom = 20.dp)) {
                             OutlinedButton(
                                 onClick = {
@@ -120,6 +140,7 @@ class MainActivity : ComponentActivity() {
                                             WalkLaunchActivity::class.java
                                         )
                                     )
+                                    finish()
                                 },
                                 Modifier
                                     .padding(
@@ -138,36 +159,36 @@ class MainActivity : ComponentActivity() {
                                     contentColor = Color.Black
                                 )
                             ) {
-                                Text("Walks!")
+                                Text("Прогулка!")
                             }
-                            OutlinedButton(
-                                onClick = {
-                                    startActivity(
-                                        Intent(
-                                            this@MainActivity,
-                                            ReminderActivity::class.java
-                                        )
-                                    )
-                                },
-                                Modifier
-                                    .padding(
-                                        start = 20.dp,
-                                        end = 20.dp
-                                    )
-                                    .height(70.dp)
-                                    .fillMaxWidth()
-                                    .border(
-                                        width = 0.dp, color = Color.Black,
-                                        shape = RoundedCornerShape(50)
-                                    )
-                                    .clip(RoundedCornerShape(50)),
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
-                                    contentColor = Color.Black
-                                )
-                            ) {
-                                Text("Добавить напоминание к походу к ветеринару")
-                            }
+//                            OutlinedButton(
+//                                onClick = {
+//                                    startActivity(
+//                                        Intent(
+//                                            this@MainActivity,
+//                                            ReminderActivity::class.java
+//                                        )
+//                                    )
+//                                },
+//                                Modifier
+//                                    .padding(
+//                                        start = 20.dp,
+//                                        end = 20.dp
+//                                    )
+//                                    .height(70.dp)
+//                                    .fillMaxWidth()
+//                                    .border(
+//                                        width = 0.dp, color = Color.Black,
+//                                        shape = RoundedCornerShape(50)
+//                                    )
+//                                    .clip(RoundedCornerShape(50)),
+//                                colors = ButtonDefaults.buttonColors(
+//                                    backgroundColor = Color.White,
+//                                    contentColor = Color.Black
+//                                )
+//                            ) {
+//                                Text("Добавить напоминание к походу к ветеринару")
+//                            }
                         }
                     }
                 }
@@ -180,14 +201,14 @@ class MainActivity : ComponentActivity() {
                         Row(Modifier.fillMaxWidth()) {
                             Box(Modifier.weight(0.5f)) {
                                 Text(
-                                    text = "My pets",
+                                    text = "Знания",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 36.sp
                                 )
                             }
                         }
-                        DashboardPets(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetPaddock!!)
-//                            myPetNameBreed.toString(),myPetAge.toString(),myPetPaddock.toString())
+
+//                        DashboardPets(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetPaddock!!, myPetPaddockStandart!!)
                     }
                 }
                 if (selectedIndex.value == 2) {
@@ -199,6 +220,40 @@ class MainActivity : ComponentActivity() {
                         listDogs()
                     }
                 }
+                if (selectedIndex.value == 3) {
+                    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+                        OutlinedButton(
+                            onClick = {
+                                startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        ReminderActivity::class.java
+                                    )
+                                )
+                            },
+                            Modifier
+                                .padding(
+                                    start = 20.dp,
+                                    end = 20.dp
+                                )
+                                .height(70.dp)
+                                .fillMaxWidth()
+                                .border(
+                                    width = 0.dp, color = Color.Black,
+                                    shape = RoundedCornerShape(50)
+                                )
+                                .clip(RoundedCornerShape(50)),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.White,
+                                contentColor = Color.Black
+                            )
+                        ) {
+                            Text("Добавить напоминание!")
+                        }
+                        listDates(data = dateForVisitToVet)
+
+                    }
+                }
 
             }
 
@@ -206,10 +261,24 @@ class MainActivity : ComponentActivity() {
 
     }
 
+    @Composable
+    fun listDates(data: Map<Long, String>) {
+        LazyColumn {
+            data.forEach {
+                item(it.value) {
+                    Text(it.value+ " - " + DateFormat.getDateInstance(DateFormat.FULL).format(it.key).toString())
+                }
+            }
+        }
+    }
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun Stats() {
+    fun Stats(_time: String, _timeStandart: String) {
+        val time = _time.toLong()
+        val timeStandart = _timeStandart.toLong()
+        var res = (time.toFloat() / (timeStandart)) //0.836
+        val resReverse = 1F-res // 0,164
         Text(text = "Stats", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Card(onClick = { /*TODO*/ }) {
             Row(
@@ -220,10 +289,10 @@ class MainActivity : ComponentActivity() {
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Column {
-                    Text(text = "Today's plan", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    Text(text = "10% accomplished", color = Color.Gray)
+                    Text(text = "Сегодняшний план", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "${(resReverse*100).toInt()}% выполнено", color = Color.Gray)
                 }
-                CircularProgressIndicator(progress = 10F, color = Color.Yellow, strokeWidth = 5.dp)
+                CircularProgressIndicator(progress = resReverse, color = Color.Yellow, strokeWidth = 5.dp)
             }
         }
         Card(onClick = { /*TODO*/ }) {
@@ -235,13 +304,10 @@ class MainActivity : ComponentActivity() {
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Column {
-                    Text(text = "Energy available", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    Text(text = "90% energy", color = Color.Gray)
+                    Text(text = "Энергии доступно", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "${(res*100).toInt()}% энергии", color = Color.Gray)
                 }
-                Canvas(modifier = Modifier.size(50.dp), onDraw = {
-                    drawCircle(color = Color.Red)
-                    drawCircle(radius = 50F, color = Color.Blue)
-                })
+                CircularProgressIndicator(progress = res, color = Color.Yellow, strokeWidth = 5.dp)
             }
         }
         Card(onClick = { /*TODO*/ }) {
@@ -256,25 +322,21 @@ class MainActivity : ComponentActivity() {
                     Text(text = "Weekly objectives", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     Text(text = "2 walks left", color = Color.Gray)
                 }
-                Canvas(modifier = Modifier.size(50.dp), onDraw = {
-                    drawCircle(color = Color.Red)
-                    drawCircle(radius = 50F, color = Color.Blue)
-                })
+                CircularProgressIndicator(progress = res, color = Color.Yellow, strokeWidth = 5.dp)
             }
         }
     }
 
-    @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun DashboardPets(name: String, breed: String, age: String, paddock: String) {
+    fun DashboardPets(name: String, breed: String, age: String, paddock: String, standartPaddock: String) {
         Text(text = "Dashboard", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Card(onClick = { /*TODO*/ }) {
+        Card {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(top = 10.dp, bottom = 10.dp),
+                    .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(
                     Modifier.padding(top = 10.dp, bottom = 10.dp),
@@ -292,14 +354,23 @@ class MainActivity : ComponentActivity() {
                     Column(horizontalAlignment = Alignment.Start) {
                         Text(text = breed)
                         Text(text = name)
-                        Text(text = "$age лет")
+                        if (age.isEmpty()) {
+                            Text(text ="")
+                        } else {
+                            Text(text = "$age лет")
+                        }
                     }
                 }
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(paddock, color = Color.Blue)
+                    if (paddock.isNotEmpty() && standartPaddock.isNotEmpty()) {
+                        when {
+                            paddock == standartPaddock -> Text((standartPaddock.toLong()/60000).toString(), color = Color.Blue)
+                            paddock < standartPaddock -> Text((paddock.toLong()/60000).toString(), color = Color.Blue)
+                        }
+                    }
                 }
             }
         }
@@ -309,19 +380,18 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun BottomNav() {
         BottomNavigation(backgroundColor = Color.White) {
-            val home = Icons.Outlined.Home
-            val myPets = R.drawable.pets_48px
-            val myCard = Icons.Outlined.AccountBox
-            val profile = Icons.Outlined.Person
+            val home = R.drawable.home_48px
+            val myPets = R.drawable.school_48px
+            val myCard = R.drawable.menu_book_48px
+            val health = R.drawable.health_and_safety_48px
             BottomNavigationItem(icon = {
-                Icon(imageVector = home, "")
+                Icon(imageVector = ImageVector.vectorResource(home), "", modifier = Modifier.size(25.dp))
             },
-//            label = { Text(text = "Home") },
+            label = { Text(text = "Меню") },
                 selected = (selectedIndex.value == 0),
                 onClick = {
                     selectedIndex.value = 0
                 })
-
             BottomNavigationItem(icon = {
                 Icon(
                     imageVector = ImageVector.vectorResource(myPets),
@@ -329,7 +399,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.size(25.dp)
                 )
             },
-//            label = { Text(text = "Statistic") },
+            label = { Text(text = "Знания") },
                 selected = (selectedIndex.value == 1),
                 onClick = {
                     selectedIndex.value = 1
@@ -338,17 +408,17 @@ class MainActivity : ComponentActivity() {
                 FloatingActionButtonMainMenu()
             }
             BottomNavigationItem(icon = {
-                Icon(imageVector = myCard, "", modifier = Modifier.size(25.dp))
+                Icon(imageVector = ImageVector.vectorResource(myCard), "", modifier = Modifier.size(25.dp))
             },
-//            label = { Text(text = "My Card") },
+            label = { Text(text = "Томик") },
                 selected = (selectedIndex.value == 2),
                 onClick = {
                     selectedIndex.value = 2
                 })
             BottomNavigationItem(icon = {
-                Icon(imageVector = profile, "", modifier = Modifier.size(25.dp))
+                Icon(imageVector = ImageVector.vectorResource(health), "", modifier = Modifier.size(25.dp))
             },
-//            label = { Text(text = "Profile") },
+            label = { Text(text = "Здоровье") },
                 selected = (selectedIndex.value == 3),
                 onClick = {
                     selectedIndex.value = 3
@@ -434,82 +504,60 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun Dashboard(name: String, breed: String, age: String, paddock: String) {
-    Text(text = "Dashboard", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-//    Card(onClick = {
-//        selectedIndex.value = 1
-////            startActivity(Intent(this@MainActivity, MyPetsActivity::class.java))
-//    }) {
-//        Row(
-//            Modifier
-//                .fillMaxWidth()
-//                .padding(top = 10.dp, bottom = 10.dp),
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceAround
-//        ) {
-//            Row(
-//                Modifier.padding(top = 10.dp, bottom = 10.dp),
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Image(
-//                    painterResource(R.drawable.dog_first),
-//                    contentDescription = "",
-//                    contentScale = ContentScale.Crop,
-//                    modifier = Modifier
-//                        .padding(end = 10.dp)
-//                        .size(75.dp)
-//                        .clip(RoundedCornerShape(100))
-//                )
-//                Column(horizontalAlignment = Alignment.Start) {
-//                    Text(text = "American Pit Buff Terrier")
-//                    Text(text = "Milou")
-//                    Text(text = "6 months old")
-//                }
-//            }
-//            Column(
-//                verticalArrangement = Arrangement.Center,
-//                horizontalAlignment = Alignment.CenterHorizontally
-//            ) {
-//                Text("Happy", color = Color.Blue)
-//            }
-//        }
-//    }
-    Card(onClick = { /*TODO*/ }) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp, bottom = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun Dashboard(name: String, breed: String, age: String, paddock: String, standartPaddock: String) {
+        val ctx = LocalContext.current
+        Text(text = "Dashboard", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Card(onClick = { if (name.isEmpty()) {startActivity(Intent(ctx, NewPetActivity::class.java))} else {
+            selectedIndex.value = 1
+        }}) {
             Row(
-                Modifier.padding(top = 10.dp, bottom = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Image(
-                    painterResource(R.drawable.dog_first),
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .padding(end = 10.dp)
-                        .size(75.dp)
-                        .clip(RoundedCornerShape(100))
-                )
-                Column(horizontalAlignment = Alignment.Start) {
-                    Text(text = breed)
-                    Text(text = name)
-                    Text(text = "$age лет")
+                Row(
+                    Modifier.padding(top = 10.dp, bottom = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painterResource(R.drawable.dog_first),
+                        contentDescription = "",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .padding(end = 10.dp)
+                            .size(75.dp)
+                            .clip(RoundedCornerShape(100))
+                    )
+                    Column(horizontalAlignment = Alignment.Start) {
+                        Text(text = breed)
+                        Text(text = name)
+                        if (age.isEmpty()) {
+                            Text(text ="")
+                        } else {
+                            Text(text = "$age лет")
+                        }
+                    }
                 }
-            }
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(paddock, color = Color.Blue)
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (paddock.isNotEmpty() && standartPaddock.isNotEmpty()) {
+                        Log.d("paddock", paddock)
+                        Log.d("standartPaddock", standartPaddock)
+                        when {
+                            paddock == standartPaddock -> Text((standartPaddock.toLong()/60000).toString(), color = Color.Blue)
+                            paddock < standartPaddock -> Text((paddock.toLong()/60000).toString(), color = Color.Blue)
+                        }
+                    }
+                }
             }
         }
     }
 }
+
+

@@ -50,13 +50,16 @@ class NewPetActivity : ComponentActivity() {
                     value = petPaddock.value, onValueChange = {petPaddock.value = it})
                 OutlinedButton(onClick = {
                     if ((petAge.value!= "" && petName.value != "" && petNameBreed.value != "" && petPaddock.value != "")) {
+                        petPaddock.value.toLong()
+                        petPaddock.value = (petPaddock.value.toLong()*60000).toString()
                         edit.putString("mypetName", petName.value)
                         edit.putString("mypetBreed", petNameBreed.value)
                         edit.putString("mypetAge", petAge.value)
                         edit.putString("mypetPaddock", petPaddock.value)
+                        edit.putString("mypetPaddockStandart", petPaddock.value)
                         edit.apply()
                         startActivity(Intent(this@NewPetActivity, MainActivity::class.java))
-
+                        finish()
                     } else {
                         Toast.makeText(this@NewPetActivity, "Заполните все поля", Toast.LENGTH_LONG).show()
                     } },
