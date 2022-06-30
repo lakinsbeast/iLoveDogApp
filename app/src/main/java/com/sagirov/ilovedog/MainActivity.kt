@@ -58,6 +58,7 @@ class MainActivity : ComponentActivity() {
         DogsBreedEncyclopediaViewModelFactory((application as DogsApplication).repo)
     }
 
+    @OptIn(ExperimentalMaterialApi::class)
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -201,12 +202,41 @@ class MainActivity : ComponentActivity() {
                         Row(Modifier.fillMaxWidth()) {
                             Box(Modifier.weight(0.5f)) {
                                 Text(
-                                    text = "Знания",
+                                    text = "Полезные статьи",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 36.sp
                                 )
                             }
                         }
+                        Card(onClick = { /* TODO */ }) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    Modifier.padding(top = 10.dp, bottom = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Image(
+                                        painterResource(R.drawable.dog_first),
+                                        contentDescription = "",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .padding(end = 10.dp)
+                                            .size(75.dp)
+                                            .clip(RoundedCornerShape(100))
+                                    )
+                                    Column(horizontalAlignment = Alignment.Start) {
+                                        Text(text = "Здоровье питомца", fontSize = 18.sp)
+
+                                    }
+                                }
+                            }
+                        }
+
 
 //                        DashboardPets(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetPaddock!!, myPetPaddockStandart!!)
                     }
@@ -217,6 +247,15 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(bottom = 50.dp)
                     ) {
+                        Row(Modifier.fillMaxWidth().padding(start = 15.dp, end = 15.dp)) {
+                            Box(Modifier.weight(0.5f)) {
+                                Text(
+                                    text = "Энциклопедия",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 36.sp
+                                )
+                            }
+                        }
                         listDogs()
                     }
                 }
@@ -404,9 +443,9 @@ class MainActivity : ComponentActivity() {
                 onClick = {
                     selectedIndex.value = 1
                 })
-            if (selectedIndex.value == 1) {
-                FloatingActionButtonMainMenu()
-            }
+//            if (selectedIndex.value == 1) {
+//                FloatingActionButtonMainMenu()
+//            }
             BottomNavigationItem(icon = {
                 Icon(imageVector = ImageVector.vectorResource(myCard), "", modifier = Modifier.size(25.dp))
             },
