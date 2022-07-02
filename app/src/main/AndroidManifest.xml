@@ -5,7 +5,8 @@
 
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:name=".DogsEncyclopediaDatabase.DogsApplication"
         android:allowBackup="true"
@@ -17,7 +18,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ILoveDog"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ArticleChoiceActivity"
+            android:exported="false"
+            android:label="@string/title_activity_article_choice"
+            android:theme="@style/Theme.ILoveDog" />
         <activity
             android:name=".NewPetActivity"
             android:exported="false"
@@ -31,9 +36,9 @@
         <activity
             android:name=".ReminderActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
             android:label="@string/title_activity_reminder"
-            android:theme="@style/Theme.ILoveDog" />
+            android:theme="@style/Theme.ILoveDog"
+            android:windowSoftInputMode="adjustResize" />
 
         <service
             android:name=".TimerService"

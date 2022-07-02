@@ -5,7 +5,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.icu.text.DateFormat
 import android.os.Bundle
+import android.text.Spanned
 import android.util.Log
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -34,12 +36,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.text.HtmlCompat
+import androidx.core.text.toSpanned
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaEntity
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModelFactory
+import com.sagirov.ilovedog.DogsKnowledgeBaseDatabase.*
+import de.charlex.compose.HtmlText
 
 
 val selectedIndex =  mutableStateOf(0)
@@ -50,12 +57,18 @@ class MainActivity : ComponentActivity() {
     private lateinit var prefs: SharedPreferences
 //    private lateinit var prefsMyPet: SharedPreferences
 
+    private var isBack = true
+
     private var dateForVisitToVet = mutableMapOf<Long, String>()
     private val dogsEncyclopedia = mutableListOf<DogsBreedEncyclopediaEntity>()
+    private val knowData = mutableListOf<DogsKnowledgeBaseEntity>()
 
 
     private val dogsViewModel: DogsBreedEncyclopediaViewModel by viewModels {
         DogsBreedEncyclopediaViewModelFactory((application as DogsApplication).repo)
+    }
+    private val knowViewModel: DogsKnowledgeViewModel by viewModels {
+        DogsKnowledgeBaseViewModelFactory((application as DogsApplication).repoKnow)
     }
 
     @OptIn(ExperimentalMaterialApi::class)
@@ -80,7 +93,7 @@ class MainActivity : ComponentActivity() {
         val getArrayFromJson = prefs.getString("dateForVisitToVet", "")
         if (getArrayFromJson != "") {
             dateForVisitToVet = (Gson().fromJson(getArrayFromJson, object : TypeToken<Map<Long, String>>() {}.type))
-
+            Log.d("clenadr", dateForVisitToVet.toString())
             var it = dateForVisitToVet.iterator()
             while (it.hasNext()) {
                 var item = it.next()
@@ -116,6 +129,11 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+        knowViewModel.allKnowledge.observe(this) {
+            knowData.addAll(it)
+            Log.d("knowData", it.toString())
+        }
+
         setContent {
             Scaffold(bottomBar = { BottomNav() }) {
                 if (selectedIndex.value == 0) {
@@ -162,34 +180,29 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 Text("Прогулка!")
                             }
-//                            OutlinedButton(
-//                                onClick = {
-//                                    startActivity(
-//                                        Intent(
-//                                            this@MainActivity,
-//                                            ReminderActivity::class.java
-//                                        )
-//                                    )
-//                                },
-//                                Modifier
-//                                    .padding(
-//                                        start = 20.dp,
-//                                        end = 20.dp
-//                                    )
-//                                    .height(70.dp)
-//                                    .fillMaxWidth()
-//                                    .border(
-//                                        width = 0.dp, color = Color.Black,
-//                                        shape = RoundedCornerShape(50)
-//                                    )
-//                                    .clip(RoundedCornerShape(50)),
-//                                colors = ButtonDefaults.buttonColors(
-//                                    backgroundColor = Color.White,
-//                                    contentColor = Color.Black
-//                                )
-//                            ) {
-//                                Text("Добавить напоминание к походу к ветеринару")
-//                            }
+                            OutlinedButton(
+                                onClick = {
+
+                                },
+                                Modifier
+                                    .padding(
+                                        start = 20.dp, top = 20.dp,
+                                        end = 20.dp
+                                    )
+                                    .height(70.dp)
+                                    .fillMaxWidth()
+                                    .border(
+                                        width = 0.dp, color = Color.Black,
+                                        shape = RoundedCornerShape(50)
+                                    )
+                                    .clip(RoundedCornerShape(50)),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color.White,
+                                    contentColor = Color.Black
+                                )
+                            ) {
+                                Text("Достижения")
+                            }
                         }
                     }
                 }
@@ -197,6 +210,7 @@ class MainActivity : ComponentActivity() {
                     Column(
                         Modifier
                             .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
                             .padding(start = 15.dp, end = 15.dp)
                     ) {
                         Row(Modifier.fillMaxWidth()) {
@@ -208,11 +222,16 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         }
-                        Card(onClick = { /* TODO */ }) {
+                        Card(onClick = { val intent = Intent(this@MainActivity, ArticleChoiceActivity::class.java); intent.putExtra("Article","feeding") ;startActivity(intent) }) {
                             Row(
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
+                                    .padding(
+                                        start = 20.dp,
+                                        end = 20.dp,
+                                        top = 10.dp,
+                                        bottom = 10.dp
+                                    ),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -220,22 +239,56 @@ class MainActivity : ComponentActivity() {
                                     Modifier.padding(top = 10.dp, bottom = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Image(
-                                        painterResource(R.drawable.dog_first),
-                                        contentDescription = "",
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .padding(end = 10.dp)
-                                            .size(75.dp)
-                                            .clip(RoundedCornerShape(100))
-                                    )
+//                                    Image(
+//                                        painterResource(R.drawable.dog_first),
+//                                        contentDescription = "",
+//                                        contentScale = ContentScale.Crop,
+//                                        modifier = Modifier
+//                                            .padding(end = 10.dp)
+//                                            .size(75.dp)
+//                                            .clip(RoundedCornerShape(100))
+//                                    )
                                     Column(horizontalAlignment = Alignment.Start) {
-                                        Text(text = "Здоровье питомца", fontSize = 18.sp)
+                                        Text(text = "Кормление", fontSize = 18.sp)
 
                                     }
                                 }
                             }
                         }
+                        Card(onClick = { val intent = Intent(this@MainActivity, ArticleChoiceActivity::class.java); intent.putExtra("Article","activity") ;startActivity(intent) }) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        start = 20.dp,
+                                        end = 20.dp,
+                                        top = 10.dp,
+                                        bottom = 10.dp
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    Modifier.padding(top = 10.dp, bottom = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+//                                    Image(
+//                                        painterResource(R.drawable.dog_first),
+//                                        contentDescription = "",
+//                                        contentScale = ContentScale.Crop,
+//                                        modifier = Modifier
+//                                            .padding(end = 10.dp)
+//                                            .size(75.dp)
+//                                            .clip(RoundedCornerShape(100))
+//                                    )
+                                    Column(horizontalAlignment = Alignment.Start) {
+                                        Text(text = "Активность", fontSize = 18.sp)
+
+                                    }
+                                }
+                            }
+                        }
+//                        HtmlText(textId = R.string.dog_feeding_text)
 
 
 //                        DashboardPets(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetPaddock!!, myPetPaddockStandart!!)
@@ -247,7 +300,10 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(bottom = 50.dp)
                     ) {
-                        Row(Modifier.fillMaxWidth().padding(start = 15.dp, end = 15.dp)) {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(start = 15.dp, end = 15.dp)) {
                             Box(Modifier.weight(0.5f)) {
                                 Text(
                                     text = "Энциклопедия",
@@ -297,7 +353,14 @@ class MainActivity : ComponentActivity() {
             }
 
         }
+    }
 
+    override fun onBackPressed() {
+        if (isBack && selectedIndex.value == 1) {
+            selectedIndex.value = 3
+        } else {
+            super.onBackPressed()
+        }
     }
 
     @Composable
@@ -305,7 +368,14 @@ class MainActivity : ComponentActivity() {
         LazyColumn {
             data.forEach {
                 item(it.value) {
-                    Text(it.value+ " - " + DateFormat.getDateInstance(DateFormat.FULL).format(it.key).toString())
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(it.value+ " - ")
+                        Column() {
+                            Text(text = DateFormat.getDateInstance(DateFormat.SHORT).format(it.key).toString())
+                            Text(text = DateFormat.getTimeInstance(DateFormat.SHORT).format(it.key).toString())
+                        }
+                    }
+
                 }
             }
         }
@@ -349,21 +419,21 @@ class MainActivity : ComponentActivity() {
                 CircularProgressIndicator(progress = res, color = Color.Yellow, strokeWidth = 5.dp)
             }
         }
-        Card(onClick = { /*TODO*/ }) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 30.dp, bottom = 30.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Column() {
-                    Text(text = "Weekly objectives", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    Text(text = "2 walks left", color = Color.Gray)
-                }
-                CircularProgressIndicator(progress = res, color = Color.Yellow, strokeWidth = 5.dp)
-            }
-        }
+//        Card(onClick = { /*TODO*/ }) {
+//            Row(
+//                Modifier
+//                    .fillMaxWidth()
+//                    .padding(top = 30.dp, bottom = 30.dp),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.SpaceAround
+//            ) {
+//                Column() {
+//                    Text(text = "Weekly objectives", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+//                    Text(text = "2 walks left", color = Color.Gray)
+//                }
+//                CircularProgressIndicator(progress = res, color = Color.Yellow, strokeWidth = 5.dp)
+//            }
+//        }
     }
 
     @Composable

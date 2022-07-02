@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.icu.util.Calendar
 import android.icu.util.GregorianCalendar
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.util.*
 
 
@@ -47,10 +49,27 @@ class ReminderActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        calendarDayText.value = (Calendar.getInstance().get(Calendar.DAY_OF_MONTH)+1).toString()
+        calendarMonthText.value = (Calendar.getInstance().get(Calendar.MONTH) + 1).toString()
+
+        prefs = getSharedPreferences(PREF_NAME_DATES, MODE_PRIVATE)
+        val getArrayFromJson = prefs.getString("dateForVisitToVet", "")
+        if (getArrayFromJson != "") {
+            dateForVisitToVet = (Gson().fromJson(getArrayFromJson, object : TypeToken<Map<Long, String>>() {}.type))
+            Log.d("clenadr", dateForVisitToVet.toString())
+            var it = dateForVisitToVet.iterator()
+            while (it.hasNext()) {
+                var item = it.next()
+                if (item.key < System.currentTimeMillis()) {
+                    it.remove()
+                    val json: String = Gson().toJson(dateForVisitToVet)
+                    prefs.edit().putString("dateForVisitToVet", json).apply()
+                }
+            }
+        }
 
         setContent {
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-
                 time()
             }
         }
@@ -69,8 +88,6 @@ class ReminderActivity : ComponentActivity() {
 
         var mycal = GregorianCalendar()
         var days = mycal.getActualMaximum(Calendar.DAY_OF_MONTH)
-
-
 
         val screenWidth = LocalConfiguration.current.screenWidthDp
 
@@ -91,7 +108,9 @@ class ReminderActivity : ComponentActivity() {
                 .width((screenWidth / 5).dp)
                 .background(Color.White).focusRequester(dayFocusRequester),
                 colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent)
-                ,singleLine = true,  label = { Text(text = "ДД", fontSize = 15.sp)},value = calendarDayText.value,
+                ,singleLine = true,  label = { Text(text = "ДД", fontSize = 15.sp)},value = calendarDayText.value, keyboardActions = KeyboardActions(onNext = {
+                    monthFocusRequester.requestFocus()
+                }),
                 onValueChange = { calendarDayText.value = it;
                     if (calendarDayText.value.length >= 2) {if (calendarDayText.value.toInt() > days || calendarDayText.value.toInt() < 0)
                     {calendarDayText.value = days.toString()}; monthFocusRequester.requestFocus()}
@@ -116,35 +135,43 @@ class ReminderActivity : ComponentActivity() {
 
 
         OutlinedButton(onClick = {
-            if (((timestamp / 100) < (createdAt.time / 100))) {
                 if (reason.value.isNotEmpty() && calendarDayText.value.isNotEmpty() && calendarMonthText.value.isNotEmpty() && calendarYearText.value.isNotEmpty()) {
-                    var time: Long = (createdAt.time) - timestamp
+                    mCalendar.set(Calendar.DAY_OF_MONTH, calendarDayText.value.toInt())
+                    mCalendar.set(Calendar.MONTH, calendarMonthText.value.toInt()-1)
+                    mCalendar.set(Calendar.YEAR, calendarYearText.value.toInt())
+                    createdAt = mCalendar.time
+                    if (((timestamp / 100) < (createdAt.time / 100))) {
+                        var time: Long = (createdAt.time) - timestamp
+//                        Log.d("calendar", (timestamp / 100).toString())
+                        /* TODO{добавить взятие времени и перевод в календарное время} */
 
-                    /* TODO{добавить взятие времени и перевод в календарное время} */
+                        prefs = getSharedPreferences(PREF_NAME_DATES, MODE_PRIVATE)
+                        dateForVisitToVet[(System.currentTimeMillis()+time)] = reason.value
+                        Log.d("calendar", dateForVisitToVet.toString())
+                        val json: String = Gson().toJson(dateForVisitToVet)
+                        prefs.edit().putString("dateForVisitToVet", json).apply()
 
-                    prefs = getSharedPreferences(PREF_NAME_DATES, MODE_PRIVATE)
+                        val am = getSystemService(Activity.ALARM_SERVICE) as AlarmManager
+                        val intent = Intent(this@ReminderActivity, NotificationReceiver::class.java)
+                        val pendingIntent = PendingIntent.getBroadcast(this@ReminderActivity, 1, intent,0)
+                        am.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+time, pendingIntent)
 
-                    dateForVisitToVet[System.currentTimeMillis()+time] = reason.value
-                    val json: String = Gson().toJson(dateForVisitToVet)
-                    prefs.edit().putString("dateForVisitToVet", json).apply()
+                        Toast.makeText(
+                            mContext,
+                            "Добавлено новое напоминание",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        startActivity(Intent(this@ReminderActivity, MainActivity::class.java))
+                        finish()
+                    } else {
+                        Log.d("timestamp", (timestamp / 100).toString())
+                        Log.d("createdAt.time", (createdAt.time / 100).toString())
+                        Toast.makeText(mContext, "Вы не можете выбрать дату меньше текущей", Toast.LENGTH_LONG).show()
+                    }
 
-                    val am = getSystemService(Activity.ALARM_SERVICE) as AlarmManager
-                    val intent = Intent(this@ReminderActivity, NotificationReceiver::class.java)
-                    val pendingIntent = PendingIntent.getBroadcast(this@ReminderActivity, 1, intent,0)
-                    am.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+time, pendingIntent)
 
-                    Toast.makeText(
-                        mContext,
-                        "Добавлено новое напоминание",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    startActivity(Intent(this@ReminderActivity, this@ReminderActivity::class.java))
-                    finish()
                 } else {
                     Toast.makeText(mContext, "Напишите причину!", Toast.LENGTH_LONG).show()
-                }
-            } else {
-                Toast.makeText(mContext, "Вы не можете выбрать дату меньше текущей", Toast.LENGTH_LONG).show()
                 }
             },
             Modifier
