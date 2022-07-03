@@ -4,4 +4,29 @@
     <style name="Theme.ILoveDog" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/purple_700</item>
     </style>
+
+
+    <style name="light_dialog_theme" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="colorAccent">#373635</item>                   <!--header background-->
+        <item name="android:windowBackground">#1C1C1C</item>     <!--calendar background-->
+        <item name="android:colorControlActivated">#DB8A74</item> <!--selected day-->
+        <item name="android:textColorPrimary">#FFFFFF</item> <!--days of the month-->
+        <item name="android:textColorSecondary">#FFFFFF</item>    <!--days of the week-->
+        <item name="android:buttonBarPositiveButtonStyle">@style/TimePickerDialogLightPositiveButtonStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/TimePickerDialogLightNegativeButtonStyle</item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/TimePickerDialogLightNeutralButtonStyle</item>
+    </style>
+    <style name="TimePickerDialogLightNegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="TimePickerDialogLightPositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="TimePickerDialogLightNeutralButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
 </resources>

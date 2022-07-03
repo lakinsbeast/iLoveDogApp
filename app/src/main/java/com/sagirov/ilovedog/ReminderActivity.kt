@@ -10,14 +10,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.focusable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,9 +29,13 @@ import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.*
@@ -42,15 +47,20 @@ class ReminderActivity : ComponentActivity() {
 
     private var dateForVisitToVet = mutableMapOf<Long, String>()
     var reason =  mutableStateOf("")
-    var calendarDayText =  mutableStateOf("")
-    var calendarMonthText =  mutableStateOf("")
-    var calendarYearText =  mutableStateOf(Calendar.getInstance().get(Calendar.YEAR).toString())
-
+    private var calendarDayText =  mutableStateOf("")
+    private var calendarMonthText =  mutableStateOf("")
+    private var calendarYearText =  mutableStateOf(Calendar.getInstance().get(Calendar.YEAR).toString())
+    private var calendarHourText =  mutableStateOf(Calendar.getInstance().get(Calendar.HOUR_OF_DAY))
+    private var calendarMinuteText =  mutableStateOf(Calendar.getInstance().get(Calendar.MINUTE))
+    var calendarHourTextModified =  mutableStateOf(calendarHourText.value.toString())
+    var calendarMinuteTextModified = mutableStateOf(calendarMinuteText.value.toString())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         calendarDayText.value = (Calendar.getInstance().get(Calendar.DAY_OF_MONTH)+1).toString()
         calendarMonthText.value = (Calendar.getInstance().get(Calendar.MONTH) + 1).toString()
+        if (calendarHourText.value < 10) {calendarHourTextModified.value = "0"+calendarHourText.value.toString()}
+        if (calendarMinuteText.value < 10) {calendarMinuteTextModified.value = "0"+calendarMinuteText.value.toString()}
 
         prefs = getSharedPreferences(PREF_NAME_DATES, MODE_PRIVATE)
         val getArrayFromJson = prefs.getString("dateForVisitToVet", "")
@@ -69,11 +79,15 @@ class ReminderActivity : ComponentActivity() {
         }
 
         setContent {
-            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                 time()
             }
         }
     }
+    @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun time() {
         val mContext = LocalContext.current
@@ -91,24 +105,56 @@ class ReminderActivity : ComponentActivity() {
 
         val screenWidth = LocalConfiguration.current.screenWidthDp
 
+        Text(text = "Текст:", fontSize = 15.sp, modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 75.dp), textAlign = TextAlign.Start)
 
-        OutlinedTextField(modifier = Modifier.padding(bottom = 10.dp).focusRequester(reasonFocusRequester).focusTarget(),
+        TextField(modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 60.dp, end = 60.dp)
+            .focusRequester(reasonFocusRequester),colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next), keyboardActions = KeyboardActions(onNext = {
                 dayFocusRequester.requestFocus()
             }),
-            label = { Text(text = "Причина:", fontSize = 15.sp)}, value = reason.value, onValueChange = {reason.value = it},
+//            label = { Text(text = "Причина:", fontSize = 15.sp)},
+            value = reason.value, onValueChange = { if (it.length <= 20) { reason.value = it } }, textStyle = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Medium),
             singleLine = true)
+        Text(text = reason.value.length.toString()+"/20", fontSize = 15.sp, modifier = Modifier
+            .fillMaxWidth()
+            .padding(end = 60.dp), textAlign = TextAlign.End)
+
+
+
+        Row() {
+            Card(onClick = { calendarHourText.value += 1 ; if (calendarHourText.value > 24) {calendarHourText.value = 0 ; calendarHourTextModified.value = "00"};
+                calendarHourTextModified.value = calendarHourText.value.toString();if (calendarHourText.value < 10) {calendarHourTextModified.value = "0"+calendarHourText.value.toString()}},) {
+                Text(text = calendarHourTextModified.value, fontSize = 120.sp )
+            }
+            Text(text = ":", fontSize = 120.sp)
+            Card(onClick = { calendarMinuteText.value += 5
+                calendarMinuteTextModified.value = calendarMinuteText.value.toString()
+                if (calendarMinuteText.value > 60) {calendarMinuteText.value = 0; calendarMinuteTextModified.value = "00"}
+                if (calendarMinuteTextModified.value.toInt() < 10) {calendarMinuteTextModified.value = "0${calendarMinuteText.value}"}})
+            {
+                Text(text = calendarMinuteTextModified.value, fontSize = 120.sp)
+            }
+        }
+        val datePickerDialog = DatePickerDialog(this, R.style.light_dialog_theme, DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+            calendarDayText.value = dayOfMonth.toString()
+            calendarMonthText.value = (month + 1).toString()
+            calendarYearText.value = year.toString()
+
+        }, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH))
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center,
             modifier = Modifier
-                .clip(shape = RoundedCornerShape(5.dp))
-                .background(Color.Gray)) {
+                .clip(shape = RoundedCornerShape(5.dp))) {
 
             TextField(modifier = Modifier
                 .width((screenWidth / 5).dp)
-                .background(Color.White).focusRequester(dayFocusRequester),
-                colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent)
-                ,singleLine = true,  label = { Text(text = "ДД", fontSize = 15.sp)},value = calendarDayText.value, keyboardActions = KeyboardActions(onNext = {
+                .focusRequester(dayFocusRequester),
+                colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                ,singleLine = true,  label = { Text(text = "Д", fontSize = 17.sp)},value = calendarDayText.value, keyboardActions = KeyboardActions(onNext = {
                     monthFocusRequester.requestFocus()
                 }),
                 onValueChange = { calendarDayText.value = it;
@@ -118,19 +164,22 @@ class ReminderActivity : ComponentActivity() {
             TextField(modifier = Modifier
                 .focusRequester(monthFocusRequester)
                 .width((screenWidth / 5).dp)
-                .background(Color.White), colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent)
-                ,singleLine = true,label = { Text(text = "MM", fontSize = 15.sp)},value = calendarMonthText.value,
+                , colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                ,singleLine = true,label = { Text(text = "M", fontSize = 17.sp)},value = calendarMonthText.value,
                 onValueChange = { calendarMonthText.value = it; if (calendarMonthText.value.length >= 2)
                 {if (calendarMonthText.value.toInt() > 13 || calendarMonthText.value.toInt() < 0) {calendarMonthText.value = 12.toString() };
                     }
                 })
             TextField(modifier = Modifier
                 .width((screenWidth / 5).dp)
-                .background(Color.White), colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),
-                singleLine = true,label = { Text(text = "YEAR", fontSize = 15.sp)},value = calendarYearText.value,
-                onValueChange = { if (calendarYearText.value.length < 4) calendarYearText.value = it
-                })
+                , colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent), textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Medium),
+                singleLine = true,label = { Text(text = "ГОД", fontSize = 17.sp)},value = calendarYearText.value,
+                onValueChange = { if (calendarYearText.value.length < 4) calendarYearText.value = it })
+            IconButton(onClick = { datePickerDialog.show()}) {
+                Icon(Icons.Outlined.DateRange, contentDescription = "")
+            }
         }
+
 
 
 
@@ -139,6 +188,9 @@ class ReminderActivity : ComponentActivity() {
                     mCalendar.set(Calendar.DAY_OF_MONTH, calendarDayText.value.toInt())
                     mCalendar.set(Calendar.MONTH, calendarMonthText.value.toInt()-1)
                     mCalendar.set(Calendar.YEAR, calendarYearText.value.toInt())
+                    mCalendar.set(Calendar.HOUR_OF_DAY, calendarHourText.value.toInt())
+                    mCalendar.set(Calendar.MINUTE, calendarMinuteText.value.toInt())
+
                     createdAt = mCalendar.time
                     if (((timestamp / 100) < (createdAt.time / 100))) {
                         var time: Long = (createdAt.time) - timestamp

@@ -5,9 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.icu.text.DateFormat
 import android.os.Bundle
-import android.text.Spanned
 import android.util.Log
-import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -19,9 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.AccountBox
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,12 +30,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.text.HtmlCompat
-import androidx.core.text.toSpanned
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsApplication
@@ -46,7 +41,6 @@ import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaEntity
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModelFactory
 import com.sagirov.ilovedog.DogsKnowledgeBaseDatabase.*
-import de.charlex.compose.HtmlText
 
 
 val selectedIndex =  mutableStateOf(0)
@@ -60,6 +54,8 @@ class MainActivity : ComponentActivity() {
     private var isBack = true
 
     private var dateForVisitToVet = mutableMapOf<Long, String>()
+    private var weeklyReminderMap = mutableStateMapOf<Long, String>()
+    private var otherReminderMapp = mutableStateMapOf<Long, String>()
     private val dogsEncyclopedia = mutableListOf<DogsBreedEncyclopediaEntity>()
     private val knowData = mutableListOf<DogsKnowledgeBaseEntity>()
 
@@ -93,17 +89,22 @@ class MainActivity : ComponentActivity() {
         val getArrayFromJson = prefs.getString("dateForVisitToVet", "")
         if (getArrayFromJson != "") {
             dateForVisitToVet = (Gson().fromJson(getArrayFromJson, object : TypeToken<Map<Long, String>>() {}.type))
-            Log.d("clenadr", dateForVisitToVet.toString())
-            var it = dateForVisitToVet.iterator()
+            val it = dateForVisitToVet.iterator()
             while (it.hasNext()) {
-                var item = it.next()
+                val item = it.next()
                 if (item.key < System.currentTimeMillis()) {
                     it.remove()
                     val json: String = Gson().toJson(dateForVisitToVet)
                     prefs.edit().putString("dateForVisitToVet", json).apply()
                 }
+                if (System.currentTimeMillis()+604800000 > item.key) {
+                    weeklyReminderMap[item.key] = item.value
+                } else {
+                    otherReminderMapp[item.key] = item.value
+                }
             }
         }
+
 
 
         dogsViewModel.allDogs.observe(this) { list ->
@@ -316,7 +317,10 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 if (selectedIndex.value == 3) {
-                    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         OutlinedButton(
                             onClick = {
                                 startActivity(
@@ -345,7 +349,14 @@ class MainActivity : ComponentActivity() {
                         ) {
                             Text("Добавить напоминание!")
                         }
-                        listDates(data = dateForVisitToVet)
+                        if (weeklyReminderMap.isNotEmpty()) {
+                            Text("Напоминания на неделю:")
+                            weeklyReminderColumn(data = weeklyReminderMap)
+                        }
+                        if (otherReminderMapp.isNotEmpty()) {
+                            Text("Остальные напоминания:")
+                            otherReminderLazyColumn(data = otherReminderMapp)
+                        }
 
                     }
                 }
@@ -363,19 +374,68 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun listDates(data: Map<Long, String>) {
+    fun otherReminderLazyColumn(data: Map<Long, String>) {
         LazyColumn {
             data.forEach {
                 item(it.value) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(it.value+ " - ")
-                        Column() {
-                            Text(text = DateFormat.getDateInstance(DateFormat.SHORT).format(it.key).toString())
-                            Text(text = DateFormat.getTimeInstance(DateFormat.SHORT).format(it.key).toString())
+                    Card(onClick = {
+                        val alert = android.app.AlertDialog.Builder(this@MainActivity)
+                        alert.setTitle("Удалить напоминание?")
+                        alert.setMessage("Вы уверены, что хотите удалить напоминание ${it.value}?")
+                        alert.setCancelable(true)
+                        alert.setPositiveButton(android.R.string.ok) { dialog, which ->
+                            dateForVisitToVet.remove(it.key)
+                            otherReminderMapp.remove(it.key)
+                            val json: String = Gson().toJson(dateForVisitToVet)
+                            prefs.edit().putString("dateForVisitToVet", json).apply()
+                        }
+                        alert.create().show()
+                    }, Modifier.padding(top = 10.dp, bottom = 10.dp)) {
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            Text(it.value, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
+                            Column() {
+                                Text(text = DateFormat.getDateInstance(DateFormat.SHORT).format(it.key).toString())
+                                Text(text = DateFormat.getTimeInstance(DateFormat.SHORT).format(it.key).toString())
+                            }
                         }
                     }
-
+                }
+            }
+        }
+    }
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun weeklyReminderColumn(data: Map<Long, String>) {
+        LazyColumn {
+            data.forEach {
+                item(it.value) {
+                    Card(onClick = {
+                        val alert = android.app.AlertDialog.Builder(this@MainActivity)
+                        alert.setTitle("Удалить напоминание?")
+                        alert.setMessage("Вы уверены, что хотите удалить напоминание ${it.value}?")
+                        alert.setCancelable(true)
+                        alert.setPositiveButton(android.R.string.ok) { dialog, which ->
+                            dateForVisitToVet.remove(it.key)
+                            weeklyReminderMap.remove(it.key)
+                            val json: String = Gson().toJson(dateForVisitToVet)
+                            prefs.edit().putString("dateForVisitToVet", json).apply()
+                        }
+                        alert.create().show()
+                    }) {
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            Text(it.value, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
+                            Column() {
+                                Text(text = DateFormat.getDateInstance(DateFormat.SHORT).format(it.key).toString())
+                                Text(text = DateFormat.getTimeInstance(DateFormat.SHORT).format(it.key).toString())
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -397,7 +457,7 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Column {
+                Column() {
                     Text(text = "Сегодняшний план", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     Text(text = "${(resReverse*100).toInt()}% выполнено", color = Color.Gray)
                 }

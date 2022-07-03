@@ -36,6 +36,7 @@
         <activity
             android:name=".ReminderActivity"
             android:exported="false"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_reminder"
             android:theme="@style/Theme.ILoveDog"
             android:windowSoftInputMode="adjustResize" />
