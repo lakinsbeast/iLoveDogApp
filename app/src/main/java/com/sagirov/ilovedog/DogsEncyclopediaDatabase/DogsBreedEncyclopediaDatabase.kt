@@ -1,15 +1,19 @@
 package com.sagirov.ilovedog.DogsEncyclopediaDatabase
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.sagirov.ilovedog.DataConverter
+import com.sagirov.ilovedog.MapConverter
 import kotlinx.coroutines.CoroutineScope
 
 
-@Database(entities = [DogsBreedEncyclopediaEntity::class], version = 1, exportSchema = true)
+@Database(entities = [DogsBreedEncyclopediaEntity::class, DogsInfoEntity::class, DocumentsEntity::class], version = 3, exportSchema = true, autoMigrations = [AutoMigration(from = 2, to = 3)])
+@TypeConverters(DataConverter::class, MapConverter::class)
 abstract class DogsBreedEncyclopediaDatabase: RoomDatabase() {
     abstract fun getDao(): DogsBreedEncyclopediaDAO
+
 
     companion object {
         // Singleton предотвращает одновременное открытие нескольких экземпляров базы данных //

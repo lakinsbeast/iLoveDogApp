@@ -14,6 +14,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -57,41 +58,85 @@ class WalkLaunchActivity : ComponentActivity() {
         val myPetPaddockStandart = prefsMyPet.getString("mypetPaddockStandart", "")
         currentTimeInMinutes = myPetPaddock!!.toLong()
         stopTimer = myPetPaddockStandart!!.toLong()
-        var backgroundColor = Color(0xFFFFFFFF)
-        var textColor = Color(0xFF000000)
+        var backgroundColor = mutableStateOf(Color(0xFFFFFFFF))
+        var textColor = mutableStateOf(Color(0xFF000000))
         var cautionText = ""
 
         setContent {
+            val res = (currentTimeInMinutes.toFloat() / (stopTimer))
+            //TODO{Сделать смену цвета круга в зависимости от процента гуляния}
+            val circularColor = remember { mutableStateOf(Color(0xFF3A5A40)) }
+//            val availableProgressColor = when {
+//                res < 0.35F -> Color(0xFFFB3640) //green
+//                res < 0.75F -> Color(0xFFffca3a) //yellow
+//                else -> Color(0xFF8ac926) //red
+//            }
             Column(
-                Modifier.fillMaxSize().background(backgroundColor),
+                Modifier
+                    .fillMaxSize()
+                    .background(backgroundColor.value),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Давайте погуляем!", fontSize = 24.sp, color = textColor)
+                Text(text = "Давайте погуляем!", fontSize = 24.sp, color = textColor.value)
                 CircularProgressIndicator(
                     progress = (currentTimeInMinutes.toFloat() / (stopTimer)),
                     strokeWidth = 12.dp,
-                    color = Color.Blue,
+                    color = circularColor.value,
                     modifier = Modifier.size(250.dp)
                 )
-                Text(text = DateUtils.formatElapsedTime(currentTimeInMinutes / 1000).toString(), color = textColor)
-                Button(onClick = {
-                    if (!isStartTimer) {
-                        startCount(); isStartTimer = true
-                        backgroundColor = Color(0xFF858585)
-                        textColor = Color(0xFFFFFFFF)
-                        cautionText = "Не нажимайте на кнопку назад и не выгружайте приложение из памяти"
-                    } else {
-                        backgroundColor = Color(0xFFFFFFFF)
-                        timer.cancel(); isStartTimer = false
-                    }
-                }) {
+                Text(text = DateUtils.formatElapsedTime(currentTimeInMinutes / 1000).toString(), color = textColor.value)
+                OutlinedButton(
+                    onClick = {
+                        if (!isStartTimer) {
+                            startCount(); isStartTimer = true
+                            circularColor.value = Color(0xFF588157)
+                            backgroundColor.value = Color(0xFF344E41)
+                            textColor.value = Color(0xFFFFFFFF)
+                            cautionText = "Не нажимайте на кнопку назад и не выгружайте приложение из памяти"
+                        } else {
+                            backgroundColor.value = Color(0xFFFFFFFF); textColor.value = Color(0xFF000000)
+                            circularColor.value = Color(0xFF3A5A40)
+                            timer.cancel(); isStartTimer = false
+                            cautionText = ""
+                        }
+                    },
+                    Modifier
+                        .height(60.dp)
+                        .fillMaxWidth()
+                    ,shape = RoundedCornerShape(0),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.White,
+                        contentColor = Color.Black
+                    ), contentPadding = PaddingValues(0.dp)
+                ) {
                     if (!isStartTimer) {
                         Text("Run")
                     } else {
                         Text("Stop")
                     }
                 }
+
+//                Button(onClick = {
+//                    if (!isStartTimer) {
+//                        startCount(); isStartTimer = true
+//                        circularColor.value = Color(0xFF588157)
+//                        backgroundColor.value = Color(0xFF344E41)
+//                        textColor.value = Color(0xFFFFFFFF)
+//                        cautionText = "Не нажимайте на кнопку назад и не выгружайте приложение из памяти"
+//                    } else {
+//                        backgroundColor.value = Color(0xFFFFFFFF); textColor.value = Color(0xFF000000)
+//                        circularColor.value = Color(0xFF3A5A40)
+//                        timer.cancel(); isStartTimer = false
+//                        cautionText = ""
+//                    }
+//                }) {
+//                    if (!isStartTimer) {
+//                        Text("Run")
+//                    } else {
+//                        Text("Stop")
+//                    }
+//                }
                 Text(text = cautionText, fontSize = 24.sp, color = Color.White, textAlign = TextAlign.Center)
             }
         }

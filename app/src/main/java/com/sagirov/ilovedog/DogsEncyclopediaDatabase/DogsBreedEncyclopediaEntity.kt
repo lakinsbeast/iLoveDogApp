@@ -22,3 +22,4 @@ data class DogsBreedEncyclopediaEntity (
     val description: String,
     @ColumnInfo(name = "image_file") val imageFile: String
 )
+

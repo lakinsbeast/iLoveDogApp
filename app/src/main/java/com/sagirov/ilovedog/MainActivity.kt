@@ -13,10 +13,12 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsApplication
@@ -54,6 +58,7 @@ class MainActivity : ComponentActivity() {
     private var isBack = true
 
     private var dateForVisitToVet = mutableMapOf<Long, String>()
+    private var pastReminderMap = mutableStateMapOf<Long, String>()
     private var weeklyReminderMap = mutableStateMapOf<Long, String>()
     private var otherReminderMapp = mutableStateMapOf<Long, String>()
     private val dogsEncyclopedia = mutableListOf<DogsBreedEncyclopediaEntity>()
@@ -63,14 +68,15 @@ class MainActivity : ComponentActivity() {
     private val dogsViewModel: DogsBreedEncyclopediaViewModel by viewModels {
         DogsBreedEncyclopediaViewModelFactory((application as DogsApplication).repo)
     }
-    private val knowViewModel: DogsKnowledgeViewModel by viewModels {
-        DogsKnowledgeBaseViewModelFactory((application as DogsApplication).repoKnow)
-    }
+
 
     @OptIn(ExperimentalMaterialApi::class)
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
 
         prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
         val frst_lnch = prefs.getBoolean("firstOpen", true)
@@ -79,11 +85,13 @@ class MainActivity : ComponentActivity() {
             finish()
         }
         prefs = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
-        val myPetName = prefs.getString("mypetName", "")
-        val myPetNameBreed = prefs.getString("mypetBreed", "Нажмите сюда, чтоб добавить питомца")
-        val myPetAge = prefs.getString("mypetAge", "")
-        val myPetPaddock = prefs.getString("mypetPaddock", "")
-        val myPetPaddockStandart = prefs.getString("mypetPaddockStandart", "")
+
+        var myPetName = prefs.getString("mypetName", "")
+        var myPetNameBreed = prefs.getString("mypetBreed", "Нажмите сюда, чтоб добавить питомца")
+        var myPetPaddock = prefs.getString("mypetPaddock", "")
+        var myPetAge = prefs.getString("mypetAge", "")
+        var myPetAgeMonth = prefs.getString("mypetAgeMonth", "")
+        var myPetPaddockStandart = prefs.getString("mypetPaddockStandart", "")
 
         prefs = getSharedPreferences(PREF_NAME_DATES, MODE_PRIVATE)
         val getArrayFromJson = prefs.getString("dateForVisitToVet", "")
@@ -93,20 +101,49 @@ class MainActivity : ComponentActivity() {
             while (it.hasNext()) {
                 val item = it.next()
                 if (item.key < System.currentTimeMillis()) {
-                    it.remove()
-                    val json: String = Gson().toJson(dateForVisitToVet)
-                    prefs.edit().putString("dateForVisitToVet", json).apply()
+                    pastReminderMap[item.key] = item.value
+//                    it.remove()
+//                    val json: String = Gson().toJson(dateForVisitToVet)
+//                    prefs.edit().putString("dateForVisitToVet", json).apply()
                 }
                 if (System.currentTimeMillis()+604800000 > item.key) {
                     weeklyReminderMap[item.key] = item.value
                 } else {
                     otherReminderMapp[item.key] = item.value
                 }
+//                if (System.currentTimeMillis()+604800000 > item.key) {
+//                    weeklyReminderMap[item.key] = item.value
+//                } else {
+//                    otherReminderMapp[item.key] = item.value
+//                }
             }
         }
+//        if (dateForVisitToVet.isNotEmpty()) {
+//            val itt = dateForVisitToVet.iterator()
+//            while (itt.hasNext()) {
+//                val item = itt.next()
+//                if (System.currentTimeMillis()+604800000 > item.key) {
+//                    weeklyReminderMap[item.key] = item.value
+//                } else {
+//                    otherReminderMapp[item.key] = item.value
+//                }
+//            }
+//        }
 
 
 
+        dogsViewModel.getAllDogsProfiles.observe(this) { dogs ->
+            dogs.forEach {
+                myPetName = it.name
+                myPetNameBreed = it.breedName
+//                myPetAge = it.dateBirth.toString()
+//                myPetAgeMonth = it.dateBirth.toString()
+                myPetPaddock = it.currentTimeWalk.toString()
+                myPetPaddockStandart = it.walkingTimeConst.toString()
+
+
+            }
+        }
         dogsViewModel.allDogs.observe(this) { list ->
             list.forEach {
                 dogsEncyclopedia.add(
@@ -130,27 +167,27 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-        knowViewModel.allKnowledge.observe(this) {
-            knowData.addAll(it)
-            Log.d("knowData", it.toString())
-        }
+
 
         setContent {
+            val systemUiController = rememberSystemUiController()
+            systemUiController.setSystemBarsColor(Color(0xFFB8D0B3))
+            systemUiController.setNavigationBarColor(Color(0xFFB8D0B3))
             Scaffold(bottomBar = { BottomNav() }) {
                 if (selectedIndex.value == 0) {
                     Column(
-                        Modifier
+                        Modifier.background(Color(0xFFB8D0B3))
                             .verticalScroll(rememberScrollState(), true)
                             .fillMaxSize()
                             .padding(start = 15.dp, end = 15.dp, bottom = 50.dp)
                     ) {
                         Row(Modifier.fillMaxWidth()) {
                             Box(Modifier.weight(0.5f)) {
-                                Text(text = "Home", fontWeight = FontWeight.Bold, fontSize = 36.sp)
+                                Text(text = "Питомец", fontWeight = FontWeight.SemiBold, fontSize = 36.sp)
                             }
                         }
-                        Dashboard(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetPaddock!!,myPetPaddockStandart!!)
-                        Stats(myPetPaddock, myPetPaddockStandart)
+                        Dashboard(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetAgeMonth!!, myPetPaddock!!,myPetPaddockStandart!!)
+                        Stats(myPetPaddock!!, myPetPaddockStandart!!)
                         Column(Modifier.padding(top = 20.dp, bottom = 20.dp)) {
                             OutlinedButton(
                                 onClick = {
@@ -169,21 +206,18 @@ class MainActivity : ComponentActivity() {
                                     )
                                     .height(70.dp)
                                     .fillMaxWidth()
-                                    .border(
-                                        width = 0.dp, color = Color.Black,
-                                        shape = RoundedCornerShape(50)
-                                    )
-                                    .clip(RoundedCornerShape(50)),
+//                                    .border(1.dp, Color(0xFF8AB181), shape = CircleShape)
+//                                    .clip(RoundedCornerShape(35)),
+                                ,shape = RoundedCornerShape(35),
                                 colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
+                                    backgroundColor = Color(0xFF8AB181),
                                     contentColor = Color.Black
-                                )
+                                ), contentPadding = PaddingValues(0.dp)
                             ) {
                                 Text("Прогулка!")
                             }
                             OutlinedButton(
                                 onClick = {
-
                                 },
                                 Modifier
                                     .padding(
@@ -192,15 +226,14 @@ class MainActivity : ComponentActivity() {
                                     )
                                     .height(70.dp)
                                     .fillMaxWidth()
-                                    .border(
-                                        width = 0.dp, color = Color.Black,
-                                        shape = RoundedCornerShape(50)
-                                    )
-                                    .clip(RoundedCornerShape(50)),
+//                                    .border(0.1F.dp, Color(0xFF8AB181), shape = RoundedCornerShape(35))
+//                                    .clip(RoundedCornerShape(35)),
+                                ,shape = RoundedCornerShape(35),
                                 colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
+                                    backgroundColor = Color(0xFF8AB181),
                                     contentColor = Color.Black
-                                )
+                                ),
+//                                contentPadding = PaddingValues(0.dp)
                             ) {
                                 Text("Достижения")
                             }
@@ -210,7 +243,7 @@ class MainActivity : ComponentActivity() {
                 if (selectedIndex.value == 1) {
                     Column(
                         Modifier
-                            .fillMaxSize()
+                            .fillMaxSize().background(Color(0xFFB8D0B3))
                             .verticalScroll(rememberScrollState())
                             .padding(start = 15.dp, end = 15.dp)
                     ) {
@@ -226,7 +259,7 @@ class MainActivity : ComponentActivity() {
                         Card(onClick = { val intent = Intent(this@MainActivity, ArticleChoiceActivity::class.java); intent.putExtra("Article","feeding") ;startActivity(intent) }) {
                             Row(
                                 Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth().background(Color(0xFFD0E0CC))
                                     .padding(
                                         start = 20.dp,
                                         end = 20.dp,
@@ -251,15 +284,15 @@ class MainActivity : ComponentActivity() {
 //                                    )
                                     Column(horizontalAlignment = Alignment.Start) {
                                         Text(text = "Кормление", fontSize = 18.sp)
-
                                     }
                                 }
                             }
                         }
-                        Card(onClick = { val intent = Intent(this@MainActivity, ArticleChoiceActivity::class.java); intent.putExtra("Article","activity") ;startActivity(intent) }) {
+                        Card(onClick = { val intent = Intent(this@MainActivity, ArticleChoiceActivity::class.java); intent.putExtra("Article","activity") ;startActivity(intent) },
+                            modifier = Modifier.padding(top = 10.dp)) {
                             Row(
                                 Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth().background(Color(0xFFD0E0CC))
                                     .padding(
                                         start = 20.dp,
                                         end = 20.dp,
@@ -298,7 +331,7 @@ class MainActivity : ComponentActivity() {
                 if (selectedIndex.value == 2) {
                     Column(
                         Modifier
-                            .fillMaxSize()
+                            .fillMaxSize().background(Color(0xFFB8D0B3))
                             .padding(bottom = 50.dp)
                     ) {
                         Row(
@@ -319,7 +352,7 @@ class MainActivity : ComponentActivity() {
                 if (selectedIndex.value == 3) {
                     Column(
                         Modifier
-                            .fillMaxSize()
+                            .fillMaxSize().background(Color(0xFFB8D0B3))
                             .padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         OutlinedButton(
                             onClick = {
@@ -343,7 +376,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 .clip(RoundedCornerShape(50)),
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Color.White,
+                                backgroundColor = Color(0xFFD0E0CC),
                                 contentColor = Color.Black
                             )
                         ) {
@@ -357,7 +390,51 @@ class MainActivity : ComponentActivity() {
                             Text("Остальные напоминания:")
                             otherReminderLazyColumn(data = otherReminderMapp)
                         }
+                        if (pastReminderMap.isNotEmpty()) {
+                            Text("Прошедшие напоминания:")
+                            pastReminderColumn(data = pastReminderMap)
+                        }
 
+                    }
+                }
+                if (selectedIndex.value == 4) {
+                    Column(
+                        Modifier
+                            .fillMaxSize().background(Color(0xFFB8D0B3))
+                            .padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Card(onClick = { startActivity(Intent(this@MainActivity, DocumentActivity::class.java)) }) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth().background(Color(0xFFD0E0CC))
+                                    .padding(
+                                        start = 20.dp,
+                                        end = 20.dp,
+                                        top = 10.dp,
+                                        bottom = 10.dp
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    Modifier.padding(top = 10.dp, bottom = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+//                                    Image(
+//                                        painterResource(R.drawable.dog_first),
+//                                        contentDescription = "",
+//                                        contentScale = ContentScale.Crop,
+//                                        modifier = Modifier
+//                                            .padding(end = 10.dp)
+//                                            .size(75.dp)
+//                                            .clip(RoundedCornerShape(100))
+//                                    )
+                                    Column(horizontalAlignment = Alignment.Start) {
+                                        Text(text = "Документы", fontSize = 18.sp)
+                                    }
+                                }
+                            }
+                        }
+                        Text("Пусто")
                     }
                 }
 
@@ -440,60 +517,96 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun pastReminderColumn(data: Map<Long, String>) {
+        LazyColumn {
+            data.forEach {
+                item(it.value) {
+                    Card(onClick = {
+                        val alert = android.app.AlertDialog.Builder(this@MainActivity)
+                        alert.setTitle("Удалить напоминание?")
+                        alert.setMessage("Вы уверены, что хотите удалить напоминание ${it.value}?")
+                        alert.setCancelable(true)
+                        alert.setPositiveButton(android.R.string.ok) { dialog, which ->
+                            dateForVisitToVet.remove(it.key)
+                            weeklyReminderMap.remove(it.key)
+                            val json: String = Gson().toJson(dateForVisitToVet)
+                            prefs.edit().putString("dateForVisitToVet", json).apply()
+                        }
+                        alert.create().show()
+                    }) {
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            Text(it.value, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1, color = Color.Black.copy(alpha = 0.5f))
+                            Column() {
+                                Text(text = DateFormat.getDateInstance(DateFormat.SHORT).format(it.key).toString(), color = Color.Black.copy(alpha = 0.5f))
+                                Text(text = DateFormat.getTimeInstance(DateFormat.SHORT).format(it.key).toString(), color = Color.Black.copy(alpha = 0.5f))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun Stats(_time: String, _timeStandart: String) {
         val time = _time.toLong()
         val timeStandart = _timeStandart.toLong()
-        var res = (time.toFloat() / (timeStandart)) //0.836
-        val resReverse = 1F-res // 0,164
-        Text(text = "Stats", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Card(onClick = { /*TODO*/ }) {
+        val res = (time.toFloat() / (timeStandart)) //0.836
+        var resReverse = 1F-res // 0,164
+        val availableProgressColor = when {
+            res < 0.35F -> Color(0xFFFB3640) //green
+            res < 0.75F -> Color(0xFFffca3a) //yellow
+            else -> Color(0xFF8ac926) //red
+        }
+        val planProgressColor = when {
+            resReverse < 0.35F -> Color(0xFFFB3640)//green
+            resReverse < 0.75F -> Color(0xFFffca3a)//yellow
+            else -> Color(0xFF8ac926)//red
+        }
+        if ((resReverse*100).toInt()+(res*100).toInt() < 100) {
+            if ((resReverse*100).toInt() != 0 && (resReverse*100).toInt()!= 100) {
+                resReverse += 0.01F
+            }
+        }
+        Text(text = "Статистика", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Card(shape = RoundedCornerShape(10.dp)) {
             Row(
                 Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth().background(Color(0xFFD0E0CC))
                     .padding(top = 30.dp, bottom = 30.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Column() {
-                    Text(text = "Сегодняшний план", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "Сегодняшний план", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+//                    Text(text = resReverse.toString(), fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     Text(text = "${(resReverse*100).toInt()}% выполнено", color = Color.Gray)
                 }
-                CircularProgressIndicator(progress = resReverse, color = Color.Yellow, strokeWidth = 5.dp)
+                CircularProgressIndicator(progress = resReverse, color = planProgressColor, strokeWidth = 5.dp)
             }
         }
-        Card(onClick = { /*TODO*/ }) {
+        Card(modifier = Modifier.padding(top = 10.dp), shape = RoundedCornerShape(10.dp)) {
             Row(
                 Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth().background(Color(0xFFD0E0CC))
                     .padding(top = 30.dp, bottom = 30.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Column {
-                    Text(text = "Энергии доступно", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "Энергии доступно", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+//                    Text(text = res.toString(), fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     Text(text = "${(res*100).toInt()}% энергии", color = Color.Gray)
                 }
-                CircularProgressIndicator(progress = res, color = Color.Yellow, strokeWidth = 5.dp)
+                CircularProgressIndicator(progress = res, color = availableProgressColor, strokeWidth = 5.dp)
             }
         }
-//        Card(onClick = { /*TODO*/ }) {
-//            Row(
-//                Modifier
-//                    .fillMaxWidth()
-//                    .padding(top = 30.dp, bottom = 30.dp),
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.SpaceAround
-//            ) {
-//                Column() {
-//                    Text(text = "Weekly objectives", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-//                    Text(text = "2 walks left", color = Color.Gray)
-//                }
-//                CircularProgressIndicator(progress = res, color = Color.Yellow, strokeWidth = 5.dp)
-//            }
-//        }
+
     }
 
     @Composable
@@ -548,15 +661,16 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun BottomNav() {
-        BottomNavigation(backgroundColor = Color.White) {
+        BottomNavigation(backgroundColor = Color(0xFFD0E0CC)) {
             val home = R.drawable.home_48px
             val myPets = R.drawable.school_48px
             val myCard = R.drawable.menu_book_48px
             val health = R.drawable.health_and_safety_48px
+            val menu = Icons.Outlined.Menu
             BottomNavigationItem(icon = {
                 Icon(imageVector = ImageVector.vectorResource(home), "", modifier = Modifier.size(25.dp))
             },
-            label = { Text(text = "Меню") },
+            label = { Text(text = "Питомец", fontSize = 9.sp) },
                 selected = (selectedIndex.value == 0),
                 onClick = {
                     selectedIndex.value = 0
@@ -568,7 +682,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.size(25.dp)
                 )
             },
-            label = { Text(text = "Знания") },
+            label = { Text(text = "Знания", fontSize = 9.sp) },
                 selected = (selectedIndex.value == 1),
                 onClick = {
                     selectedIndex.value = 1
@@ -579,7 +693,7 @@ class MainActivity : ComponentActivity() {
             BottomNavigationItem(icon = {
                 Icon(imageVector = ImageVector.vectorResource(myCard), "", modifier = Modifier.size(25.dp))
             },
-            label = { Text(text = "Томик") },
+            label = { Text(text = "Томик", fontSize = 9.sp) },
                 selected = (selectedIndex.value == 2),
                 onClick = {
                     selectedIndex.value = 2
@@ -587,10 +701,18 @@ class MainActivity : ComponentActivity() {
             BottomNavigationItem(icon = {
                 Icon(imageVector = ImageVector.vectorResource(health), "", modifier = Modifier.size(25.dp))
             },
-            label = { Text(text = "Здоровье") },
+            label = { Text(text = "Здоровье", fontSize = 9.sp) },
                 selected = (selectedIndex.value == 3),
                 onClick = {
                     selectedIndex.value = 3
+                })
+            BottomNavigationItem(icon = {
+                Icon(imageVector = menu, "", modifier = Modifier.size(25.dp))
+            },
+                label = { Text(text = "Меню", fontSize = 9.sp) },
+                selected = (selectedIndex.value == 4),
+                onClick = {
+                    selectedIndex.value = 4
                 })
         }
     }
@@ -615,11 +737,11 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(this@MainActivity, DetailedDogActivity::class.java)
             intent.putExtra("id", model.id)
             startActivity(intent)
-        })
+        }, modifier = Modifier.padding(top = 10.dp))
         {
             Row(
                 Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth().background(Color(0xFFD0E0CC))
                     .padding(top = 10.dp, bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -675,15 +797,13 @@ class MainActivity : ComponentActivity() {
     }
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun Dashboard(name: String, breed: String, age: String, paddock: String, standartPaddock: String) {
+    fun Dashboard(name: String, breed: String, age: String, ageMonth: String,paddock: String, standartPaddock: String) {
         val ctx = LocalContext.current
-        Text(text = "Dashboard", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Card(onClick = { if (name.isEmpty()) {startActivity(Intent(ctx, NewPetActivity::class.java))} else {
-            selectedIndex.value = 1
-        }}) {
+        Text(text = "Профиль", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+        Card(onClick = { startActivity(Intent(ctx, NewPetActivity::class.java))}, elevation = 15.dp, shape = RoundedCornerShape(15.dp)) {
             Row(
                 Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth().background(Color(0xFFD0E0CC))
                     .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -703,11 +823,14 @@ class MainActivity : ComponentActivity() {
                     )
                     Column(horizontalAlignment = Alignment.Start) {
                         Text(text = breed)
-                        Text(text = name)
-                        if (age.isEmpty()) {
-                            Text(text ="")
-                        } else {
-                            Text(text = "$age лет")
+                        Text(text = name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Row() {
+                            if (age.isNotEmpty()) {
+                                Text(text = "$age лет ")
+                            }
+                            if (ageMonth.isNotEmpty()) {
+                                Text(text = "$ageMonth месяцев")
+                            }
                         }
                     }
                 }

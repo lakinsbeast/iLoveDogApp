@@ -54,6 +54,10 @@ android {
 
 dependencies {
 
+    implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
+
+
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.24.13-rc"
 
 
     implementation("androidx.activity:activity-ktx:1.6.0-alpha05")

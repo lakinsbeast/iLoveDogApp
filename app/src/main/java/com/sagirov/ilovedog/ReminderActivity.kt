@@ -95,6 +95,9 @@ class ReminderActivity : ComponentActivity() {
         val timestamp = createdAt.time
         val mCalendar = Calendar.getInstance()
 
+        val checkNotification = remember { mutableStateOf(false) }
+        val checkRepeat = remember { mutableStateOf(false) }
+
 
         val dayFocusRequester = FocusRequester()
         val monthFocusRequester = FocusRequester()
@@ -139,11 +142,11 @@ class ReminderActivity : ComponentActivity() {
                 Text(text = calendarMinuteTextModified.value, fontSize = 120.sp)
             }
         }
+
         val datePickerDialog = DatePickerDialog(this, R.style.light_dialog_theme, DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             calendarDayText.value = dayOfMonth.toString()
             calendarMonthText.value = (month + 1).toString()
             calendarYearText.value = year.toString()
-
         }, mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH))
 
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center,
@@ -179,8 +182,16 @@ class ReminderActivity : ComponentActivity() {
                 Icon(Icons.Outlined.DateRange, contentDescription = "")
             }
         }
-
-
+        Row(modifier = Modifier.fillMaxWidth().padding(start = 60.dp, end = 60.dp),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Text("Уведомления", fontSize = 15.sp)
+            Switch(
+                checked = checkNotification.value,
+                onCheckedChange = { checkNotification.value = it })
+        }
+        Row(modifier = Modifier.fillMaxWidth().padding(start = 60.dp, end = 60.dp, top = 10.dp),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+            Text("Повтор", fontSize = 15.sp)
+            Switch(checked = checkRepeat.value, onCheckedChange = {checkRepeat.value = it})
+        }
 
 
         OutlinedButton(onClick = {
@@ -195,7 +206,6 @@ class ReminderActivity : ComponentActivity() {
                     if (((timestamp / 100) < (createdAt.time / 100))) {
                         var time: Long = (createdAt.time) - timestamp
 //                        Log.d("calendar", (timestamp / 100).toString())
-                        /* TODO{добавить взятие времени и перевод в календарное время} */
 
                         prefs = getSharedPreferences(PREF_NAME_DATES, MODE_PRIVATE)
                         dateForVisitToVet[(System.currentTimeMillis()+time)] = reason.value
@@ -203,10 +213,13 @@ class ReminderActivity : ComponentActivity() {
                         val json: String = Gson().toJson(dateForVisitToVet)
                         prefs.edit().putString("dateForVisitToVet", json).apply()
 
-                        val am = getSystemService(Activity.ALARM_SERVICE) as AlarmManager
-                        val intent = Intent(this@ReminderActivity, NotificationReceiver::class.java)
-                        val pendingIntent = PendingIntent.getBroadcast(this@ReminderActivity, 1, intent,0)
-                        am.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+time, pendingIntent)
+                        if (checkNotification.value) {
+                            val am = getSystemService(Activity.ALARM_SERVICE) as AlarmManager
+                            val intent = Intent(this@ReminderActivity, NotificationReceiver::class.java)
+                            val pendingIntent = PendingIntent.getBroadcast(this@ReminderActivity, 1, intent,0)
+                            am.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+time, pendingIntent)
+                        }
+                        /* TODO{добавить повтор для напоминалки} */
 
                         Toast.makeText(
                             mContext,
@@ -240,7 +253,7 @@ class ReminderActivity : ComponentActivity() {
                 .clip(RoundedCornerShape(50)),
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.White, contentColor = Color.Black)) {
             Text("Добавить напоминание!")
-        }
+        }}}
 
 //        AndroidView(
 //            { CalendarView(it) },
@@ -257,5 +270,5 @@ class ReminderActivity : ComponentActivity() {
 //        )
 
 
-    }
-}
+
+
