@@ -70,7 +70,7 @@ class FirstLaunchActivity : ComponentActivity() {
                         .fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                         OutlinedButton(onClick = {  edit.putBoolean("firstOpen", false)
-                            edit.apply();startActivity(Intent(applicationContext, NewPetActivity::class.java)) },
+                            edit.apply();startActivity(Intent(applicationContext, NewPetActivity::class.java)); finish() },
                             Modifier
                                 .padding(
                                     start = 20.dp,

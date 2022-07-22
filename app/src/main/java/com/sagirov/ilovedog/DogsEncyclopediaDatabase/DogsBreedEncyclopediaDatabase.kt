@@ -9,7 +9,7 @@ import com.sagirov.ilovedog.MapConverter
 import kotlinx.coroutines.CoroutineScope
 
 
-@Database(entities = [DogsBreedEncyclopediaEntity::class, DogsInfoEntity::class, DocumentsEntity::class], version = 3, exportSchema = true, autoMigrations = [AutoMigration(from = 2, to = 3)])
+@Database(entities = [DogsBreedEncyclopediaEntity::class, DogsInfoEntity::class, DocumentsEntity::class], version = 4, exportSchema = true, autoMigrations = [AutoMigration(from = 3, to = 4)])
 @TypeConverters(DataConverter::class, MapConverter::class)
 abstract class DogsBreedEncyclopediaDatabase: RoomDatabase() {
     abstract fun getDao(): DogsBreedEncyclopediaDAO

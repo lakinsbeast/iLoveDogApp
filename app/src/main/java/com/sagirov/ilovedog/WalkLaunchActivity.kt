@@ -60,17 +60,12 @@ class WalkLaunchActivity : ComponentActivity() {
         stopTimer = myPetPaddockStandart!!.toLong()
         var backgroundColor = mutableStateOf(Color(0xFFFFFFFF))
         var textColor = mutableStateOf(Color(0xFF000000))
+        var buttonBackgroundColor = mutableStateOf(Color(0xFFC8E6C9))
         var cautionText = ""
 
         setContent {
-            val res = (currentTimeInMinutes.toFloat() / (stopTimer))
             //TODO{Сделать смену цвета круга в зависимости от процента гуляния}
             val circularColor = remember { mutableStateOf(Color(0xFF3A5A40)) }
-//            val availableProgressColor = when {
-//                res < 0.35F -> Color(0xFFFB3640) //green
-//                res < 0.75F -> Color(0xFFffca3a) //yellow
-//                else -> Color(0xFF8ac926) //red
-//            }
             Column(
                 Modifier
                     .fillMaxSize()
@@ -81,32 +76,34 @@ class WalkLaunchActivity : ComponentActivity() {
                 Text(text = "Давайте погуляем!", fontSize = 24.sp, color = textColor.value)
                 CircularProgressIndicator(
                     progress = (currentTimeInMinutes.toFloat() / (stopTimer)),
-                    strokeWidth = 12.dp,
+                    strokeWidth = 20.dp,
                     color = circularColor.value,
-                    modifier = Modifier.size(250.dp)
+                    modifier = Modifier.size(350.dp)
                 )
                 Text(text = DateUtils.formatElapsedTime(currentTimeInMinutes / 1000).toString(), color = textColor.value)
                 OutlinedButton(
                     onClick = {
                         if (!isStartTimer) {
                             startCount(); isStartTimer = true
+                            buttonBackgroundColor.value = Color(0xFF7BAA7A)
                             circularColor.value = Color(0xFF588157)
                             backgroundColor.value = Color(0xFF344E41)
                             textColor.value = Color(0xFFFFFFFF)
                             cautionText = "Не нажимайте на кнопку назад и не выгружайте приложение из памяти"
                         } else {
                             backgroundColor.value = Color(0xFFFFFFFF); textColor.value = Color(0xFF000000)
+                            buttonBackgroundColor.value = Color(0xFFC8E6C9)
                             circularColor.value = Color(0xFF3A5A40)
                             timer.cancel(); isStartTimer = false
                             cautionText = ""
                         }
                     },
                     Modifier
-                        .height(60.dp)
+                        .height(70.dp)
                         .fillMaxWidth()
                     ,shape = RoundedCornerShape(0),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.White,
+                        backgroundColor = buttonBackgroundColor.value,
                         contentColor = Color.Black
                     ), contentPadding = PaddingValues(0.dp)
                 ) {
@@ -116,27 +113,6 @@ class WalkLaunchActivity : ComponentActivity() {
                         Text("Stop")
                     }
                 }
-
-//                Button(onClick = {
-//                    if (!isStartTimer) {
-//                        startCount(); isStartTimer = true
-//                        circularColor.value = Color(0xFF588157)
-//                        backgroundColor.value = Color(0xFF344E41)
-//                        textColor.value = Color(0xFFFFFFFF)
-//                        cautionText = "Не нажимайте на кнопку назад и не выгружайте приложение из памяти"
-//                    } else {
-//                        backgroundColor.value = Color(0xFFFFFFFF); textColor.value = Color(0xFF000000)
-//                        circularColor.value = Color(0xFF3A5A40)
-//                        timer.cancel(); isStartTimer = false
-//                        cautionText = ""
-//                    }
-//                }) {
-//                    if (!isStartTimer) {
-//                        Text("Run")
-//                    } else {
-//                        Text("Stop")
-//                    }
-//                }
                 Text(text = cautionText, fontSize = 24.sp, color = Color.White, textAlign = TextAlign.Center)
             }
         }
@@ -157,8 +133,6 @@ class WalkLaunchActivity : ComponentActivity() {
         timer = object : CountDownTimer(currentTimeInMinutes, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 currentTimeInMinutes = millisUntilFinished
-                Log.d("timerActivity", currentTimeInMinutes.toString())
-                Log.d("timerActivity1", stopTimer.toString())
                 edit.putString("mypetPaddock", currentTimeInMinutes.toString()).apply()
                 timeToString = currentTimeInMinutes.toString()
             }

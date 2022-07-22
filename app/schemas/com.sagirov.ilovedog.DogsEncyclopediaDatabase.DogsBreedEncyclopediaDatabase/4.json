@@ -1,0 +1,218 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 4,
+    "identityHash": "e1ed1c146e996676f77588c2e8e6fb47",
+    "entities": [
+      {
+        "tableName": "DogsBreedEncyclopediaEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `breed_name` TEXT NOT NULL, `origin` TEXT NOT NULL, `breed_group` TEXT NOT NULL, `life_span` TEXT NOT NULL, `type` TEXT NOT NULL, `temperament` TEXT NOT NULL, `male_height` TEXT NOT NULL, `female_height` TEXT NOT NULL, `male_weight` TEXT NOT NULL, `female_weight` TEXT NOT NULL, `colors` TEXT NOT NULL, `litter_size` TEXT NOT NULL, `description` TEXT NOT NULL, `image_file` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "breedName",
+            "columnName": "breed_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "origin",
+            "columnName": "origin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "breedGroup",
+            "columnName": "breed_group",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lifeSpan",
+            "columnName": "life_span",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "temperament",
+            "columnName": "temperament",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "male_height",
+            "columnName": "male_height",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "female_height",
+            "columnName": "female_height",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "male_weight",
+            "columnName": "male_weight",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "female_weight",
+            "columnName": "female_weight",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "colors",
+            "columnName": "colors",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "litterSize",
+            "columnName": "litter_size",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageFile",
+            "columnName": "image_file",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "DogsInfoEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `dateBirth` INTEGER NOT NULL, `currentTimeWalk` INTEGER NOT NULL, `lastWalk` INTEGER NOT NULL, `breedName` TEXT NOT NULL, `gender` TEXT NOT NULL, `walkingTimeConst` INTEGER NOT NULL, `weight` INTEGER NOT NULL, `image` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dateBirth",
+            "columnName": "dateBirth",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "currentTimeWalk",
+            "columnName": "currentTimeWalk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastWalk",
+            "columnName": "lastWalk",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "breedName",
+            "columnName": "breedName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gender",
+            "columnName": "gender",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "walkingTimeConst",
+            "columnName": "walkingTimeConst",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weight",
+            "columnName": "weight",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "image",
+            "columnName": "image",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "DocumentsEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `docs` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "docs",
+            "columnName": "docs",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e1ed1c146e996676f77588c2e8e6fb47')"
+    ]
+  }
+}

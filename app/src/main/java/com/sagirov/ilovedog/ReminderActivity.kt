@@ -42,6 +42,7 @@ import java.util.*
 
 
 class ReminderActivity : ComponentActivity() {
+
     private val PREF_NAME_DATES = "dates"
     private lateinit var prefs: SharedPreferences
 
@@ -67,15 +68,15 @@ class ReminderActivity : ComponentActivity() {
         if (getArrayFromJson != "") {
             dateForVisitToVet = (Gson().fromJson(getArrayFromJson, object : TypeToken<Map<Long, String>>() {}.type))
             Log.d("clenadr", dateForVisitToVet.toString())
-            var it = dateForVisitToVet.iterator()
-            while (it.hasNext()) {
-                var item = it.next()
-                if (item.key < System.currentTimeMillis()) {
-                    it.remove()
-                    val json: String = Gson().toJson(dateForVisitToVet)
-                    prefs.edit().putString("dateForVisitToVet", json).apply()
-                }
-            }
+//            var it = dateForVisitToVet.iterator()
+//            while (it.hasNext()) {
+//                var item = it.next()
+////                if (item.key < System.currentTimeMillis()) {
+////                    it.remove()
+////                    val json: String = Gson().toJson(dateForVisitToVet)
+////                    prefs.edit().putString("dateForVisitToVet", json).apply()
+////                }
+//            }
         }
 
         setContent {
@@ -219,8 +220,7 @@ class ReminderActivity : ComponentActivity() {
                             val pendingIntent = PendingIntent.getBroadcast(this@ReminderActivity, 1, intent,0)
                             am.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+time, pendingIntent)
                         }
-                        /* TODO{добавить повтор для напоминалки} */
-
+                        //TODO{Доделать повтора и уведы}
                         Toast.makeText(
                             mContext,
                             "Добавлено новое напоминание",

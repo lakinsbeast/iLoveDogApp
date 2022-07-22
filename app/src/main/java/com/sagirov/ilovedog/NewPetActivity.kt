@@ -1,41 +1,65 @@
 package com.sagirov.ilovedog
 
+import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModelFactory
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
 import com.sagirov.ilovedog.ui.theme.ILoveDogTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.io.File
 import java.util.*
 
+
+@Suppress("DEPRECATION")
 class NewPetActivity : ComponentActivity() {
     private val PREF_NAME_PET = "mypets"
     private lateinit var prefsMyPet: SharedPreferences
-
+    private var camera_uri: Uri? = null
+    private var cameraUriPhoto = mutableStateOf("")
 
     private val dogsViewModel: DogsBreedEncyclopediaViewModel by viewModels {
         DogsBreedEncyclopediaViewModelFactory((application as DogsApplication).repo)
@@ -47,13 +71,31 @@ class NewPetActivity : ComponentActivity() {
         prefsMyPet = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
         val edit = prefsMyPet.edit()
         setContent {
-            var petNameBreed = rememberSaveable { mutableStateOf("")}
-            var petName = rememberSaveable { mutableStateOf("")}
-            var petAge = rememberSaveable { mutableStateOf("")}
-            var petAgeMonth = rememberSaveable { mutableStateOf("")}
-            var petPaddock = rememberSaveable { mutableStateOf("")}
+            var petNameBreed = remember { mutableStateOf("")}
+            var petName = remember { mutableStateOf("")}
+            var petAge = remember { mutableStateOf("")}
+            var petAgeMonth = remember { mutableStateOf("")}
+            var petPaddock = remember { mutableStateOf("")}
             val screenWidth = LocalConfiguration.current.screenWidthDp
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                if (cameraUriPhoto.value != ""){
+                    Image(bitmap = MediaStore.Images.Media.getBitmap(this@NewPetActivity.getContentResolver(),camera_uri).asImageBitmap(),
+                        "", contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape).size(100.dp))
+                }
+                Button(onClick = {
+                    if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
+                        checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                        //permission was not enabled
+                        val permission = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        //show popup to request permission
+                        requestPermissions(permission, 1000)
+                    } else {
+                        //permission already granter
+                        openCamera()
+                    }
+                }){
+                    Text("Открыть камеру")
+                }
                 TextField(label = { Text(text = "Имя питомца:", fontSize = 15.sp)}, value = petName.value, onValueChange = {petName.value = it},
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent))
                 Row() {
@@ -78,7 +120,9 @@ class NewPetActivity : ComponentActivity() {
                         edit.putString("mypetPaddockStandart", petPaddock.value)
                         edit.apply()
 
-                        dogsViewModel.insertDogProfile(DogsInfoEntity(0,petName.value,Calendar.getInstance().time,petPaddock.value.toLong(),Calendar.getInstance().time, petNameBreed.value,"Сука",petPaddock.value.toLong(), 56,"fuck"))
+                        dogsViewModel.insertDogProfile(DogsInfoEntity(0,petName.value,Calendar.getInstance().time,
+                            petPaddock.value.toLong(),Calendar.getInstance().time, petNameBreed.value,"Сука",
+                            petPaddock.value.toLong(), 56,cameraUriPhoto.value))
 
                         startActivity(Intent(this@NewPetActivity, MainActivity::class.java))
                         finish()
@@ -104,6 +148,28 @@ class NewPetActivity : ComponentActivity() {
             }
 
 
+        }
+    }
+
+    val getDogPhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) {
+        cameraUriPhoto.value = camera_uri.toString()
+    }
+
+    private fun openCamera() {
+        val timeStamp = SimpleDateFormat("yyyyMMddHHmmSS").format(Date())
+        val storageDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "NotesPhotos")
+        storageDir.mkdir()
+        val imageFile = File(storageDir, "image".plus(Calendar.getInstance().timeInMillis).plus(timeStamp).plus(".jpg"))
+        imageFile.createNewFile()
+        if (!imageFile.parentFile?.exists()!!) {
+            imageFile.parentFile?.mkdirs()
+        }
+        if (!imageFile.exists()) {
+            imageFile.mkdirs()
+        }
+        camera_uri = FileProvider.getUriForFile(this, "com.sagirov.ilovedog.Activities.NewPetActivity.provider", imageFile)
+        GlobalScope.launch(Dispatchers.Main) {
+            getDogPhoto.launch(camera_uri)
         }
     }
 }

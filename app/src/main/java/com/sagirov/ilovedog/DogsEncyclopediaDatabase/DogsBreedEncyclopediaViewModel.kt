@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 class DogsBreedEncyclopediaViewModel(private val repo: DogsBreedEncyclopediaRepository): ViewModel() {
     val allDogs: LiveData<MutableList<DogsBreedEncyclopediaEntity>> = repo.getAllDogs()
@@ -14,7 +15,20 @@ class DogsBreedEncyclopediaViewModel(private val repo: DogsBreedEncyclopediaRepo
     fun insertDocumentFile(doc: DocumentsEntity) = viewModelScope.launch {
         repo.insertDocumentFile(doc)
     }
+    fun updateDocumentFile(id: Int, doc: Map<String, String>) = viewModelScope.launch {
+        repo.updateDocumentFile(id, doc)
+    }
+    fun deleteDocumentFile(id: Int) = viewModelScope.launch {
+        repo.deleteDocument(id)
+    }
 
+
+    fun updateDogsTime(id: Int, time: Long) = viewModelScope.launch {
+        repo.updateDogsTime(id, time)
+    }
+    fun updateDogsDate(id: Int, date: Date) = viewModelScope.launch {
+        repo.updateDogsDate(id, date)
+    }
     fun insertDogProfile(doge: DogsInfoEntity) = viewModelScope.launch {
         repo.insertDogProfile(doge)
     }
