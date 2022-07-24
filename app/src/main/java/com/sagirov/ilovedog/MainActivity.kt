@@ -1,8 +1,10 @@
 package com.sagirov.ilovedog
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.icu.text.DateFormat
 import android.icu.util.Calendar
 import android.os.Bundle
@@ -14,7 +16,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -24,39 +25,40 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.*
 import com.sagirov.ilovedog.DogsKnowledgeBaseDatabase.*
+import com.sagirov.ilovedog.ui.theme.*
 import kotlinx.coroutines.launch
 
-
+//TODO{Сделать как в Android Now синхронизацию данных в WorkManager'e }
+//TODO{Сделать цветовую палитру и применить ее ко всем компонентам}
 val selectedIndex =  mutableStateOf(0)
 class MainActivity : ComponentActivity() {
     private val PREF_NAME = "first_launch"
     private val PREF_NAME_PET = "mypets"
     private val PREF_NAME_DATES = "dates"
     private lateinit var prefs: SharedPreferences
-//    private lateinit var prefsMyPet: SharedPreferences
 
     private var isBack = true
+
+    companion object {
+        var myPetPaddockT = MutableLiveData<Boolean>(false)
+    }
 
     private var badgeCount = mutableStateOf(0)
     private var isBadgeShown = mutableStateOf(false)
@@ -67,7 +69,6 @@ class MainActivity : ComponentActivity() {
     private var otherReminderMapp = mutableStateMapOf<Long, String>()
     private var dayReminderMap = mutableStateMapOf<Long, String>()
     private val dogsEncyclopedia = mutableListOf<DogsBreedEncyclopediaEntity>()
-    private val knowData = mutableListOf<DogsKnowledgeBaseEntity>()
     private val dogsProfileArray = mutableListOf<DogsInfoEntity>()
 
 
@@ -81,6 +82,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        CheckDarkMode.isDarkMode(true)
+
         prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
         val frst_lnch = prefs.getBoolean("firstOpen", true)
         if (frst_lnch) {
@@ -92,16 +95,23 @@ class MainActivity : ComponentActivity() {
         var myPetName = prefs.getString("mypetName", "")
         var myPetNameBreed = prefs.getString("mypetBreed", "Нажмите сюда, чтоб добавить питомца")
         var myPetPaddock = mutableStateOf(prefs.getString("mypetPaddock", ""))
+        var _myPetPaddock = ""
         var myPetAge = prefs.getString("mypetAge", "")
         var myPetAgeMonth = prefs.getString("mypetAgeMonth", "")
         var myPetPaddockStandart = mutableStateOf(prefs.getString("mypetPaddockStandart", ""))
-        Log.d("myPetPaddock", myPetPaddock.value.toString())
-        Log.d("mypetPaddockStandart", myPetPaddockStandart.value.toString())
+
+        myPetPaddockT.observe(this) {
+            _myPetPaddock = myPetPaddock.value.toString()
+            myPetPaddock.value = it.toString()
+            myPetPaddock.value = _myPetPaddock
+        }
+
         prefs = getSharedPreferences(PREF_NAME_DATES, MODE_PRIVATE)
         val getArrayFromJson = prefs.getString("dateForVisitToVet", "")
         if (getArrayFromJson != "") {
             dateForVisitToVet = (Gson().fromJson(getArrayFromJson, object : TypeToken<Map<Long, String>>() {}.type))
             val it = dateForVisitToVet.iterator()
+            Log.d("dateForVisitToVet", dateForVisitToVet.toString())
             while (it.hasNext()) {
                 val item = it.next()
                 when {
@@ -110,6 +120,7 @@ class MainActivity : ComponentActivity() {
                     System.currentTimeMillis()+604800000 > item.key -> weeklyReminderMap[item.key] = item.value
                     else -> otherReminderMapp[item.key] = item.value
                 }
+
             }
         }
         badgeCount.value = dayReminderMap.size
@@ -118,32 +129,13 @@ class MainActivity : ComponentActivity() {
         }
 
 
-
-
         dogsViewModel.getAllDogsProfiles.observe(this) { dogs ->
             dogsProfileArray.addAll(dogs)
             dogsProfileArray.forEach {
                 myPetName = it.name
                 myPetNameBreed = it.breedName
             }
-//            dogs.forEach {
-//                myPetName = it.name
-//                myPetNameBreed = it.breedName
-//                if (myPetPaddock.value!!.toLong() < it.currentTimeWalk) {
-//                    dogsViewModel.updateDogsTime(it.id, myPetPaddock.value!!.toLong())
-//                    Log.d("сработал1Цикл", "сработал1Цикл")
-//                } else {
-//                    myPetPaddock.value = it.currentTimeWalk.toString()
-//                    Log.d("сработал1.1Цикл", "сработал1.1Цикл")
-//                }
-//                if (Calendar.getInstance().timeInMillis >= it.lastWalk.time + 86400000){
-//                    dogsViewModel.updateDogsTime(it.id, Calendar.getInstance().timeInMillis)
-//                    Log.d("сработал2Цикл", "сработал2Цикл")
-//                }
-                Log.d("сработал2Цикл", "сработал2Цикл")
-//                myPetPaddock.value = it.currentTimeWalk.toString()
-//                myPetPaddockStandart.value = it.walkingTimeConst.toString()
-//            }
+
         }
         dogsProfileArray.forEach {
             if (myPetPaddock.value!!.toLong() < it.currentTimeWalk) {
@@ -183,15 +175,12 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-
         setContent {
             val systemUiController = rememberSystemUiController()
             systemUiController.setSystemBarsColor(Color(0xFFB8D0B3))
-            systemUiController.setNavigationBarColor(Color(0xFFB8D0B3))
-
+            systemUiController.setNavigationBarColor(Color(0xFFD0E0CC))
             val scaffoldState = rememberScaffoldState()
             val scope = rememberCoroutineScope()
-
             Scaffold(bottomBar = { BottomNav() }, scaffoldState = scaffoldState) {
                 if (badgeCount.value > 0 && !isBadgeShown.value){
                     isBadgeShown.value = true
@@ -202,10 +191,10 @@ class MainActivity : ComponentActivity() {
                 if (selectedIndex.value == 0) {
                     Column(
                         Modifier
-                            .background(Color(0xFFB8D0B3))
-                            .verticalScroll(rememberScrollState(), true)
                             .fillMaxSize()
-                            .padding(start = 15.dp, end = 15.dp, bottom = 50.dp)
+                            .background(mainBackgroundColor)
+                            .verticalScroll(rememberScrollState(), isScreenHorizontal(this))
+                            .padding(start = 15.dp, end = 15.dp)
                     ) {
                         Row(Modifier.fillMaxWidth()) {
                             Box(Modifier.weight(0.5f)) {
@@ -214,7 +203,7 @@ class MainActivity : ComponentActivity() {
                         }
                         Dashboard(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetAgeMonth!!, myPetPaddock.value!!,myPetPaddockStandart.value!!)
                         Stats(myPetPaddock.value!!, myPetPaddockStandart.value!!)
-                        Column(Modifier.padding(top = 20.dp, bottom = 20.dp)) {
+                        Column(Modifier.padding(top = 20.dp)) {
                             OutlinedButton(
                                 onClick = {
                                     startActivity(
@@ -223,7 +212,7 @@ class MainActivity : ComponentActivity() {
                                             WalkLaunchActivity::class.java
                                         )
                                     )
-                                    finish()
+//                                    finish()
                                 },
                                 Modifier
                                     .padding(
@@ -232,13 +221,11 @@ class MainActivity : ComponentActivity() {
                                     )
                                     .height(70.dp)
                                     .fillMaxWidth()
-//                                    .border(1.dp, Color(0xFF8AB181), shape = CircleShape)
-//                                    .clip(RoundedCornerShape(35)),
                                 ,shape = RoundedCornerShape(35),
                                 colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color(0xFF8AB181),
+                                    backgroundColor = homeButtonColor,
                                     contentColor = Color.Black
-                                ), contentPadding = PaddingValues(0.dp)
+                                )
                             ) {
                                 Text("Прогулка!")
                             }
@@ -252,14 +239,11 @@ class MainActivity : ComponentActivity() {
                                     )
                                     .height(70.dp)
                                     .fillMaxWidth()
-//                                    .border(0.1F.dp, Color(0xFF8AB181), shape = RoundedCornerShape(35))
-//                                    .clip(RoundedCornerShape(35)),
                                 ,shape = RoundedCornerShape(35),
                                 colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color(0xFF8AB181),
+                                    backgroundColor = homeButtonColor,
                                     contentColor = Color.Black
                                 ),
-//                                contentPadding = PaddingValues(0.dp)
                             ) {
                                 Text("Достижения")
                             }
@@ -270,7 +254,7 @@ class MainActivity : ComponentActivity() {
                     Column(
                         Modifier
                             .fillMaxSize()
-                            .background(Color(0xFFB8D0B3))
+                            .background(mainBackgroundColor)
                             .verticalScroll(rememberScrollState())
                             .padding(start = 15.dp, end = 15.dp)
                     ) {
@@ -287,7 +271,7 @@ class MainActivity : ComponentActivity() {
                             Row(
                                 Modifier
                                     .fillMaxWidth()
-                                    .background(Color(0xFFD0E0CC))
+                                    .background(mainSecondColor)
                                     .padding(
                                         start = 20.dp,
                                         end = 20.dp,
@@ -301,15 +285,6 @@ class MainActivity : ComponentActivity() {
                                     Modifier.padding(top = 10.dp, bottom = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-//                                    Image(
-//                                        painterResource(R.drawable.dog_first),
-//                                        contentDescription = "",
-//                                        contentScale = ContentScale.Crop,
-//                                        modifier = Modifier
-//                                            .padding(end = 10.dp)
-//                                            .size(75.dp)
-//                                            .clip(RoundedCornerShape(100))
-//                                    )
                                     Column(horizontalAlignment = Alignment.Start) {
                                         Text(text = "Кормление", fontSize = 18.sp)
                                     }
@@ -321,7 +296,7 @@ class MainActivity : ComponentActivity() {
                             Row(
                                 Modifier
                                     .fillMaxWidth()
-                                    .background(Color(0xFFD0E0CC))
+                                    .background(mainSecondColor)
                                     .padding(
                                         start = 20.dp,
                                         end = 20.dp,
@@ -335,15 +310,6 @@ class MainActivity : ComponentActivity() {
                                     Modifier.padding(top = 10.dp, bottom = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-//                                    Image(
-//                                        painterResource(R.drawable.dog_first),
-//                                        contentDescription = "",
-//                                        contentScale = ContentScale.Crop,
-//                                        modifier = Modifier
-//                                            .padding(end = 10.dp)
-//                                            .size(75.dp)
-//                                            .clip(RoundedCornerShape(100))
-//                                    )
                                     Column(horizontalAlignment = Alignment.Start) {
                                         Text(text = "Активность", fontSize = 18.sp)
 
@@ -351,17 +317,13 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-//                        HtmlText(textId = R.string.dog_feeding_text)
-
-
-//                        DashboardPets(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetPaddock!!, myPetPaddockStandart!!)
                     }
                 }
                 if (selectedIndex.value == 2) {
                     Column(
                         Modifier
                             .fillMaxSize()
-                            .background(Color(0xFFB8D0B3))
+                            .background(mainBackgroundColor)
                             .padding(bottom = 50.dp)
                     ) {
                         Row(
@@ -383,7 +345,7 @@ class MainActivity : ComponentActivity() {
                     Column(
                         Modifier
                             .fillMaxSize()
-                            .background(Color(0xFFB8D0B3))
+                            .background(mainBackgroundColor)
                             .padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         OutlinedButton(
                             onClick = {
@@ -407,18 +369,21 @@ class MainActivity : ComponentActivity() {
                                 )
                                 .clip(RoundedCornerShape(50)),
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Color(0xFFD0E0CC),
+                                backgroundColor = mainSecondColor,
                                 contentColor = Color.Black
                             )
                         ) {
                             Text("Добавить напоминание")
                         }
+                        /*
+                        * Я поменял внутри циклов items с item.value На item.key
+                        * */
                         if (dayReminderMap.isNotEmpty()) {
-                            Text("Напоминания на день:")
+                            Text("Дневные напоминания:")
                             dayReminderColumn(data = dayReminderMap)
                         }
                         if (weeklyReminderMap.isNotEmpty()) {
-                            Text("Напоминания на неделю:")
+                            Text("Недельные напоминания:")
                             weeklyReminderColumn(data = weeklyReminderMap)
                         }
                         if (otherReminderMapp.isNotEmpty()) {
@@ -436,13 +401,13 @@ class MainActivity : ComponentActivity() {
                     Column(
                         Modifier
                             .fillMaxSize()
-                            .background(Color(0xFFB8D0B3))
+                            .background(mainBackgroundColor)
                             .padding(top = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Card(onClick = { startActivity(Intent(this@MainActivity, DocumentActivity::class.java)) }) {
                             Row(
                                 Modifier
                                     .fillMaxWidth()
-                                    .background(Color(0xFFD0E0CC))
+                                    .background(mainSecondColor)
                                     .padding(
                                         start = 20.dp,
                                         end = 20.dp,
@@ -456,15 +421,6 @@ class MainActivity : ComponentActivity() {
                                     Modifier.padding(top = 10.dp, bottom = 10.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-//                                    Image(
-//                                        painterResource(R.drawable.dog_first),
-//                                        contentDescription = "",
-//                                        contentScale = ContentScale.Crop,
-//                                        modifier = Modifier
-//                                            .padding(end = 10.dp)
-//                                            .size(75.dp)
-//                                            .clip(RoundedCornerShape(100))
-//                                    )
                                     Column(horizontalAlignment = Alignment.Start) {
                                         Text(text = "Документы", fontSize = 18.sp)
                                     }
@@ -494,7 +450,7 @@ class MainActivity : ComponentActivity() {
     fun otherReminderLazyColumn(data: Map<Long, String>) {
         LazyColumn {
             data.forEach {
-                item(it.value) {
+                item(it.key) {
                     Card(onClick = {
                         val alert = android.app.AlertDialog.Builder(this@MainActivity)
                         alert.setTitle("Удалить напоминание?")
@@ -510,6 +466,7 @@ class MainActivity : ComponentActivity() {
                     }, Modifier.padding(top = 0.dp, bottom = 10.dp)) {
                         Row(modifier = Modifier
                             .fillMaxWidth()
+                            .background(mainSecondColor)
                             .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                             Text(it.value, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
                             Column() {
@@ -527,7 +484,7 @@ class MainActivity : ComponentActivity() {
     fun dayReminderColumn(data: Map<Long, String>) {
         LazyColumn {
             data.forEach {
-                item(it.value) {
+                item(it.key) {
                     Card(onClick = {
                         val alert = android.app.AlertDialog.Builder(this@MainActivity)
                         alert.setTitle("Удалить напоминание?")
@@ -543,6 +500,7 @@ class MainActivity : ComponentActivity() {
                     }) {
                         Row(modifier = Modifier
                             .fillMaxWidth()
+                            .background(mainSecondColor)
                             .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                             Text(it.value, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
                             Column() {
@@ -560,7 +518,7 @@ class MainActivity : ComponentActivity() {
     fun weeklyReminderColumn(data: Map<Long, String>) {
         LazyColumn {
             data.forEach {
-                item(it.value) {
+                item(it.key) {
                     Card(onClick = {
                         val alert = android.app.AlertDialog.Builder(this@MainActivity)
                         alert.setTitle("Удалить напоминание?")
@@ -576,6 +534,7 @@ class MainActivity : ComponentActivity() {
                     }) {
                         Row(modifier = Modifier
                             .fillMaxWidth()
+                            .background(mainSecondColor)
                             .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                             Text(it.value, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
                             Column() {
@@ -593,7 +552,7 @@ class MainActivity : ComponentActivity() {
     fun pastReminderColumn(data: Map<Long, String>) {
         LazyColumn {
             data.forEach {
-                item(it.value) {
+                item(it.key) {
                     Card(onClick = {
                         val alert = android.app.AlertDialog.Builder(this@MainActivity)
                         alert.setTitle("Удалить напоминание?")
@@ -609,6 +568,7 @@ class MainActivity : ComponentActivity() {
                     }) {
                         Row(modifier = Modifier
                             .fillMaxWidth()
+                            .background(healthBarPastReminderColor)
                             .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                             Text(it.value, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1, color = Color.Black.copy(alpha = 0.5f))
                             Column() {
@@ -622,7 +582,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun Stats(_time: String, _timeStandart: String) {
         val time = _time.toLong()
@@ -649,7 +608,7 @@ class MainActivity : ComponentActivity() {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFD0E0CC))
+                    .background(mainSecondColor)
                     .padding(top = 30.dp, bottom = 30.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround
@@ -666,7 +625,7 @@ class MainActivity : ComponentActivity() {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFD0E0CC))
+                    .background(mainSecondColor)
                     .padding(top = 30.dp, bottom = 30.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround
@@ -784,7 +743,7 @@ class MainActivity : ComponentActivity() {
                                 badgeCount.value < 10 -> 7.dp
                                 badgeCount.value < 100 -> 5.dp
                                 else -> 5.dp
-                            }
+                            }, 0.dp
                         ), color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.SemiBold) }) {
                         Icon(imageVector = ImageVector.vectorResource(health), "", modifier = Modifier.size(25.dp))
                     }
@@ -831,7 +790,7 @@ class MainActivity : ComponentActivity() {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFD0E0CC))
+                    .background(mainSecondColor)
                     .padding(top = 10.dp, bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -889,12 +848,13 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun Dashboard(name: String, breed: String, age: String, ageMonth: String,paddock: String, standartPaddock: String) {
         val ctx = LocalContext.current
+
         Text(text = "Профиль", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
         Card(onClick = { startActivity(Intent(ctx, NewPetActivity::class.java))}, elevation = 15.dp, shape = RoundedCornerShape(15.dp)) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFD0E0CC))
+                    .background(mainSecondColor)
                     .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -940,6 +900,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    fun isScreenHorizontal(ctx: Context): Boolean {
+         if (ctx.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+             return true
+         } else {
+             return false
+         }
     }
 }
 

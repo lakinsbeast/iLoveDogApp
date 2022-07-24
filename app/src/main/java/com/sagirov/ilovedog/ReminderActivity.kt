@@ -38,9 +38,11 @@ import androidx.compose.ui.unit.sp
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import java.util.*
 
-
+// TODO{Поменять смену времени с кликов на scroll wheel(придется делать самописный
+//  https://developer.android.com/jetpack/compose/gestures#scrolling тут показан пример)}
 class ReminderActivity : ComponentActivity() {
 
     private val PREF_NAME_DATES = "dates"
@@ -82,7 +84,7 @@ class ReminderActivity : ComponentActivity() {
         setContent {
             Column(
                 Modifier
-                    .fillMaxSize()
+                    .fillMaxSize().background(mainBackgroundColor)
                     .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                 time()
             }
@@ -189,6 +191,10 @@ class ReminderActivity : ComponentActivity() {
                 checked = checkNotification.value,
                 onCheckedChange = { checkNotification.value = it })
         }
+//        Row(modifier = Modifier.fillMaxWidth().padding(start = 60.dp, end = 60.dp, top = 10.dp),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+//            Text("Повтор уведомления?", fontSize = 15.sp)
+//            Switch(checked = checkRepeat.value, onCheckedChange = {checkRepeat.value = it})
+//        }
         Row(modifier = Modifier.fillMaxWidth().padding(start = 60.dp, end = 60.dp, top = 10.dp),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
             Text("Повтор", fontSize = 15.sp)
             Switch(checked = checkRepeat.value, onCheckedChange = {checkRepeat.value = it})
@@ -213,12 +219,14 @@ class ReminderActivity : ComponentActivity() {
                         Log.d("calendar", dateForVisitToVet.toString())
                         val json: String = Gson().toJson(dateForVisitToVet)
                         prefs.edit().putString("dateForVisitToVet", json).apply()
-
+                        // TODO{УВЕДЫ СРАБАТЫВАЮТ ПРЯМО В МОМЕНТ ОКОНЧАНИЯ НАПОМИНАНИЯ}
+                        // TODO{Нужно сделать выбор в какое время сработает уведомление}
                         if (checkNotification.value) {
                             val am = getSystemService(Activity.ALARM_SERVICE) as AlarmManager
                             val intent = Intent(this@ReminderActivity, NotificationReceiver::class.java)
                             val pendingIntent = PendingIntent.getBroadcast(this@ReminderActivity, 1, intent,0)
-                            am.setExact(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+time, pendingIntent)
+                            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,(System.currentTimeMillis()+time)-43200000, pendingIntent)
+
                         }
                         //TODO{Доделать повтора и уведы}
                         Toast.makeText(

@@ -5,6 +5,7 @@ package com.sagirov.ilovedog
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.database.Cursor
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -16,6 +17,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -27,12 +29,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.SystemUiController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModelFactory
+import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
+import com.sagirov.ilovedog.ui.theme.mainSecondColor
+import com.skydoves.landscapist.glide.GlideImage
 import java.io.File
 
 
@@ -80,6 +88,7 @@ class DocumentActivity : ComponentActivity() {
                  displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                 Log.d("name", "Display Name: $displayName")
             }
+            cursor.close()
             Log.d("doc", "doc Uri: $it")
             Log.d("docName", File(it.path.toString()).name)
             Log.d("docName1", File(it.path.toString()).name.split(":")[0])
@@ -103,6 +112,7 @@ class DocumentActivity : ComponentActivity() {
                 displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                 Log.d("name", "Display Name: $displayName")
             }
+            cursor.close()
             dogsViewModel.insertDocumentFile(
                 DocumentsEntity(
                     0,
@@ -113,6 +123,7 @@ class DocumentActivity : ComponentActivity() {
         }
 
         setContent {
+//            val systemUiController: SystemUiController = rememberSystemUiController()
             val dialogState = remember { mutableStateOf(false) }
             val dialogChooseActive = remember { mutableStateOf(false) }
 
@@ -120,10 +131,12 @@ class DocumentActivity : ComponentActivity() {
                     if (isImageOpened.value) {
                         Box(Modifier.fillMaxSize()) {
                             IconButton(onClick = { isImageOpened.value = false }) {
-                                Icon(bitmap = MediaStore.Images.Media.getBitmap(this@DocumentActivity.contentResolver,Uri.parse(keyUriDocument)).asImageBitmap(), contentDescription = "")
+                                GlideImage(Uri.parse(keyUriDocument), contentScale = ContentScale.Fit)
                             }
                         }
+                    } else {
                     }
+
                     if (dialogState.value) {
                         AlertDialog(onDismissRequest = { dialogState.value = false },
                             buttons = {
@@ -149,8 +162,8 @@ class DocumentActivity : ComponentActivity() {
                                                     dialogState.value = false}
                                                 File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "image" ->
                                                     {
-                                                       // TODO{СДЕЛАТЬ INTENT с IMAGEFULLSCREEN}
                                                         isImageOpened.value = true;dialogState.value = false;dialogChooseActive.value = false
+
                                                     }
                                             }
                                                   },
@@ -159,7 +172,7 @@ class DocumentActivity : ComponentActivity() {
                                             .fillMaxWidth()
                                         ,shape = RoundedCornerShape(0),
                                         colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = Color.White,
+                                            backgroundColor = mainSecondColor,
                                             contentColor = Color.Black
                                         ), contentPadding = PaddingValues(0.dp)
                                     ) {
@@ -180,7 +193,7 @@ class DocumentActivity : ComponentActivity() {
                                             .fillMaxWidth()
                                         ,shape = RoundedCornerShape(0),
                                         colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = Color.White,
+                                            backgroundColor = mainSecondColor,
                                             contentColor = Color.Black
                                         ), contentPadding = PaddingValues(0.dp)
                                     ) {
@@ -203,7 +216,7 @@ class DocumentActivity : ComponentActivity() {
                                                 .fillMaxWidth()
                                             ,shape = RoundedCornerShape(0),
                                             colors = ButtonDefaults.buttonColors(
-                                                backgroundColor = Color.White,
+                                                backgroundColor = mainSecondColor,
                                                 contentColor = Color.Black
                                             ), contentPadding = PaddingValues(0.dp)
                                         ) {
@@ -220,7 +233,7 @@ class DocumentActivity : ComponentActivity() {
                                                 .fillMaxWidth()
                                             ,shape = RoundedCornerShape(0),
                                             colors = ButtonDefaults.buttonColors(
-                                                backgroundColor = Color.White,
+                                                backgroundColor = mainSecondColor,
                                                 contentColor = Color.Black
                                             ), contentPadding = PaddingValues(0.dp)
                                         ) {
@@ -230,7 +243,7 @@ class DocumentActivity : ComponentActivity() {
                                 })
                     }
                     Row(modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth().background(mainBackgroundColor)
                         .padding(top = 10.dp), horizontalArrangement = Arrangement.Center) {
                         OutlinedButton(
                             onClick = {
@@ -241,7 +254,7 @@ class DocumentActivity : ComponentActivity() {
                                 .height(70.dp)
                             ,shape = RoundedCornerShape(50),
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Color.White,
+                                backgroundColor = Color(0xFFD0E0CC),
                                 contentColor = Color.Black
                             ), contentPadding = PaddingValues(0.dp)
                         ) {
@@ -266,7 +279,7 @@ class DocumentActivity : ComponentActivity() {
                                     .fillMaxWidth()
                                 ,shape = RoundedCornerShape(0),
                                 colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
+                                    backgroundColor = Color(0xFFD0E0CC),
                                     contentColor = Color.Black
                                 ), contentPadding = PaddingValues(0.dp)
                             ) {
@@ -293,6 +306,10 @@ class DocumentActivity : ComponentActivity() {
 
 
     override fun onBackPressed() {
+        if (isImageOpened.value == true) {
+            isImageOpened.value = false
+            return
+        }
         if (!newDocumentState.value) {
             super.onBackPressed()
         } else {

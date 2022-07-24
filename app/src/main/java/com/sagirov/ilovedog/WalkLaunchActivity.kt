@@ -24,6 +24,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationCompat
+import com.sagirov.ilovedog.MainActivity.Companion.myPetPaddockT
+import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
+import com.sagirov.ilovedog.ui.theme.mainSecondColor
+import com.sagirov.ilovedog.ui.theme.mainTextColor
 
 var currentTimeInMinutes: Long by mutableStateOf(0)
 var stopTimer: Long by mutableStateOf(0)
@@ -43,13 +47,14 @@ class WalkLaunchActivity : ComponentActivity() {
         .setContentText("Завершить?")
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        if (isStartTimer) {
-            
-        } else {
-        startActivity(Intent(this, MainActivity::class.java))
+        myPetPaddockT.value = true
+        myPetPaddockT.value = false
+        if (isStartTimer){
+            Toast.makeText(this@WalkLaunchActivity, "Таймер остановлен", Toast.LENGTH_SHORT).show()
+            timer.cancel()
+            isStartTimer = false
         }
-    }
+        super.onBackPressed()}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,13 +63,12 @@ class WalkLaunchActivity : ComponentActivity() {
         val myPetPaddockStandart = prefsMyPet.getString("mypetPaddockStandart", "")
         currentTimeInMinutes = myPetPaddock!!.toLong()
         stopTimer = myPetPaddockStandart!!.toLong()
-        var backgroundColor = mutableStateOf(Color(0xFFFFFFFF))
-        var textColor = mutableStateOf(Color(0xFF000000))
-        var buttonBackgroundColor = mutableStateOf(Color(0xFFC8E6C9))
+        var backgroundColor = mutableStateOf(mainBackgroundColor)
+        var textColor = mutableStateOf(mainTextColor)
+        var buttonBackgroundColor = mutableStateOf(mainSecondColor)
         var cautionText = ""
 
         setContent {
-            //TODO{Сделать смену цвета круга в зависимости от процента гуляния}
             val circularColor = remember { mutableStateOf(Color(0xFF3A5A40)) }
             Column(
                 Modifier
@@ -91,7 +95,7 @@ class WalkLaunchActivity : ComponentActivity() {
                             textColor.value = Color(0xFFFFFFFF)
                             cautionText = "Не нажимайте на кнопку назад и не выгружайте приложение из памяти"
                         } else {
-                            backgroundColor.value = Color(0xFFFFFFFF); textColor.value = Color(0xFF000000)
+                            backgroundColor.value = Color(0xFFB8D0B3); textColor.value = Color(0xFF000000)
                             buttonBackgroundColor.value = Color(0xFFC8E6C9)
                             circularColor.value = Color(0xFF3A5A40)
                             timer.cancel(); isStartTimer = false

@@ -54,11 +54,13 @@ android {
 
 dependencies {
 
+//    implementation("androidx.work:work-runtime-ktx:2.7.1")
+
+    implementation "com.github.skydoves:landscapist-glide:1.5.3"
+
     implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
 
-
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.24.13-rc"
-
 
     implementation("androidx.activity:activity-ktx:1.6.0-alpha05")
     implementation("androidx.room:room-runtime:2.4.2")
@@ -68,12 +70,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.9.0'
 
     implementation 'de.charlex.compose:html-text:1.0.0'
-
-
+    //это я хз, вроде не использовал
     implementation "io.github.boguszpawlowski.composecalendar:composecalendar:0.5.1"
-
+//Пока не использовал
     implementation 'nl.dionsegijn:konfetti-compose:2.0.2'
-
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation "androidx.compose.ui:ui:$compose_version"

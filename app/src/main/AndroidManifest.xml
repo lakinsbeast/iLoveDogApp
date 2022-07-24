@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.sagirov.ilovedog">
 
-
     <uses-permission android:name="android.permission.ACTION_OPEN_DOCUMENT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
@@ -17,15 +16,16 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:requestLegacyExternalStorage="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/launcher_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.ILoveDog"
         tools:targetApi="31">
         <activity
             android:name=".DocumentActivity"
             android:exported="false"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_document"
             android:theme="@style/Theme.ILoveDog" />
         <activity

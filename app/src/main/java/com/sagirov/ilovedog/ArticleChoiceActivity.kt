@@ -3,6 +3,7 @@ package com.sagirov.ilovedog
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,10 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import de.charlex.compose.HtmlText
 
 val selectedCard =  mutableStateOf(-1)
@@ -40,13 +44,20 @@ class ArticleChoiceActivity : ComponentActivity() {
         }
 
         setContent {
+            val systemUiController = rememberSystemUiController()
+            systemUiController.setSystemBarsColor(Color(0xFFB8D0B3))
+            systemUiController.setNavigationBarColor(Color(0xFFD0E0CC))
             if (selectedCard.value == -1 ) {
-                listDates(data = currentArticle)
+                Column(Modifier.fillMaxSize().background(mainBackgroundColor)) {
+                    listDates(data = currentArticle)
+                }
             } else {
                 Column(
                     Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState()).padding(start = 15.dp, end = 15.dp, top = 15.dp)) {
+                        .background(mainBackgroundColor)
+                        .verticalScroll(rememberScrollState())
+                        .padding(start = 15.dp, end = 15.dp, top = 15.dp)) {
                     HtmlText(textId = selectedArticle, fontSize = 15.sp)
                 }
             }
@@ -76,7 +87,10 @@ class ArticleChoiceActivity : ComponentActivity() {
                 Card(onClick = { selectedCard.value = 2 }, modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)) {
-                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFD0E0CC)), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                         Text(text = resources.getString(stringID), textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.padding(start = 20.dp, end = 20.dp))
                     }
                 }
