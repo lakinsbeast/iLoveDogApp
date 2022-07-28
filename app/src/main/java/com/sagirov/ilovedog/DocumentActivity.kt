@@ -41,9 +41,10 @@ import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewMo
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.skydoves.landscapist.glide.GlideImage
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 
-
+@AndroidEntryPoint
 class DocumentActivity : ComponentActivity() {
     private val allDocsKeys = mutableStateListOf<String>()
     private val allDocsValues = mutableStateListOf<String>()
@@ -77,49 +78,52 @@ class DocumentActivity : ComponentActivity() {
 
         }
         val getDocument = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
-            this@DocumentActivity.contentResolver.takePersistableUriPermission(
-                it!!, Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            )
-            var displayName = ""
-            val cursor: Cursor? = contentResolver.query(
-                it, null, null, null, null, null)
-            if (cursor!!.moveToFirst()) {
-                 displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                Log.d("name", "Display Name: $displayName")
-            }
-            cursor.close()
-            Log.d("doc", "doc Uri: $it")
-            Log.d("docName", File(it.path.toString()).name)
-            Log.d("docName1", File(it.path.toString()).name.split(":")[0])
-            dogsViewModel.insertDocumentFile(
-                DocumentsEntity(
-                    0,
-                    mapOf(it.toString() to displayName)
+            if (it != null) {
+                this@DocumentActivity.contentResolver.takePersistableUriPermission(
+                    it, Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
-            )
+                var displayName = ""
+                val cursor: Cursor? = contentResolver.query(
+                    it, null, null, null, null, null)
+                if (cursor!!.moveToFirst()) {
+                    displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    Log.d("name", "Display Name: $displayName")
+                }
+                cursor.close()
+                Log.d("doc", "doc Uri: $it")
+                Log.d("docName", File(it.path.toString()).name)
+                Log.d("docName1", File(it.path.toString()).name.split(":")[0])
+                dogsViewModel.insertDocumentFile(
+                    DocumentsEntity(
+                        0,
+                        mapOf(it.toString() to displayName)
+                    )
+                )
+            }
         }
 
         val getImage = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
-            this@DocumentActivity.contentResolver.takePersistableUriPermission(
-                it!!, Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            )
-            var displayName = ""
-            val cursor: Cursor? = contentResolver.query(
-                it, null, null, null, null, null)
-            if (cursor!!.moveToFirst()) {
-                displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                Log.d("name", "Display Name: $displayName")
-            }
-            cursor.close()
-            dogsViewModel.insertDocumentFile(
-                DocumentsEntity(
-                    0,
-                    mapOf(it.toString() to displayName)
+            if (it != null) {
+                this@DocumentActivity.contentResolver.takePersistableUriPermission(
+                    it, Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
-            )
-
+                var displayName = ""
+                val cursor: Cursor? = contentResolver.query(
+                    it, null, null, null, null, null)
+                if (cursor!!.moveToFirst()) {
+                    displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    Log.d("name", "Display Name: $displayName")
+                }
+                cursor.close()
+                dogsViewModel.insertDocumentFile(
+                    DocumentsEntity(
+                        0,
+                        mapOf(it.toString() to displayName)
+                    )
+                )
+            }
         }
 
         setContent {
@@ -197,8 +201,36 @@ class DocumentActivity : ComponentActivity() {
                                             contentColor = Color.Black
                                         ), contentPadding = PaddingValues(0.dp)
                                     ) {
-                                        Text(text = "Удалить документ")
+                                        when {
+                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "document" ->
+                                                Text(text = "Удалить документ")
+                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "image" ->
+                                                Text(text = "Удалить фото")
+                                        }
+//                                        Text(text = "Удалить документ")
                                     }
+//                                    OutlinedButton(
+//                                        onClick = {
+////                                            dogsViewModel.deleteDocumentFile(allDocsIdsState[idDocument.value])
+//                                            dialogState.value = false
+//                                        },
+//                                        Modifier
+//                                            .height(60.dp)
+//                                            .fillMaxWidth()
+//                                        ,shape = RoundedCornerShape(0),
+//                                        colors = ButtonDefaults.buttonColors(
+//                                            backgroundColor = mainSecondColor,
+//                                            contentColor = Color.Black
+//                                        ), contentPadding = PaddingValues(0.dp)
+//                                    ) {
+//                                        when {
+//                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "document" ->
+//                                                Text(text = "Изменить имя документа")
+//                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "image" ->
+//                                                Text(text = "Изменить имя фото")
+//                                        }
+////                                        Text(text = "Удалить документ")
+//                                    }
                                 }
                             })
                     }

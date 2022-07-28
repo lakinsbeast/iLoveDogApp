@@ -6,7 +6,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.icu.text.DateFormat
+import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -43,18 +45,25 @@ import com.google.gson.reflect.TypeToken
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.*
 import com.sagirov.ilovedog.DogsKnowledgeBaseDatabase.*
 import com.sagirov.ilovedog.ui.theme.*
+import com.skydoves.landscapist.glide.GlideImage
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.*
+import javax.inject.Inject
 
-//TODO{Сделать как в Android Now синхронизацию данных в WorkManager'e }
+//TODO{НЕ ОБЯЗАТЕЛЬНО - Сделать как в Android Now синхронизацию данных в WorkManager'e }
 //TODO{Сделать цветовую палитру и применить ее ко всем компонентам}
 val selectedIndex =  mutableStateOf(0)
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val PREF_NAME = "first_launch"
     private val PREF_NAME_PET = "mypets"
     private val PREF_NAME_DATES = "dates"
-    private lateinit var prefs: SharedPreferences
+    lateinit var prefs: SharedPreferences
 
     private var isBack = true
+    private var isDateChecked = false
 
     companion object {
         var myPetPaddockT = MutableLiveData<Boolean>(false)
@@ -68,6 +77,7 @@ class MainActivity : ComponentActivity() {
     private var weeklyReminderMap = mutableStateMapOf<Long, String>()
     private var otherReminderMapp = mutableStateMapOf<Long, String>()
     private var dayReminderMap = mutableStateMapOf<Long, String>()
+    private var repeatReminderMap = mutableStateMapOf<Long, String>()
     private val dogsEncyclopedia = mutableListOf<DogsBreedEncyclopediaEntity>()
     private val dogsProfileArray = mutableListOf<DogsInfoEntity>()
 
@@ -98,12 +108,17 @@ class MainActivity : ComponentActivity() {
         var _myPetPaddock = ""
         var myPetAge = prefs.getString("mypetAge", "")
         var myPetAgeMonth = prefs.getString("mypetAgeMonth", "")
-        var myPetPaddockStandart = mutableStateOf(prefs.getString("mypetPaddockStandart", ""))
+        var myPetPaddockStandart = mutableStateOf(prefs.getString("mypetPaddockStandart", "0"))
+        var image = mutableStateOf("")
+        currentTimeInMinutes = myPetPaddock.value!!.toLong()
 
         myPetPaddockT.observe(this) {
-            _myPetPaddock = myPetPaddock.value.toString()
-            myPetPaddock.value = it.toString()
-            myPetPaddock.value = _myPetPaddock
+            try {
+                myPetPaddock.value = currentTimeInMinutes.toString()
+                Log.e("Exception", "updated")
+            } catch (e: Exception) {
+                Log.e("Exception", e.toString())
+            }
         }
 
         prefs = getSharedPreferences(PREF_NAME_DATES, MODE_PRIVATE)
@@ -111,10 +126,10 @@ class MainActivity : ComponentActivity() {
         if (getArrayFromJson != "") {
             dateForVisitToVet = (Gson().fromJson(getArrayFromJson, object : TypeToken<Map<Long, String>>() {}.type))
             val it = dateForVisitToVet.iterator()
-            Log.d("dateForVisitToVet", dateForVisitToVet.toString())
             while (it.hasNext()) {
                 val item = it.next()
                 when {
+                    item.value.contains(".Повтор%#%:#%:")->repeatReminderMap[item.key] = item.value.substringBefore(".Повтор")
                     item.key < System.currentTimeMillis() -> pastReminderMap[item.key] = item.value
                     System.currentTimeMillis()+86400000 > item.key -> dayReminderMap[item.key] = item.value
                     System.currentTimeMillis()+604800000 > item.key -> weeklyReminderMap[item.key] = item.value
@@ -123,6 +138,7 @@ class MainActivity : ComponentActivity() {
 
             }
         }
+
         badgeCount.value = dayReminderMap.size
         if (badgeCount.value > 100) {
             badgeCount.value = 99
@@ -134,23 +150,39 @@ class MainActivity : ComponentActivity() {
             dogsProfileArray.forEach {
                 myPetName = it.name
                 myPetNameBreed = it.breedName
+                image.value = it.image
+                Log.d("it.image", it.image)
+                Log.d("image", image.value)
+                val sdf = SimpleDateFormat("dd.MM.yyyy")
+                val dateLast = Date(it.lastWalk.time) //23.07
+                val dateNow = Date(Calendar.getInstance().timeInMillis) //26.07
+                if ((sdf.parse(sdf.format(dateLast)) < sdf.parse(sdf.format(dateNow))) && !isDateChecked) {
+                    dogsViewModel.updateDogsDate(it.id, Date(Calendar.getInstance().timeInMillis))
+                    dogsViewModel.updateDogsTime(it.id, myPetPaddockStandart.value!!.toLong())
+                    val prefsMyPet = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
+                    val edit = prefsMyPet.edit()
+                    edit.putString("mypetPaddock", myPetPaddockStandart.value).apply()
+                    myPetPaddock.value = myPetPaddockStandart.value
+                    currentTimeInMinutes = myPetPaddockStandart.value!!.toLong()
+                    Log.d("check", "Меньше")
+                    isDateChecked = true
+                } else {
+                    Log.d("check", "Больше")
+                    isDateChecked = true
+                }
             }
-
         }
-        dogsProfileArray.forEach {
-            if (myPetPaddock.value!!.toLong() < it.currentTimeWalk) {
-                dogsViewModel.updateDogsTime(it.id, myPetPaddock.value!!.toLong())
-                Log.d("сработал1Цикл", "сработал1Цикл")
-            } else {
-                myPetPaddock.value = it.currentTimeWalk.toString()
-                Log.d("сработал1.1Цикл", "сработал1.1Цикл")
-            }
-            if (Calendar.getInstance().timeInMillis >= it.lastWalk.time + 86400000){
-                dogsViewModel.updateDogsTime(it.id, Calendar.getInstance().timeInMillis)
-                Log.d("сработал2Цикл", "сработал2Цикл")
-            }
-        }
-
+//        dogsProfileArray.forEach {
+//            if (myPetPaddock.value!!.toLong() < it.currentTimeWalk) {
+//                dogsViewModel.updateDogsTime(it.id, myPetPaddock.value!!.toLong())
+//            } else {
+//                myPetPaddock.value = it.currentTimeWalk.toString()
+//            }
+//            if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) >= it.lastWalk.time){
+//                dogsViewModel.updateDogsDate(it.id, Calendar.getInstance().timeInMillis)
+//                dogsViewModel.updateDogsTime(it.id, myPetPaddockStandart.value!!.toLong())
+//            }
+//        }
         dogsViewModel.allDogs.observe(this) { list ->
             list.forEach {
                 dogsEncyclopedia.add(
@@ -182,7 +214,7 @@ class MainActivity : ComponentActivity() {
             val scaffoldState = rememberScaffoldState()
             val scope = rememberCoroutineScope()
             Scaffold(bottomBar = { BottomNav() }, scaffoldState = scaffoldState) {
-                if (badgeCount.value > 0 && !isBadgeShown.value){
+                if (badgeCount.value > 0 && !isBadgeShown.value) {
                     isBadgeShown.value = true
                     scope.launch {
                         scaffoldState.snackbarHostState.showSnackbar("У тебя ${badgeCount.value} истекающих напоминания")
@@ -201,7 +233,8 @@ class MainActivity : ComponentActivity() {
                                 Text(text = "Питомец", fontWeight = FontWeight.SemiBold, fontSize = 36.sp)
                             }
                         }
-                        Dashboard(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetAgeMonth!!, myPetPaddock.value!!,myPetPaddockStandart.value!!)
+                        Dashboard(myPetName!!, myPetNameBreed!!, myPetAge!!, myPetAgeMonth!!, myPetPaddock.value!!,
+                            myPetPaddockStandart.value!!, image.value)
                         Stats(myPetPaddock.value!!, myPetPaddockStandart.value!!)
                         Column(Modifier.padding(top = 20.dp)) {
                             OutlinedButton(
@@ -211,7 +244,7 @@ class MainActivity : ComponentActivity() {
                                             this@MainActivity,
                                             WalkLaunchActivity::class.java
                                         )
-                                    )
+                                    );
 //                                    finish()
                                 },
                                 Modifier
@@ -378,6 +411,10 @@ class MainActivity : ComponentActivity() {
                         /*
                         * Я поменял внутри циклов items с item.value На item.key
                         * */
+                        if (repeatReminderMap.isNotEmpty()) {
+                            Text("Повторяющиеся напоминания:")
+                            repeatReminderColumn(data = repeatReminderMap)
+                        }
                         if (dayReminderMap.isNotEmpty()) {
                             Text("Дневные напоминания:")
                             dayReminderColumn(data = dayReminderMap)
@@ -427,6 +464,78 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
+                        Card(onClick = {  }) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .background(mainSecondColor)
+                                    .padding(
+                                        start = 20.dp,
+                                        end = 20.dp,
+                                        top = 10.dp,
+                                        bottom = 10.dp
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    Modifier.padding(top = 10.dp, bottom = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(horizontalAlignment = Alignment.Start) {
+                                        Text(text = "Настройки", fontSize = 18.sp)
+                                    }
+                                }
+                            }
+                        }
+                        Card(onClick = { startActivity(Intent(this@MainActivity, RoadMapActivity::class.java)) }) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .background(mainSecondColor)
+                                    .padding(
+                                        start = 20.dp,
+                                        end = 20.dp,
+                                        top = 10.dp,
+                                        bottom = 10.dp
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    Modifier.padding(top = 10.dp, bottom = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(horizontalAlignment = Alignment.Start) {
+                                        Text(text = "Дорожная карта", fontSize = 18.sp)
+                                    }
+                                }
+                            }
+                        }
+                        Card(onClick = { startActivity(Intent(this@MainActivity, AboutAuthorPageActivity::class.java)) }) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .background(mainSecondColor)
+                                    .padding(
+                                        start = 20.dp,
+                                        end = 20.dp,
+                                        top = 10.dp,
+                                        bottom = 10.dp
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    Modifier.padding(top = 10.dp, bottom = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(horizontalAlignment = Alignment.Start) {
+                                        Text(text = "Об авторе", fontSize = 18.sp)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -451,16 +560,26 @@ class MainActivity : ComponentActivity() {
         LazyColumn {
             data.forEach {
                 item(it.key) {
+                    val alertDelete = android.app.AlertDialog.Builder(this@MainActivity)
+                    alertDelete.setTitle("Удалить напоминание?")
+                    alertDelete.setMessage("Вы уверены, что хотите удалить напоминание: \n ${it.value}?")
+                    alertDelete.setCancelable(true)
+                    alertDelete.setPositiveButton("Да") { dialog, which ->
+                        dateForVisitToVet.remove(it.key)
+                        otherReminderMapp.remove(it.key)
+                        val json: String = Gson().toJson(dateForVisitToVet)
+                        prefs.edit().putString("dateForVisitToVet", json).apply()
+                    }
+                    alertDelete.setNegativeButton("Нет") { dialog, which ->
+                        dialog.cancel()
+                    }
                     Card(onClick = {
                         val alert = android.app.AlertDialog.Builder(this@MainActivity)
-                        alert.setTitle("Удалить напоминание?")
-                        alert.setMessage("Вы уверены, что хотите удалить напоминание ${it.value}?")
+//                        alert.setTitle(it.value)
+                        alert.setMessage(it.value)
                         alert.setCancelable(true)
-                        alert.setPositiveButton(android.R.string.ok) { dialog, which ->
-                            dateForVisitToVet.remove(it.key)
-                            otherReminderMapp.remove(it.key)
-                            val json: String = Gson().toJson(dateForVisitToVet)
-                            prefs.edit().putString("dateForVisitToVet", json).apply()
+                        alert.setPositiveButton("Удалить") { dialog, which ->
+                            alertDelete.create().show()
                         }
                         alert.create().show()
                     }, Modifier.padding(top = 0.dp, bottom = 10.dp)) {
@@ -468,7 +587,51 @@ class MainActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .background(mainSecondColor)
                             .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            Text(it.value, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
+                            Text(textReduces(it.value), fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
+                            Column() {
+                                Text(text = DateFormat.getDateInstance(DateFormat.SHORT).format(it.key).toString())
+                                Text(text = DateFormat.getTimeInstance(DateFormat.SHORT).format(it.key).toString())
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun repeatReminderColumn(data: Map<Long, String>) {
+        LazyColumn {
+            data.forEach {
+                item(it.key) {
+                    val alertDelete = android.app.AlertDialog.Builder(this@MainActivity)
+                    alertDelete.setTitle("Удалить напоминание?")
+                    alertDelete.setMessage("Вы уверены, что хотите удалить напоминание: \n ${it.value}?")
+                    alertDelete.setCancelable(true)
+                    alertDelete.setPositiveButton("Да") { dialog, which ->
+                        dateForVisitToVet.remove(it.key)
+                        repeatReminderMap.remove(it.key)
+                        val json: String = Gson().toJson(dateForVisitToVet)
+                        prefs.edit().putString("dateForVisitToVet", json).apply()
+                    }
+                    alertDelete.setNegativeButton("Нет") { dialog, which ->
+                        dialog.cancel()
+                    }
+                    Card(onClick = {
+                        val alert = android.app.AlertDialog.Builder(this@MainActivity)
+//                        alert.setTitle(it.value)
+                        alert.setMessage(it.value)
+                        alert.setCancelable(true)
+                        alert.setPositiveButton("Удалить") { dialog, which ->
+                            alertDelete.create().show()
+                        }
+                        alert.create().show()
+                    }) {
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .background(mainSecondColor)
+                            .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            Text(textReduces(it.value), fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
                             Column() {
                                 Text(text = DateFormat.getDateInstance(DateFormat.SHORT).format(it.key).toString())
                                 Text(text = DateFormat.getTimeInstance(DateFormat.SHORT).format(it.key).toString())
@@ -485,16 +648,26 @@ class MainActivity : ComponentActivity() {
         LazyColumn {
             data.forEach {
                 item(it.key) {
+                    val alertDelete = android.app.AlertDialog.Builder(this@MainActivity)
+                    alertDelete.setTitle("Удалить напоминание?")
+                    alertDelete.setMessage("Вы уверены, что хотите удалить напоминание: \n ${it.value}?")
+                    alertDelete.setCancelable(true)
+                    alertDelete.setPositiveButton("Да") { dialog, which ->
+                        dateForVisitToVet.remove(it.key)
+                        dayReminderMap.remove(it.key)
+                        val json: String = Gson().toJson(dateForVisitToVet)
+                        prefs.edit().putString("dateForVisitToVet", json).apply()
+                    }
+                    alertDelete.setNegativeButton("Нет") { dialog, which ->
+                        dialog.cancel()
+                    }
                     Card(onClick = {
                         val alert = android.app.AlertDialog.Builder(this@MainActivity)
-                        alert.setTitle("Удалить напоминание?")
-                        alert.setMessage("Вы уверены, что хотите удалить напоминание ${it.value}?")
+//                        alert.setTitle(it.value)
+                        alert.setMessage(it.value)
                         alert.setCancelable(true)
-                        alert.setPositiveButton(android.R.string.ok) { dialog, which ->
-                            dateForVisitToVet.remove(it.key)
-                            dayReminderMap.remove(it.key)
-                            val json: String = Gson().toJson(dateForVisitToVet)
-                            prefs.edit().putString("dateForVisitToVet", json).apply()
+                        alert.setPositiveButton("Удалить") { dialog, which ->
+                            alertDelete.create().show()
                         }
                         alert.create().show()
                     }) {
@@ -502,7 +675,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .background(mainSecondColor)
                             .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            Text(it.value, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
+                            Text(textReduces(it.value), fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
                             Column() {
                                 Text(text = DateFormat.getDateInstance(DateFormat.SHORT).format(it.key).toString())
                                 Text(text = DateFormat.getTimeInstance(DateFormat.SHORT).format(it.key).toString())
@@ -513,22 +686,42 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    fun textReduces(text: String): String {
+        var _text = ""
+        if (text.length > 20) {
+            _text = text.substring(0, 20) + "..."
+        } else {
+            _text = text
+        }
+        return _text
+    }
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun weeklyReminderColumn(data: Map<Long, String>) {
         LazyColumn {
             data.forEach {
                 item(it.key) {
+                    val alertDelete = android.app.AlertDialog.Builder(this@MainActivity)
+                    alertDelete.setTitle("Удалить напоминание?")
+                    alertDelete.setMessage("Вы уверены, что хотите удалить напоминание: \n ${it.value}?")
+                    alertDelete.setCancelable(true)
+                    alertDelete.setPositiveButton("Да") { dialog, which ->
+                        dateForVisitToVet.remove(it.key)
+                        weeklyReminderMap.remove(it.key)
+                        val json: String = Gson().toJson(dateForVisitToVet)
+                        prefs.edit().putString("dateForVisitToVet", json).apply()
+                    }
+                    alertDelete.setNegativeButton("Нет") { dialog, which ->
+                        dialog.cancel()
+                    }
                     Card(onClick = {
                         val alert = android.app.AlertDialog.Builder(this@MainActivity)
-                        alert.setTitle("Удалить напоминание?")
-                        alert.setMessage("Вы уверены, что хотите удалить напоминание ${it.value}?")
+//                        alert.setTitle(it.value)
+                        alert.setMessage(it.value)
                         alert.setCancelable(true)
-                        alert.setPositiveButton(android.R.string.ok) { dialog, which ->
-                            dateForVisitToVet.remove(it.key)
-                            weeklyReminderMap.remove(it.key)
-                            val json: String = Gson().toJson(dateForVisitToVet)
-                            prefs.edit().putString("dateForVisitToVet", json).apply()
+                        alert.setPositiveButton("Удалить") { dialog, which ->
+                            alertDelete.create().show()
                         }
                         alert.create().show()
                     }) {
@@ -536,7 +729,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .background(mainSecondColor)
                             .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            Text(it.value, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
+                            Text(textReduces(it.value), fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
                             Column() {
                                 Text(text = DateFormat.getDateInstance(DateFormat.SHORT).format(it.key).toString())
                                 Text(text = DateFormat.getTimeInstance(DateFormat.SHORT).format(it.key).toString())
@@ -553,16 +746,26 @@ class MainActivity : ComponentActivity() {
         LazyColumn {
             data.forEach {
                 item(it.key) {
+                    val alertDelete = android.app.AlertDialog.Builder(this@MainActivity)
+                    alertDelete.setTitle("Удалить напоминание?")
+                    alertDelete.setMessage("Вы уверены, что хотите удалить напоминание: \n ${it.value}?")
+                    alertDelete.setCancelable(true)
+                    alertDelete.setPositiveButton("Да") { dialog, which ->
+                        dateForVisitToVet.remove(it.key)
+                        pastReminderMap.remove(it.key)
+                        val json: String = Gson().toJson(dateForVisitToVet)
+                        prefs.edit().putString("dateForVisitToVet", json).apply()
+                    }
+                    alertDelete.setNegativeButton("Нет") { dialog, which ->
+                        dialog.cancel()
+                    }
                     Card(onClick = {
                         val alert = android.app.AlertDialog.Builder(this@MainActivity)
-                        alert.setTitle("Удалить напоминание?")
-                        alert.setMessage("Вы уверены, что хотите удалить напоминание ${it.value}?")
+//                        alert.setTitle(it.value)
+                        alert.setMessage(it.value)
                         alert.setCancelable(true)
-                        alert.setPositiveButton(android.R.string.ok) { dialog, which ->
-                            dateForVisitToVet.remove(it.key)
-                            pastReminderMap.remove(it.key)
-                            val json: String = Gson().toJson(dateForVisitToVet)
-                            prefs.edit().putString("dateForVisitToVet", json).apply()
+                        alert.setPositiveButton("Удалить") { dialog, which ->
+                           alertDelete.create().show()
                         }
                         alert.create().show()
                     }) {
@@ -570,7 +773,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .background(healthBarPastReminderColor)
                             .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            Text(it.value, fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1, color = Color.Black.copy(alpha = 0.5f))
+                            Text(textReduces(it.value), fontWeight = FontWeight.Bold, fontSize = 18.sp, overflow = TextOverflow.Ellipsis, maxLines = 1, color = Color.Black.copy(alpha = 0.5f))
                             Column() {
                                 Text(text = DateFormat.getDateInstance(DateFormat.SHORT).format(it.key).toString(), color = Color.Black.copy(alpha = 0.5f))
                                 Text(text = DateFormat.getTimeInstance(DateFormat.SHORT).format(it.key).toString(), color = Color.Black.copy(alpha = 0.5f))
@@ -583,11 +786,12 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun Stats(_time: String, _timeStandart: String) {
-        val time = _time.toLong()
-        val timeStandart = _timeStandart.toLong()
-        val res = remember { mutableStateOf((time.toFloat() / (timeStandart))) } //0.836
-        var resReverse = remember { mutableStateOf(1F - res.value) } // 0,164
+    fun Stats(time: String, timeStandart: String) {
+//        val time = mutableStateOf(_time.toLong())
+//        val timeStandart = mutableStateOf(_timeStandart.toLong())
+        val res =  mutableStateOf((time.toFloat() / (timeStandart.toFloat())))  //0.836
+        var resReverse =   mutableStateOf(1F - res.value)  // 0,164
+
         val availableProgressColor = when {
             res.value < 0.35F -> Color(0xFFFB3640) //green
             res.value < 0.75F -> Color(0xFFffca3a) //yellow
@@ -846,9 +1050,10 @@ class MainActivity : ComponentActivity() {
     }
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    fun Dashboard(name: String, breed: String, age: String, ageMonth: String,paddock: String, standartPaddock: String) {
+    fun Dashboard(name: String, breed: String, age: String, ageMonth: String,paddock: String, standartPaddock: String,
+                  img: String) {
         val ctx = LocalContext.current
-
+Log.d("img", img.toString())
         Text(text = "Профиль", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
         Card(onClick = { startActivity(Intent(ctx, NewPetActivity::class.java))}, elevation = 15.dp, shape = RoundedCornerShape(15.dp)) {
             Row(
@@ -863,15 +1068,22 @@ class MainActivity : ComponentActivity() {
                     Modifier.padding(top = 10.dp, bottom = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painterResource(R.drawable.dog_first),
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
+                    if (img.isNotEmpty()) {
+                        GlideImage(imageModel = Uri.parse(img), modifier = Modifier
                             .padding(end = 10.dp)
                             .size(75.dp)
-                            .clip(RoundedCornerShape(100))
-                    )
+                            .clip(RoundedCornerShape(100)), contentScale = ContentScale.Crop)
+                    } else {
+                        Image(
+                            painterResource(R.drawable.avatar_paw),
+                            contentDescription = "",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .padding(end = 10.dp)
+                                .size(75.dp)
+                                .clip(RoundedCornerShape(100))
+                        )
+                    }
                     Column(horizontalAlignment = Alignment.Start) {
                         Text(text = breed)
                         Text(text = name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
@@ -890,8 +1102,6 @@ class MainActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (paddock.isNotEmpty() && standartPaddock.isNotEmpty()) {
-                        Log.d("paddock", paddock)
-                        Log.d("standartPaddock", standartPaddock)
                         when {
                             paddock == standartPaddock -> Text((standartPaddock.toLong()/60000).toString(), color = Color.Blue)
                             paddock < standartPaddock -> Text((paddock.toLong()/60000).toString(), color = Color.Blue)

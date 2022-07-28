@@ -31,7 +31,9 @@ import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewMo
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModelFactory
 import com.sagirov.ilovedog.ui.theme.ILoveDogTheme
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailedDogActivity : ComponentActivity() {
     val dogsEncyclopedia = mutableListOf<DogsBreedEncyclopediaEntity>()
 

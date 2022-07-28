@@ -24,7 +24,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sagirov.ilovedog.ui.theme.ILoveDogTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FirstLaunchActivity : ComponentActivity() {
     private val PREF_NAME = "first_launch"
     private lateinit var prefs: SharedPreferences
@@ -69,8 +71,8 @@ class FirstLaunchActivity : ComponentActivity() {
                         .weight(0.5f)
                         .fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                        OutlinedButton(onClick = {  edit.putBoolean("firstOpen", false)
-                            edit.apply();startActivity(Intent(applicationContext, NewPetActivity::class.java)); finish() },
+                        OutlinedButton(onClick = {  edit.putBoolean("firstOpen", false).apply()
+                            startActivity(Intent(applicationContext, NewPetActivity::class.java)); finish() },
                             Modifier
                                 .padding(
                                     start = 20.dp,

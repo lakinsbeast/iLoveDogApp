@@ -28,11 +28,13 @@ import com.sagirov.ilovedog.MainActivity.Companion.myPetPaddockT
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.sagirov.ilovedog.ui.theme.mainTextColor
+import dagger.hilt.android.AndroidEntryPoint
 
 var currentTimeInMinutes: Long by mutableStateOf(0)
 var stopTimer: Long by mutableStateOf(0)
 var isStartTimer by mutableStateOf(false)
 var timeToString by mutableStateOf("")
+@AndroidEntryPoint
 class WalkLaunchActivity : ComponentActivity() {
 
     private val PREF_NAME_PET = "mypets"
@@ -40,20 +42,20 @@ class WalkLaunchActivity : ComponentActivity() {
     private lateinit var timer: CountDownTimer
 
     private val inCycleNotif = NotificationCompat.Builder(this, "channelID")
-        .setSmallIcon(R.drawable.ic_launcher_background).setContentTitle("Гуляем...").setContentText("Осталось ещё "+
+        .setSmallIcon(R.drawable.ic_launcher_background).setContentTitle("Прогулка началась").setContentText("Осталось ещё "+
             (currentTimeInMinutes/60000).toString()+" минут")
     val endCycleNotif = NotificationCompat.Builder(this, "channelID")
         .setSmallIcon(R.drawable.ic_launcher_background).setContentTitle("Всё, можете закругляться!")
         .setContentText("Завершить?")
 
     override fun onBackPressed() {
-        myPetPaddockT.value = true
-        myPetPaddockT.value = false
         if (isStartTimer){
             Toast.makeText(this@WalkLaunchActivity, "Таймер остановлен", Toast.LENGTH_SHORT).show()
             timer.cancel()
             isStartTimer = false
         }
+        myPetPaddockT.value = true
+        myPetPaddockT.value = false
         super.onBackPressed()}
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +63,9 @@ class WalkLaunchActivity : ComponentActivity() {
         prefsMyPet = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
         val myPetPaddock = prefsMyPet.getString("mypetPaddock", "")
         val myPetPaddockStandart = prefsMyPet.getString("mypetPaddockStandart", "")
+        Log.d("myPetPaddock", myPetPaddock.toString())
         currentTimeInMinutes = myPetPaddock!!.toLong()
+        Log.d("currentTimeInMinutes", currentTimeInMinutes.toString())
         stopTimer = myPetPaddockStandart!!.toLong()
         var backgroundColor = mutableStateOf(mainBackgroundColor)
         var textColor = mutableStateOf(mainTextColor)
@@ -125,6 +129,7 @@ class WalkLaunchActivity : ComponentActivity() {
     private fun startCount() {
         prefsMyPet = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
         val edit = prefsMyPet.edit()
+        val standartPaddock = prefsMyPet.getString("mypetPaddockStandart", "")
 
         val mNotifMan = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channel = NotificationChannel("channelID", "readable title", NotificationManager.IMPORTANCE_HIGH)
@@ -132,16 +137,25 @@ class WalkLaunchActivity : ComponentActivity() {
         mNotifMan.createNotificationChannel(channel)
         inCycleNotif.setChannelId("channelID")
         endCycleNotif.setChannelId("channelID")
-//        mNotifMan.notify(0, inCycleNotif.build())
+        mNotifMan.notify(0, inCycleNotif.build())
 
         timer = object : CountDownTimer(currentTimeInMinutes, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 currentTimeInMinutes = millisUntilFinished
+                Log.d("currentTimeInMinutes", currentTimeInMinutes.toString())
                 edit.putString("mypetPaddock", currentTimeInMinutes.toString()).apply()
                 timeToString = currentTimeInMinutes.toString()
             }
             override fun onFinish() {
-                currentTimeInMinutes = 3600000
+                if (standartPaddock != null) {
+                    if (standartPaddock.isNotEmpty()) {
+                        currentTimeInMinutes = standartPaddock!!.toLong()
+                    } else {
+                        currentTimeInMinutes = 3600000
+                    }
+                } else {
+                    currentTimeInMinutes = 3600000
+                }
                 mNotifMan.notify(0, endCycleNotif.build())
                 cancel()
             }

@@ -7,7 +7,9 @@ import android.os.CountDownTimer
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class TimerService : Service() {
     private val PREF_NAME_PET = "mypets"
     private lateinit var prefsMyPet: SharedPreferences

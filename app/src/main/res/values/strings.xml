@@ -308,6 +308,8 @@
 
     </string>
     <string name="title_activity_document">DocumentActivity</string>
+    <string name="title_activity_road_map">RoadMapActivity</string>
+    <string name="title_activity_about_author_page">AboutAuthorPageActivity</string>
 
 
     <!--    Activities-->

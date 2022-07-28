@@ -21,10 +21,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
+import dagger.hilt.android.AndroidEntryPoint
 import de.charlex.compose.HtmlText
 
 val selectedCard =  mutableStateOf(-1)
-
+@AndroidEntryPoint
 class ArticleChoiceActivity : ComponentActivity() {
     var selectedArticle: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {

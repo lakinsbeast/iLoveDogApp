@@ -14,8 +14,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.NotificationManagerCompat.IMPORTANCE_DEFAULT
 import androidx.core.content.getSystemService
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class NotificationReceiver: BroadcastReceiver() {
+
+
     override fun onReceive(context: Context?, intent: Intent?) {
 
         val notificationManager = context?.getSystemService<NotificationManager>()

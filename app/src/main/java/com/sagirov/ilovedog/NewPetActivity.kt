@@ -42,24 +42,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModelFactory
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
 import com.sagirov.ilovedog.ui.theme.ILoveDogTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
 
-
-@Suppress("DEPRECATION")
+@AndroidEntryPoint
 class NewPetActivity : ComponentActivity() {
     private val PREF_NAME_PET = "mypets"
     private lateinit var prefsMyPet: SharedPreferences
     private var camera_uri: Uri? = null
     private var cameraUriPhoto = mutableStateOf("")
+
+    private val PERMISSION_CODE = 1000
 
     private val dogsViewModel: DogsBreedEncyclopediaViewModel by viewModels {
         DogsBreedEncyclopediaViewModelFactory((application as DogsApplication).repo)
@@ -76,6 +79,7 @@ class NewPetActivity : ComponentActivity() {
             var petAge = remember { mutableStateOf("")}
             var petAgeMonth = remember { mutableStateOf("")}
             var petPaddock = remember { mutableStateOf("")}
+            var petPaddockStandart = remember { mutableStateOf("")}
             val screenWidth = LocalConfiguration.current.screenWidthDp
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                 if (cameraUriPhoto.value != ""){
@@ -86,12 +90,14 @@ class NewPetActivity : ComponentActivity() {
                     if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ||
                         checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                         //permission was not enabled
-                        val permission = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        //show popup to request permission
-                        requestPermissions(permission, 1000)
+                        getTakeCameraPhotoPermissionRequest.launch(arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE))
                     } else {
                         //permission already granter
-                        openCamera()
+                        try {
+                            openCamera()
+                        } catch(e: Exception) {
+                            Toast.makeText(this@NewPetActivity, "Не удается открыть камеру :(", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }){
                     Text("Открыть камеру")
@@ -154,7 +160,21 @@ class NewPetActivity : ComponentActivity() {
     val getDogPhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) {
         cameraUriPhoto.value = camera_uri.toString()
     }
+    val getTakeCameraPhotoPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        it.entries.forEach {
+            if (it.value){
+                try {
+                    openCamera()
+                } catch(e: Exception) {
+                    Log.d("exception", e.toString())
+                }
+            } else {
+//                Toast.makeText(this, "Нет доступа к камере", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
+    @Suppress("DEPRECATION")
     private fun openCamera() {
         val timeStamp = SimpleDateFormat("yyyyMMddHHmmSS").format(Date())
         val storageDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "NotesPhotos")
@@ -168,8 +188,27 @@ class NewPetActivity : ComponentActivity() {
             imageFile.mkdirs()
         }
         camera_uri = FileProvider.getUriForFile(this, "com.sagirov.ilovedog.Activities.NewPetActivity.provider", imageFile)
-        GlobalScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch(Dispatchers.Main) {
             getDogPhoto.launch(camera_uri)
         }
     }
+
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        when(requestCode) {
+//            PERMISSION_CODE -> {
+//                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    //perm from popup was granted
+//                    openCamera()
+//                } else {
+//                    // perm from popup was denied
+//                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//        }
+//    }
 }

@@ -3,9 +3,11 @@ package com.sagirov.ilovedog.DogsEncyclopediaDatabase
 import android.app.Application
 import com.sagirov.ilovedog.DogsKnowledgeBaseDatabase.DogsKnowledgeBaseDatabase
 import com.sagirov.ilovedog.DogsKnowledgeBaseDatabase.DogsKnowledgeBaseRepository
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
+@HiltAndroidApp
 class DogsApplication: Application() {
     val applicationScope = CoroutineScope(SupervisorJob())
 
