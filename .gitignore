@@ -13,7 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
-/.idea
+.idea
 app/build
 app/release
 app/schemas
