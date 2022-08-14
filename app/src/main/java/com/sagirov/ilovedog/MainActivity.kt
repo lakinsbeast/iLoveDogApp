@@ -182,7 +182,7 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             val systemUiController = rememberSystemUiController()
-            systemUiController.setSystemBarsColor(Color(0xFFB8D0B3))
+            systemUiController.setSystemBarsColor(mainBackgroundColor)
             systemUiController.setNavigationBarColor(Color(0xFFD0E0CC))
             val scaffoldState = rememberScaffoldState()
             val scope = rememberCoroutineScope()
@@ -872,7 +872,7 @@ class MainActivity : ComponentActivity() {
     }
     @Composable
     fun BottomNav() {
-        BottomNavigation(backgroundColor = Color(0xFFD0E0CC)) {
+        BottomNavigation(backgroundColor = bottomNavBackgroundColor) {
             val home = R.drawable.home_48px
             val myPets = R.drawable.school_48px
             val myCard = R.drawable.menu_book_48px

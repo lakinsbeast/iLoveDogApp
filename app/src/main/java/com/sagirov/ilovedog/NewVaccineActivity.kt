@@ -107,15 +107,14 @@ class NewVaccineActivity : ComponentActivity() {
                     mCalendar.set(Calendar.MONTH, calendarMonthText.value.toInt()-1)
                     mCalendar.set(Calendar.YEAR, calendarYearText.value.toInt())
                     val createdAt = mCalendar.time
-                    if(((Date().time/100) < (createdAt.time/100))) {
-                        dogsViewModel.insertVaccination(VaccinationsEntity(0, nameVaccination.value, drugName.value, createdAt.time))
-                        finish()
-                        Toast.makeText(this@NewVaccineActivity, "Да, все заибисься", Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(this@NewVaccineActivity, "Со временем пизда", Toast.LENGTH_LONG).show()
-                    }
+//                    if(((Date().time/100) < (createdAt.time/100))) {
+                    dogsViewModel.insertVaccination(VaccinationsEntity(0, nameVaccination.value, drugName.value, createdAt.time))
+                    finish()
+//                    } else {
+//                        Toast.makeText(this@NewVaccineActivity, "Со временем пизда", Toast.LENGTH_LONG).show()
+//                    }
                 } else {
-                    Toast.makeText(this@NewVaccineActivity, "Не все поля заполнил", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@NewVaccineActivity, "Не все поля заполнены", Toast.LENGTH_LONG).show()
                 }
             },
                 Modifier

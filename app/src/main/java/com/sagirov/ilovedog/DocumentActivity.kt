@@ -42,6 +42,7 @@ import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModelFactory
+import com.sagirov.ilovedog.ui.theme.homeButtonColor
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.skydoves.landscapist.glide.GlideImage
@@ -324,7 +325,7 @@ class DocumentActivity : ComponentActivity() {
                     }
                     Row(modifier = Modifier
                         .fillMaxWidth()
-                        .background(mainBackgroundColor)
+//                        .background(mainBackgroundColor)
                         .padding(top = 10.dp), horizontalArrangement = Arrangement.Center) {
                         OutlinedButton(
                             onClick = {
@@ -335,7 +336,7 @@ class DocumentActivity : ComponentActivity() {
                                 .height(70.dp)
                             ,shape = RoundedCornerShape(50),
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Color(0xFFD0E0CC),
+                                backgroundColor = homeButtonColor,
                                 contentColor = Color.Black
                             ), contentPadding = PaddingValues(0.dp)
                         ) {
@@ -363,7 +364,7 @@ class DocumentActivity : ComponentActivity() {
                                     .fillMaxWidth()
                                 ,shape = RoundedCornerShape(0),
                                 colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color(0xFFD0E0CC),
+                                    backgroundColor = mainSecondColor,
                                     contentColor = Color.Black
                                 ), contentPadding = PaddingValues(0.dp)
                             ) {

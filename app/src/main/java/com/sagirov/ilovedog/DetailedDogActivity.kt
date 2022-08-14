@@ -30,6 +30,7 @@ import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaEntity
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModelFactory
 import com.sagirov.ilovedog.ui.theme.ILoveDogTheme
+import com.sagirov.ilovedog.ui.theme.encyclopediaDogBarColor
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -64,7 +65,7 @@ class DetailedDogActivity : ComponentActivity() {
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFF669559)), contentAlignment = Alignment.Center) {
+                            .background(encyclopediaDogBarColor), contentAlignment = Alignment.Center) {
                         Text(dogsEncyclopedia[0].breedName, fontSize = 22.sp, fontWeight = FontWeight.Bold)
                     }
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -76,7 +77,7 @@ class DetailedDogActivity : ComponentActivity() {
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFF669559)), contentAlignment = Alignment.Center) {
+                            .background(encyclopediaDogBarColor), contentAlignment = Alignment.Center) {
                         Text("Происхождение", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
                     Row(Modifier.padding(start = 10.dp)) {
@@ -86,7 +87,7 @@ class DetailedDogActivity : ComponentActivity() {
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFF669559)), contentAlignment = Alignment.Center) {
+                            .background(encyclopediaDogBarColor), contentAlignment = Alignment.Center) {
                         Text("Характеристики", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
                     Row(Modifier.padding(start = 10.dp)) {
@@ -131,7 +132,7 @@ class DetailedDogActivity : ComponentActivity() {
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFF669559)), contentAlignment = Alignment.Center) {
+                            .background(encyclopediaDogBarColor), contentAlignment = Alignment.Center) {
                         Text("Другие классификации", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     }
                     Row(Modifier.padding(start = 10.dp)) {

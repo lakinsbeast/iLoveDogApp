@@ -29,6 +29,7 @@ import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModelFactory
 import com.sagirov.ilovedog.MainActivity.Companion.myPetPaddockT
+import com.sagirov.ilovedog.ui.theme.circularColor
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.sagirov.ilovedog.ui.theme.mainTextColor
@@ -94,7 +95,7 @@ class WalkLaunchActivity : ComponentActivity() {
         var cautionText = ""
 
         setContent {
-            val circularColor = remember { mutableStateOf(Color(0xFF3A5A40)) }
+            val circularColor = remember { mutableStateOf(circularColor) }
             Column(
                 Modifier
                     .fillMaxSize()
@@ -121,9 +122,9 @@ class WalkLaunchActivity : ComponentActivity() {
                             cautionText = "Не нажимайте на кнопку назад и не выгружайте приложение из памяти"
                         } else {
                             dogsViewModel.updateDogsTime(idOfProfile, currentTimeInMinutes)
-                            backgroundColor.value = Color(0xFFB8D0B3); textColor.value = Color(0xFF000000)
-                            buttonBackgroundColor.value = Color(0xFFC8E6C9)
-                            circularColor.value = Color(0xFF3A5A40)
+                            backgroundColor.value = mainBackgroundColor; textColor.value = mainTextColor
+                            buttonBackgroundColor.value = mainSecondColor
+                            circularColor.value = com.sagirov.ilovedog.ui.theme.circularColor
                             timer.cancel(); isStartTimer = false
                             cautionText = ""
                         }

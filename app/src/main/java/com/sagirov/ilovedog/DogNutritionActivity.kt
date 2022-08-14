@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -103,7 +104,7 @@ fun MeatTitle(list: List<String>) {
         LazyColumn{
             list.forEach {
                 item {
-                    Card(modifier = Modifier.fillMaxSize()) {
+                    Card(modifier = Modifier.fillMaxSize(), shape = RoundedCornerShape(0)) {
                         Row(modifier = Modifier
 //                        .fillMaxSize()
                             .background(mainSecondColor)

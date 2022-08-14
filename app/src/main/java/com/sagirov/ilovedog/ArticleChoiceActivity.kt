@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
+import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import dagger.hilt.android.AndroidEntryPoint
 import de.charlex.compose.HtmlText
 
@@ -46,7 +47,7 @@ class ArticleChoiceActivity : ComponentActivity() {
 
         setContent {
             val systemUiController = rememberSystemUiController()
-            systemUiController.setSystemBarsColor(Color(0xFFB8D0B3))
+            systemUiController.setSystemBarsColor(mainBackgroundColor)
             systemUiController.setNavigationBarColor(Color(0xFFD0E0CC))
             if (selectedCard.value == -1 ) {
                 Column(Modifier.fillMaxSize().background(mainBackgroundColor)) {
@@ -91,7 +92,7 @@ class ArticleChoiceActivity : ComponentActivity() {
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .background(Color(0xFFD0E0CC)), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                            .background(mainSecondColor), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                         Text(text = resources.getString(stringID), textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.padding(start = 20.dp, end = 20.dp))
                     }
                 }

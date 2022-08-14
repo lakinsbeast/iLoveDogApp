@@ -13,3 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+/.idea
+app/build
+app/release
+app/schemas
+app/agconnect-services.json
+app/src/androidTest
+app/src/test
