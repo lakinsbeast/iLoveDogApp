@@ -1,8 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-
     id 'kotlin-kapt'
+//    id 'com.huawei.agconnect'
 }
 
 android {
@@ -12,8 +12,8 @@ android {
         applicationId "com.sagirov.ilovedog"
         minSdk 26
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.03"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -25,6 +25,8 @@ android {
             }
         }
     }
+
+
 
     buildTypes {
         release {
@@ -53,6 +55,12 @@ android {
 }
 
 dependencies {
+    implementation "com.google.accompanist:accompanist-pager:0.25.0"
+
+    // If using indicators, also depend on
+    implementation "com.google.accompanist:accompanist-pager-indicators:0.25.0"
+
+
     implementation "com.google.dagger:hilt-android:2.43"
 
     implementation("androidx.work:work-runtime-ktx:2.7.1")
@@ -73,7 +81,7 @@ dependencies {
     implementation 'de.charlex.compose:html-text:1.0.0'
     //это я хз, вроде не использовал
     implementation "io.github.boguszpawlowski.composecalendar:composecalendar:0.5.1"
-//Пока не использовал
+    //Пока не использовал
     implementation 'nl.dionsegijn:konfetti-compose:2.0.2'
 
     implementation 'androidx.core:core-ktx:1.8.0'
@@ -92,3 +100,5 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 }
+
+

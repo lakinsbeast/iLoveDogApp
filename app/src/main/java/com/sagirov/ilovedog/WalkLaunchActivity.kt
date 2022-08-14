@@ -12,6 +12,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationCompat
+import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsApplication
+import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModel
+import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaViewModelFactory
 import com.sagirov.ilovedog.MainActivity.Companion.myPetPaddockT
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
@@ -41,6 +45,9 @@ class WalkLaunchActivity : ComponentActivity() {
     private lateinit var prefsMyPet: SharedPreferences
     private lateinit var timer: CountDownTimer
 
+    private val statsCurrentTime = mutableStateOf(0L)
+    private val statsConstTime = mutableStateOf(0L)
+
     private val inCycleNotif = NotificationCompat.Builder(this, "channelID")
         .setSmallIcon(R.drawable.ic_launcher_background).setContentTitle("Прогулка началась").setContentText("Осталось ещё "+
             (currentTimeInMinutes/60000).toString()+" минут")
@@ -54,19 +61,33 @@ class WalkLaunchActivity : ComponentActivity() {
             timer.cancel()
             isStartTimer = false
         }
+        val notifManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notifManager.cancel(0)
         myPetPaddockT.value = true
         myPetPaddockT.value = false
         super.onBackPressed()}
 
+    private val dogsViewModel: DogsBreedEncyclopediaViewModel by viewModels {
+        DogsBreedEncyclopediaViewModelFactory((application as DogsApplication).repo)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val id = intent.getIntExtra("id", 0)
+        var idOfProfile: Int = id
+        dogsViewModel.getAllDogsProfiles.observe(this) {
+            idOfProfile = it[id].id
+            statsCurrentTime.value = it[id].currentTimeWalk
+            statsConstTime.value =  it[id].walkingTimeConst
+            currentTimeInMinutes = statsCurrentTime.value
+            stopTimer = statsConstTime.value
+        }
+
         prefsMyPet = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
         val myPetPaddock = prefsMyPet.getString("mypetPaddock", "")
         val myPetPaddockStandart = prefsMyPet.getString("mypetPaddockStandart", "")
-        Log.d("myPetPaddock", myPetPaddock.toString())
-        currentTimeInMinutes = myPetPaddock!!.toLong()
-        Log.d("currentTimeInMinutes", currentTimeInMinutes.toString())
-        stopTimer = myPetPaddockStandart!!.toLong()
+//        Log.d("myPetPaddock", myPetPaddock.toString())
+//        currentTimeInMinutes = myPetPaddock!!.toLong()
         var backgroundColor = mutableStateOf(mainBackgroundColor)
         var textColor = mutableStateOf(mainTextColor)
         var buttonBackgroundColor = mutableStateOf(mainSecondColor)
@@ -99,6 +120,7 @@ class WalkLaunchActivity : ComponentActivity() {
                             textColor.value = Color(0xFFFFFFFF)
                             cautionText = "Не нажимайте на кнопку назад и не выгружайте приложение из памяти"
                         } else {
+                            dogsViewModel.updateDogsTime(idOfProfile, currentTimeInMinutes)
                             backgroundColor.value = Color(0xFFB8D0B3); textColor.value = Color(0xFF000000)
                             buttonBackgroundColor.value = Color(0xFFC8E6C9)
                             circularColor.value = Color(0xFF3A5A40)
@@ -142,8 +164,7 @@ class WalkLaunchActivity : ComponentActivity() {
         timer = object : CountDownTimer(currentTimeInMinutes, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 currentTimeInMinutes = millisUntilFinished
-                Log.d("currentTimeInMinutes", currentTimeInMinutes.toString())
-                edit.putString("mypetPaddock", currentTimeInMinutes.toString()).apply()
+//                edit.putString("mypetPaddock", currentTimeInMinutes.toString()).apply()
                 timeToString = currentTimeInMinutes.toString()
             }
             override fun onFinish() {

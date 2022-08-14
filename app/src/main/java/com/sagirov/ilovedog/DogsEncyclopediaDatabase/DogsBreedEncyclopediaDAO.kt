@@ -1,10 +1,7 @@
 package com.sagirov.ilovedog.DogsEncyclopediaDatabase
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import java.util.*
 
 @Dao
@@ -20,6 +17,12 @@ interface DogsBreedEncyclopediaDAO {
 
     @Query("UPDATE DogsInfoEntity SET lastWalk=:date WHERE id=:id")
     suspend fun updateDogsDate(id: Int, date: Date)
+
+    @Update
+    suspend fun updateDogProfile(doge: DogsInfoEntity)
+
+    @Query("DELETE FROM DogsInfoEntity WHERE id=:id")
+    suspend fun deleteDogProfile(id: Int)
 
     @Query("SELECT * FROM DogsInfoEntity")
     fun getAllDogsProfiles(): LiveData<MutableList<DogsInfoEntity>>
@@ -38,5 +41,13 @@ interface DogsBreedEncyclopediaDAO {
     @Query("SELECT * FROM DocumentsEntity")
     fun getAllDocuments(): LiveData<MutableList<DocumentsEntity>>
 
+    @Query("SELECT * FROM VaccinationsEntity")
+    fun getAllVaccinations(): LiveData<MutableList<VaccinationsEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertVaccination(vac: VaccinationsEntity)
+
+    @Query("DELETE FROM VaccinationsEntity WHERE id=:id")
+    suspend fun deleteVaccination(id: Int)
 
 }

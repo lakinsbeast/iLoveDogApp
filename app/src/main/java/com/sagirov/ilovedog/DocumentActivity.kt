@@ -12,6 +12,7 @@ import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
 import android.webkit.MimeTypeMap
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +24,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +35,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
@@ -53,6 +57,8 @@ class DocumentActivity : ComponentActivity() {
     private var newDocumentState = mutableStateOf(false)
     private var keyUriDocument = ""
     private var idDocument = mutableStateOf(0)
+
+    private val newDocumentName = mutableStateOf("")
 
     private val isImageOpened = mutableStateOf(false)
 
@@ -117,6 +123,7 @@ class DocumentActivity : ComponentActivity() {
                     Log.d("name", "Display Name: $displayName")
                 }
                 cursor.close()
+
                 dogsViewModel.insertDocumentFile(
                     DocumentsEntity(
                         0,
@@ -140,7 +147,6 @@ class DocumentActivity : ComponentActivity() {
                         }
                     } else {
                     }
-
                     if (dialogState.value) {
                         AlertDialog(onDismissRequest = { dialogState.value = false },
                             buttons = {
@@ -209,6 +215,48 @@ class DocumentActivity : ComponentActivity() {
                                         }
 //                                        Text(text = "Удалить документ")
                                     }
+                                    OutlinedButton(
+                                        onClick = {
+
+                                            dialogState.value = false
+                                        },
+                                        Modifier
+                                            .height(60.dp)
+                                            .fillMaxWidth()
+                                        ,shape = RoundedCornerShape(0),
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = mainSecondColor,
+                                            contentColor = Color.Black
+                                        ), contentPadding = PaddingValues(0.dp)
+                                    ) {
+                                        Row() {
+                                            TextField(label = { Text(text = "Название:", fontSize = 15.sp)}, value = newDocumentName.value, onValueChange = {newDocumentName.value = it},
+                                                colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent))
+                                            IconButton(onClick = {
+                                                if (newDocumentName.value.isNotEmpty() || newDocumentName.value.isNotBlank()) {
+                                                    dogsViewModel.updateDocumentFile(allDocsIds[idDocument.value], mapOf(keyUriDocument to newDocumentName.value))
+                                                    dialogState.value = false
+                                                    newDocumentName.value = ""
+                                                } else {
+                                                    Toast.makeText(this@DocumentActivity, "Не удалось обновить название", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Send,
+                                                    contentDescription = ""
+                                                )
+                                            }
+                                        }
+
+//                                        when {
+//                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "document" ->
+//                                                Text(text = "Удалить документ")
+//                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "image" ->
+//                                                Text(text = "Удалить фото")
+//                                        }
+                                    }
+
+
 //                                    OutlinedButton(
 //                                        onClick = {
 ////                                            dogsViewModel.deleteDocumentFile(allDocsIdsState[idDocument.value])
@@ -275,7 +323,8 @@ class DocumentActivity : ComponentActivity() {
                                 })
                     }
                     Row(modifier = Modifier
-                        .fillMaxWidth().background(mainBackgroundColor)
+                        .fillMaxWidth()
+                        .background(mainBackgroundColor)
                         .padding(top = 10.dp), horizontalArrangement = Arrangement.Center) {
                         OutlinedButton(
                             onClick = {
@@ -291,9 +340,12 @@ class DocumentActivity : ComponentActivity() {
                             ), contentPadding = PaddingValues(0.dp)
                         ) {
                             Row(Modifier.padding(start = 30.dp, end = 30.dp)){
-                                Text("Новый документ!")
+                                Text("Новый документ/анализ!")
                             }
                         }
+                    }
+                    if (allDocsKeys.isEmpty()) {
+
                     }
                     LazyColumn(
                         Modifier

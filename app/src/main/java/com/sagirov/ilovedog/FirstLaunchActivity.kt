@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sagirov.ilovedog.ui.theme.ILoveDogTheme
+import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,7 +43,7 @@ class FirstLaunchActivity : ComponentActivity() {
                         .fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                         Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "Dog Tracking", fontSize = 56.sp, fontWeight = FontWeight.Medium, color = Color.Gray)
+                            Text(text = "iLoveDog!", fontSize = 56.sp, fontWeight = FontWeight.Medium, color = Color.Black)
                         }
                     }
                 }
@@ -62,7 +63,7 @@ class FirstLaunchActivity : ComponentActivity() {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                         Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(text = "Это приложение было создано для заботы за братьями наши меньшими на основе их потребностей." +
-                                    "Следите за их прогрессом и здоровьем!", fontSize = 18.sp, color = Color.Gray, textAlign = TextAlign.Center)
+                                    "Следите за их прогрессом и здоровьем!", fontSize = 18.sp, color = Color.Black, textAlign = TextAlign.Center)
                         }
                     }
                 }
@@ -71,7 +72,7 @@ class FirstLaunchActivity : ComponentActivity() {
                         .weight(0.5f)
                         .fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                        OutlinedButton(onClick = {  edit.putBoolean("firstOpen", false).apply()
+                        OutlinedButton(onClick = {  /*edit.putBoolean("firstOpen", false).apply()*/
                             startActivity(Intent(applicationContext, NewPetActivity::class.java)); finish() },
                             Modifier
                                 .padding(
@@ -85,7 +86,7 @@ class FirstLaunchActivity : ComponentActivity() {
                                     shape = RoundedCornerShape(50)
                                 )
                                 .clip(RoundedCornerShape(50)),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White, contentColor = Color.Black)) {
+                            colors = ButtonDefaults.buttonColors(backgroundColor = mainSecondColor, contentColor = Color.Black)) {
                             Text("Let's start!")
                         }
                     }

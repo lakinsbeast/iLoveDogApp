@@ -21,7 +21,7 @@ class NotificationReceiver: BroadcastReceiver() {
 
 
     override fun onReceive(context: Context?, intent: Intent?) {
-
+        val name = intent?.getStringExtra("notification")
         val notificationManager = context?.getSystemService<NotificationManager>()
         val notificationChannel = NotificationChannel(
             "channel_id",
@@ -31,8 +31,8 @@ class NotificationReceiver: BroadcastReceiver() {
         notificationManager?.createNotificationChannel(notificationChannel)
         val notification = NotificationCompat.Builder(context!!, "channel_id")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Поход к ветеринару!")
-            .setContentText("Самое время пойти к ветеринару!")
+            .setContentTitle("Напоминание!")
+            .setContentText(name)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
         notificationManager?.notify(1, notification.build())}
 

@@ -15,7 +15,8 @@ import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 
-@Database(entities = [DogsBreedEncyclopediaEntity::class, DogsInfoEntity::class, DocumentsEntity::class], version = 4, exportSchema = true, autoMigrations = [AutoMigration(from = 3, to = 4)])
+@Database(entities = [DogsBreedEncyclopediaEntity::class, DogsInfoEntity::class,
+    DocumentsEntity::class, VaccinationsEntity::class], version = 5, exportSchema = true,autoMigrations = [AutoMigration(from = 4, to = 5)])
 @TypeConverters(DataConverter::class, MapConverter::class)
 @Module// свой вклад в граф объектов внедрения зависимостей.
 @InstallIn(SingletonComponent::class) //говорит, что активности этой зависимость должны быть активными в течении жизни приложения

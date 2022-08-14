@@ -125,34 +125,15 @@ class ReminderActivity : ComponentActivity() {
         TextField(modifier = Modifier
             .fillMaxWidth()
             .padding(start = 60.dp, end = 60.dp)
-            .focusRequester(reasonFocusRequester),colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next), keyboardActions = KeyboardActions(onNext = {
-                dayFocusRequester.requestFocus()
-            }),
+            .focusRequester(reasonFocusRequester),colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, focusedIndicatorColor = Color.Black,
+            focusedLabelColor = Color.Black, cursorColor = Color.Black), keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { dayFocusRequester.requestFocus() }),
 //            label = { Text(text = "Причина:", fontSize = 15.sp)},
             value = reason.value, onValueChange = { if (it.length <= 150) { reason.value = it } }, textStyle = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Medium),
             singleLine = true)
         Text(text = reason.value.length.toString()+"/150", fontSize = 15.sp, modifier = Modifier
             .fillMaxWidth()
             .padding(end = 60.dp), textAlign = TextAlign.End)
-//        Row() {
-//               Column(modifier = Modifier
-//                   .size(100.dp)) {
-//                   LazyColumn {
-//                        itemsIndexed(hours) { index, item ->
-//                            Text(text = item.toString())
-//                        }
-//                   }
-//               }
-//            Column(modifier = Modifier
-//                .size(100.dp)) {
-//                LazyColumn {
-//                    itemsIndexed(minutes) { index, item ->
-//                        Text(text = item.toString())
-//                    }
-//                }
-//            }
-//        }
         Row() {
             Card(onClick = { calendarHourText.value += 1 ; if (calendarHourText.value > 24) {calendarHourText.value = 0 ; calendarHourTextModified.value = "00"};
                 calendarHourTextModified.value = calendarHourText.value.toString();if (calendarHourText.value < 10) {calendarHourTextModified.value = "0"+calendarHourText.value.toString()}},) {
@@ -181,7 +162,8 @@ class ReminderActivity : ComponentActivity() {
             TextField(modifier = Modifier
                 .width((screenWidth / 5).dp)
                 .focusRequester(dayFocusRequester),
-                colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, focusedIndicatorColor = Color.Black,
+                    focusedLabelColor = Color.Black, cursorColor = Color.Black),textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium)
                 ,singleLine = true,  label = { Text(text = "Д", fontSize = 17.sp)},value = calendarDayText.value, keyboardActions = KeyboardActions(onNext = {
                     monthFocusRequester.requestFocus()
                 }),
@@ -192,7 +174,8 @@ class ReminderActivity : ComponentActivity() {
             TextField(modifier = Modifier
                 .focusRequester(monthFocusRequester)
                 .width((screenWidth / 5).dp)
-                , colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Medium)
+                , colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, focusedIndicatorColor = Color.Black,
+                    focusedLabelColor = Color.Black, cursorColor = Color.Black),textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium)
                 ,singleLine = true,label = { Text(text = "M", fontSize = 17.sp)},value = calendarMonthText.value,
                 onValueChange = { calendarMonthText.value = it; if (calendarMonthText.value.length >= 2)
                 {if (calendarMonthText.value.toInt() > 13 || calendarMonthText.value.toInt() < 0) {calendarMonthText.value = 12.toString() };
@@ -200,7 +183,8 @@ class ReminderActivity : ComponentActivity() {
                 })
             TextField(modifier = Modifier
                 .width((screenWidth / 5).dp)
-                , colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent), textStyle = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Medium),
+                , colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, focusedIndicatorColor = Color.Black,
+                    focusedLabelColor = Color.Black, cursorColor = Color.Black), textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium),
                 singleLine = true,label = { Text(text = "ГОД", fontSize = 17.sp)},value = calendarYearText.value,
                 onValueChange = { if (calendarYearText.value.length < 4) calendarYearText.value = it })
             IconButton(onClick = { datePickerDialog.show()}) {
@@ -213,20 +197,14 @@ class ReminderActivity : ComponentActivity() {
             Text("Уведомления", fontSize = 15.sp)
             Switch(
                 checked = checkNotification.value,
-                onCheckedChange = { checkNotification.value = it })
+                onCheckedChange = { checkNotification.value = it }, colors = SwitchDefaults.colors(checkedThumbColor = Color.Black))
         }
-//        Row(modifier = Modifier.fillMaxWidth().padding(start = 60.dp, end = 60.dp, top = 10.dp),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
-//            Text("Повтор уведомления?", fontSize = 15.sp)
-//            Switch(checked = checkRepeat.value, onCheckedChange = {checkRepeat.value = it})
-//        }
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(start = 60.dp, end = 60.dp, top = 10.dp),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
             Text("Повтор", fontSize = 15.sp)
-            Switch(checked = checkRepeat.value, onCheckedChange = {checkRepeat.value = it})
+            Switch(checked = checkRepeat.value, onCheckedChange = {checkRepeat.value = it}, colors = SwitchDefaults.colors(checkedThumbColor = Color.Black))
         }
-
-
         OutlinedButton(onClick = {
                 if (reason.value.isNotEmpty() && calendarDayText.value.isNotEmpty() && calendarMonthText.value.isNotEmpty() && calendarYearText.value.isNotEmpty()) {
                     mCalendar.set(Calendar.DAY_OF_MONTH, calendarDayText.value.toInt())
@@ -238,8 +216,6 @@ class ReminderActivity : ComponentActivity() {
                     createdAt = mCalendar.time
                     if (((timestamp / 100) < (createdAt.time / 100))) {
                         var time: Long = (createdAt.time) - timestamp
-//                        Log.d("calendar", (timestamp / 100).toString())
-
                         prefs = getSharedPreferences(PREF_NAME_DATES, MODE_PRIVATE)
                         if (checkRepeat.value) {
                             dateForVisitToVet[(System.currentTimeMillis()+time)] = reason.value+".Повтор%#%:#%:"
@@ -249,29 +225,25 @@ class ReminderActivity : ComponentActivity() {
                         Log.d("calendar", dateForVisitToVet.toString())
                         val json: String = Gson().toJson(dateForVisitToVet)
                         prefs.edit().putString("dateForVisitToVet", json).apply()
-                        if (checkNotification.value && checkRepeat.value) {
-                            val am = getSystemService(Activity.ALARM_SERVICE) as AlarmManager
-                            val intent = Intent(this@ReminderActivity, NotificationReceiver::class.java)
-                            val pendingIntent = PendingIntent.getBroadcast(this@ReminderActivity, 1, intent,0)
-                            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, createdAt.time, 86400000, pendingIntent)
+                        when {
+                            checkNotification.value && checkRepeat.value -> {val am = getSystemService(Activity.ALARM_SERVICE) as AlarmManager
+                                val intent = Intent(this@ReminderActivity, NotificationReceiver::class.java)
+                                intent.putExtra("notification", reason.value)
+                                val pendingIntent = PendingIntent.getBroadcast(this@ReminderActivity, 1, intent,0)
+                                am.setInexactRepeating(AlarmManager.RTC_WAKEUP, createdAt.time, 86400000, pendingIntent)
+                            Log.d("check", "checkNotification.value && checkRepeat.value")}
+                            checkNotification.value -> {val am = getSystemService(Activity.ALARM_SERVICE) as AlarmManager
+                                val intent = Intent(this@ReminderActivity, NotificationReceiver::class.java)
+                                intent.putExtra("notification", reason.value)
+                                val pendingIntent = PendingIntent.getBroadcast(this@ReminderActivity, 1, intent,0)
+                                //уведы срабатывают за пол дня до начала
+                                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,(System.currentTimeMillis()+time)-3600000, pendingIntent)
+                                Log.d("check", "checkNotification.value")}
+                            checkRepeat.value -> {val am = getSystemService(Activity.ALARM_SERVICE) as AlarmManager
+                                val pendingIntent = PendingIntent.getActivity(this@ReminderActivity, 1, Intent(this@ReminderActivity, MainActivity::class.java),0)
+                                am.setInexactRepeating(AlarmManager.RTC_WAKEUP, createdAt.time, 86400000, pendingIntent)
+                                Log.d("check", "checkRepeat.value")}
                         }
-                        if (checkNotification.value) {
-                            val am = getSystemService(Activity.ALARM_SERVICE) as AlarmManager
-                            val intent = Intent(this@ReminderActivity, NotificationReceiver::class.java)
-                            val pendingIntent = PendingIntent.getBroadcast(this@ReminderActivity, 1, intent,0)
-                            //уведы срабатывают за пол дня до начала
-                            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,(System.currentTimeMillis()+time)-3600000, pendingIntent)
-                        }
-                        if (checkRepeat.value) {
-                            val am = getSystemService(Activity.ALARM_SERVICE) as AlarmManager
-                            val pendingIntent = PendingIntent.getActivity(this@ReminderActivity, 1, Intent(this@ReminderActivity, MainActivity::class.java),0)
-                            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, createdAt.time, 86400000, pendingIntent)
-                        }
-                        Toast.makeText(
-                            mContext,
-                            "Добавлено новое напоминание",
-                            Toast.LENGTH_SHORT
-                        ).show()
                         startActivity(Intent(this@ReminderActivity, MainActivity::class.java))
                         finish()
                     } else {
@@ -299,21 +271,4 @@ class ReminderActivity : ComponentActivity() {
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.White, contentColor = Color.Black)) {
             Text("Добавить напоминание!")
         }}}
-
-//        AndroidView(
-//            { CalendarView(it) },
-//            modifier = Modifier.wrapContentWidth(),
-//            update = { views ->
-//                views.setOnDateChangeListener { calendarView, year, month, days ->
-//                    mCalendar.set(Calendar.DATE,days)
-//                    createdAt = mCalendar.time
-//                    if (timestamp/100 < createdAt.time/100) {
-//                    }
-//                }
-//                views.minDate = System.currentTimeMillis()
-//            }
-//        )
-
-
-
 

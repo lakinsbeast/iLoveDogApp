@@ -14,6 +14,7 @@ class DogsBreedEncyclopediaViewModel @Inject constructor(private val repo: DogsB
     val allDogs: LiveData<MutableList<DogsBreedEncyclopediaEntity>> = repo.getAllDogs()
     val getAllDogsProfiles: LiveData<MutableList<DogsInfoEntity>> = repo.getAllDogsProfiles()
     val getAllDocuments: LiveData<MutableList<DocumentsEntity>> = repo.getAllDocuments()
+    val getAllVaccinations: LiveData<MutableList<VaccinationsEntity>> = repo.getAllVaccinations()
 
     fun insertDocumentFile(doc: DocumentsEntity) = viewModelScope.launch {
         repo.insertDocumentFile(doc)
@@ -25,6 +26,13 @@ class DogsBreedEncyclopediaViewModel @Inject constructor(private val repo: DogsB
         repo.deleteDocument(id)
     }
 
+    fun insertVaccination(vac: VaccinationsEntity) = viewModelScope.launch {
+        repo.insertVaccination(vac)
+    }
+    fun deleteVaccination(id: Int) = viewModelScope.launch {
+        repo.deleteVaccination(id)
+    }
+
 
     fun updateDogsTime(id: Int, time: Long) = viewModelScope.launch {
         repo.updateDogsTime(id, time)
@@ -34,6 +42,12 @@ class DogsBreedEncyclopediaViewModel @Inject constructor(private val repo: DogsB
     }
     fun insertDogProfile(doge: DogsInfoEntity) = viewModelScope.launch {
         repo.insertDogProfile(doge)
+    }
+    fun updateDogProfile(doge: DogsInfoEntity) = viewModelScope.launch {
+        repo.updateDogProfile(doge)
+    }
+    fun deleteDogProfile(id: Int) = viewModelScope.launch {
+        repo.deleteDogProfile(id)
     }
 }
 

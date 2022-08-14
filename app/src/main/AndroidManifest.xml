@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.sagirov.ilovedog">
+    package="com.sagirov.ilovedog"
+    android:versionName="1.03">
 
     <uses-permission android:name="android.permission.ACTION_OPEN_DOCUMENT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -14,13 +15,28 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/launcher_icon"
+        android:icon="@mipmap/dog_icon_new"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/launcher_icon"
+        android:roundIcon="@mipmap/dog_icon_new"
         android:supportsRtl="true"
         android:theme="@style/Theme.ILoveDog"
         tools:targetApi="31">
+        <activity
+            android:name=".NewVaccineActivity"
+            android:exported="false"
+            android:label="@string/title_activity_new_vaccine"
+            android:theme="@style/Theme.ILoveDog" />
+        <activity
+            android:name=".VaccinationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_vaccination"
+            android:theme="@style/Theme.ILoveDog" />
+        <activity
+            android:name=".DogNutritionActivity"
+            android:exported="false"
+            android:label="@string/title_activity_dog_nutrition"
+            android:theme="@style/Theme.ILoveDog" />
         <activity
             android:name=".AboutAuthorPageActivity"
             android:exported="false"

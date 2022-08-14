@@ -11,12 +11,12 @@ import java.util.*
 
 class DataConverter {
     @TypeConverter
-    fun dateToTimestamp(date: Date): Long? {
+    fun dateToTimestamp(date: Date): Long {
         return date.time
     }
 
     @TypeConverter
-    fun fromTimestamp(date: Long): Date? {
+    fun fromTimestamp(date: Long): Date {
         return Date(date)
     }
 }

@@ -43,6 +43,7 @@ class DetailedDogActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var resImage = -1
         var id = intent.getIntExtra("id", 0)
         dogsViewModel.allDogs.observe(this) { list ->
             dogsEncyclopedia.add(
@@ -50,7 +51,11 @@ class DetailedDogActivity : ComponentActivity() {
                     list[id].type, list[id].temperament, list[id].male_height, list[id].female_height, list[id].male_weight,
                     list[id].female_weight, list[id].colors, list[id].litterSize, list[id].description, list[id].imageFile)
             )
-            val resImage = resources.getIdentifier(list[id].imageFile,"drawable", packageName)
+            if (list[id].imageFile != "") {
+                resImage = resources.getIdentifier(list[id].imageFile,"drawable", packageName)
+            } else {
+                resImage = -578358347
+            }
             setContent {
                 Column(
                     Modifier
@@ -63,8 +68,10 @@ class DetailedDogActivity : ComponentActivity() {
                         Text(dogsEncyclopedia[0].breedName, fontSize = 22.sp, fontWeight = FontWeight.Bold)
                     }
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        Image(
-                            painterResource(resImage), contentDescription ="", contentScale = ContentScale.Fit)
+                        if (resImage != -578358347){
+                            Image(
+                                painterResource(resImage), contentDescription ="", contentScale = ContentScale.Fit)
+                        }
                     }
                     Box(
                         Modifier
