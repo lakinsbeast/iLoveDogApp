@@ -1,11 +1,7 @@
 package com.sagirov.ilovedog
 
 import androidx.room.TypeConverter
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import java.lang.reflect.Type
 import java.util.*
 
 

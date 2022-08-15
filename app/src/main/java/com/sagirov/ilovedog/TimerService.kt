@@ -7,6 +7,9 @@ import android.os.CountDownTimer
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import com.sagirov.ilovedog.Activities.currentTimeInMinutes
+import com.sagirov.ilovedog.Activities.isStartTimer
+import com.sagirov.ilovedog.Activities.timeToString
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
