@@ -18,9 +18,13 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 
+@AndroidEntryPoint
 class AboutAuthorPageActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterialApi::class)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

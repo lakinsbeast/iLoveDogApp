@@ -33,9 +33,12 @@ import com.sagirov.ilovedog.ViewModels.VaccinationViewModel
 import com.sagirov.ilovedog.ViewModels.VaccinationViewModelFactory
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 import java.util.*
 
 @ExperimentalMaterialApi
+@AndroidEntryPoint
 class VaccinationActivity : ComponentActivity() {
     private var vaccinationList = mutableStateListOf<VaccinationsEntity>()
     private val vaccineViewModel: VaccinationViewModel by viewModels {

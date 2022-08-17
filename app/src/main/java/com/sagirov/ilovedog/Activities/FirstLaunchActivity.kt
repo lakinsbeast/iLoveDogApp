@@ -24,11 +24,13 @@ import androidx.compose.ui.unit.sp
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 
 @AndroidEntryPoint
 class FirstLaunchActivity : ComponentActivity() {
     private val PREF_NAME = "first_launch"
     private lateinit var prefs: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE)

@@ -39,6 +39,7 @@ import com.sagirov.ilovedog.NotificationReceiver
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 import java.util.*
 
 // TODO{НЕРЕАЛЬНО СДЕЛАТЬ - Поменять смену времени с кликов на scroll wheel(придется делать самописный
@@ -61,6 +62,7 @@ class ReminderActivity : ComponentActivity() {
     private var calendarMinuteText =  mutableStateOf(Calendar.getInstance().get(Calendar.MINUTE))
     var calendarHourTextModified =  mutableStateOf(calendarHourText.value.toString())
     var calendarMinuteTextModified = mutableStateOf(calendarMinuteText.value.toString())
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

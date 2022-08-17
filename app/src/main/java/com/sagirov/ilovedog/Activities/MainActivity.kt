@@ -54,6 +54,7 @@ import com.sagirov.ilovedog.ViewModels.DogsBreedEncyclopediaViewModelFactory
 import com.sagirov.ilovedog.ui.theme.*
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -946,20 +947,20 @@ class MainActivity : ComponentActivity() {
                 })
         }
     }
-    @Composable
-    fun FloatingActionButtonMainMenu() {
-        val ctx = LocalContext.current
-        FloatingActionButton(onClick = {
-            startActivity(
-                Intent(
-                    ctx,
-                    NewPetActivity::class.java
-                )
-            )
-        }, backgroundColor = Color.White, elevation = FloatingActionButtonDefaults.elevation(0.dp)) {
-            Icon(Icons.Filled.Add, contentDescription = "")
-        }
-    }
+//    @Composable
+//    fun FloatingActionButtonMainMenu() {
+//        val ctx = LocalContext.current
+//        FloatingActionButton(onClick = {
+//            startActivity(
+//                Intent(
+//                    ctx,
+//                    NewPetActivity::class.java
+//                )
+//            )
+//        }, backgroundColor = Color.White, elevation = FloatingActionButtonDefaults.elevation(0.dp)) {
+//            Icon(Icons.Filled.Add, contentDescription = "")
+//        }
+//    }
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun ListRowDogs(model: DogsBreedEncyclopediaEntity) {

@@ -25,10 +25,13 @@ import com.google.accompanist.pager.rememberPagerState
 import com.sagirov.ilovedog.ui.theme.homeButtonColor
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.launch
-
+@AndroidEntryPoint
 class DogNutritionActivity : ComponentActivity() {
     @OptIn(ExperimentalPagerApi::class)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val tabRowState = mutableStateOf(0)

@@ -10,5 +10,4 @@ import javax.inject.Singleton
 @Singleton
 class DogsBreedEncyclopediaRepository @Inject constructor(private val dogsDao: DogsBreedEncyclopediaDAO) {
     fun getAllDogs(): LiveData<MutableList<DogsBreedEncyclopediaEntity>> = dogsDao.getAll()
-
 }

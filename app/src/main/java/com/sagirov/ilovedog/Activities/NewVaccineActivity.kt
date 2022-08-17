@@ -29,8 +29,10 @@ import com.sagirov.ilovedog.DogsEncyclopediaDatabase.VaccinationsEntity
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ViewModels.VaccinationViewModel
 import com.sagirov.ilovedog.ViewModels.VaccinationViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 import java.util.*
-
+@AndroidEntryPoint
 class NewVaccineActivity : ComponentActivity() {
     private var nameVaccination = mutableStateOf("")
     private var drugName = mutableStateOf("")
@@ -44,6 +46,7 @@ class NewVaccineActivity : ComponentActivity() {
     private val vaccineViewModel: VaccinationViewModel by viewModels {
         VaccinationViewModelFactory((application as DogsApplication).VaccinationAppRepo)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

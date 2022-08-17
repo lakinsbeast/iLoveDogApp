@@ -40,6 +40,7 @@ import com.sagirov.ilovedog.ui.theme.homeButtonColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 import java.io.File
 
 @AndroidEntryPoint

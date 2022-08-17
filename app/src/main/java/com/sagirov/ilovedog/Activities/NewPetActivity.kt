@@ -41,6 +41,7 @@ import com.sagirov.ilovedog.DogsEncyclopediaDatabase.*
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -59,7 +60,6 @@ class NewPetActivity : ComponentActivity() {
     private val dogsInfoViewModel: DogsInfoViewModel by viewModels {
         DogsInfoViewModelFactory((application as DogsApplication).DogsInfoRepo)
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

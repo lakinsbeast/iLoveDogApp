@@ -36,11 +36,13 @@ import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.sagirov.ilovedog.ui.theme.mainTextColor
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 
 var currentTimeInMinutes: Long by mutableStateOf(0)
 var stopTimer: Long by mutableStateOf(0)
 var isStartTimer by mutableStateOf(false)
 var timeToString by mutableStateOf("")
+
 @AndroidEntryPoint
 class WalkLaunchActivity : ComponentActivity() {
 

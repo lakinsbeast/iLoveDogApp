@@ -23,12 +23,14 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 import de.charlex.compose.HtmlText
 
 val selectedCard =  mutableStateOf(-1)
 @AndroidEntryPoint
 class ArticleChoiceActivity : ComponentActivity() {
     var selectedArticle: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //resources.getString(R.string.dog_feeding)

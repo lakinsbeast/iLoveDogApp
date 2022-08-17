@@ -24,6 +24,7 @@ import com.sagirov.ilovedog.ViewModels.DogsBreedEncyclopediaViewModelFactory
 import com.sagirov.ilovedog.ui.theme.encyclopediaDogBarColor
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ActivityScoped
 
 @AndroidEntryPoint
 class DetailedDogActivity : ComponentActivity() {
@@ -32,7 +33,6 @@ class DetailedDogActivity : ComponentActivity() {
     private val dogsBreedViewModel: DogsBreedEncyclopediaViewModel by viewModels {
         DogsBreedEncyclopediaViewModelFactory((application as DogsApplication).DogsBreedEncyclopediaAppRepo)
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var resImage = -1
