@@ -43,9 +43,9 @@ class AboutAuthorPageActivity : ComponentActivity() {
             ) {
                 Card(
                     elevation = 0.dp, modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(), backgroundColor = mainBackgroundColor
                 ) {
-                    Column(modifier = Modifier.background(mainBackgroundColor)) {
+                    Column() {
                         Text(
                             "Это приложение сделано студентом-самоучкой, я занимаюсь андроид-разаботкой в свободное время" +
                                     " и мне это очень нравится, приложение я делал с любовью и желанием, планирую в дальнейшем его развивать на благо" +
@@ -67,35 +67,59 @@ class AboutAuthorPageActivity : ComponentActivity() {
                 }
                 //TODO{Копируется в буфер обмена несколько раз, если нажать несколько раз}
                 val copy = LocalClipboardManager.current
-                Card(onClick = { copy.setText(AnnotatedString("phyqstudio@gmail.com"));
-                    Toast.makeText(this@AboutAuthorPageActivity, "Скопировано в буфер обмена",
-                        Toast.LENGTH_SHORT).show()}, elevation = 10.dp, modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .padding(top = 20.dp)) {
+                Card(
+                    onClick = {
+                        copy.setText(AnnotatedString("phyqstudio@gmail.com"));
+                        Toast.makeText(
+                            this@AboutAuthorPageActivity, "Скопировано в буфер обмена",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }, elevation = 10.dp, modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .padding(top = 20.dp), backgroundColor = mainBackgroundColor
+                ) {
                     Row(
                         Modifier
-                            .fillMaxSize()
-                            .background(mainBackgroundColor), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = Icons.Outlined.Email, contentDescription = "")
-                        Text("phyqstudio@gmail.com", color = mainTextColor)
+                            .fillMaxSize(), verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Email,
+                            contentDescription = "",
+                            tint = mainTextColor
+                        )
+                        Text(
+                            "phyqstudio@gmail.com",
+                            color = mainTextColor,
+                            modifier = Modifier.padding(start = 5.dp)
+                        )
                     }
                 }
-                Card(onClick = { copy.setText(AnnotatedString("5228 6005 7978 4499"));
-                    Toast.makeText(this@AboutAuthorPageActivity, "Скопировано в буфер обмена",
-                        Toast.LENGTH_SHORT).show()}, elevation = 10.dp, modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .padding(top = 20.dp)) {
+                Card(
+                    onClick = {
+                        copy.setText(AnnotatedString("5228 6005 7978 4499"));
+                        Toast.makeText(
+                            this@AboutAuthorPageActivity, "Скопировано в буфер обмена",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }, elevation = 10.dp, modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .padding(top = 20.dp), backgroundColor = mainBackgroundColor
+                ) {
                     Row(
                         Modifier
-                            .fillMaxSize()
-                            .background(mainBackgroundColor), verticalAlignment = Alignment.CenterVertically) {
+                            .fillMaxSize(), verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             imageVector = ImageVector.vectorResource(id = R.drawable.credit_card_48px),
-                            contentDescription = ""
+                            contentDescription = "", tint = mainTextColor
                         )
-                        Text("5228 6005 7978 4499 - Сбербанк", color = mainTextColor)
+                        Text(
+                            "5228 6005 7978 4499 - Сбербанк",
+                            color = mainTextColor,
+                            modifier = Modifier.padding(start = 5.dp)
+                        )
                     }
                 }
             }

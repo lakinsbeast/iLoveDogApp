@@ -315,12 +315,12 @@ class MainActivity : ComponentActivity() {
                                     );
                                     intent.putExtra("Article", "feeding");startActivity(intent)
                                 },
-                                modifier = Modifier.padding(start = 15.dp, end = 15.dp)
+                                modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+                                backgroundColor = mainSecondColor
                             ) {
                                 Row(
                                     Modifier
                                         .fillMaxWidth()
-                                        .background(mainSecondColor)
                                         .padding(
                                             start = 20.dp,
                                             end = 20.dp,
@@ -352,12 +352,15 @@ class MainActivity : ComponentActivity() {
                                     );
                                     intent.putExtra("Article", "activity");startActivity(intent)
                                 },
-                                modifier = Modifier.padding(top = 10.dp, start = 15.dp, end = 15.dp)
+                                modifier = Modifier.padding(
+                                    top = 10.dp,
+                                    start = 15.dp,
+                                    end = 15.dp
+                                ), backgroundColor = mainSecondColor
                             ) {
                                 Row(
                                     Modifier
                                         .fillMaxWidth()
-                                        .background(mainSecondColor)
                                         .padding(
                                             start = 20.dp,
                                             end = 20.dp,
@@ -1068,14 +1071,12 @@ class MainActivity : ComponentActivity() {
             color = mainTextColor
         )
         Card(
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(10.dp), backgroundColor = mainSecondColor,
             modifier = Modifier.padding(start = 15.dp, end = 15.dp),
-            border = BorderStroke(0.dp, Color.Black)
         ) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(mainSecondColor)
                     .padding(top = 30.dp, bottom = 30.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround
@@ -1101,13 +1102,11 @@ class MainActivity : ComponentActivity() {
         }
         Card(
             modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 10.dp),
-            shape = RoundedCornerShape(10.dp),
-            border = BorderStroke(0.dp, Color.Black)
+            shape = RoundedCornerShape(10.dp), backgroundColor = mainSecondColor
         ) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(mainSecondColor)
                     .padding(top = 30.dp, bottom = 30.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround
@@ -1245,7 +1244,6 @@ class MainActivity : ComponentActivity() {
                 startActivity(intent)
             },
             modifier = Modifier.padding(top = 10.dp),
-            border = BorderStroke(0.dp, Color.Black),
             shape = RoundedCornerShape(0.dp)
         )
         {
@@ -1354,14 +1352,16 @@ class MainActivity : ComponentActivity() {
                     val intent = Intent(ctx, NewPetActivity::class.java)
                     intent.putExtra("id", currentDogId.value)
                     startActivity(intent)
-                }, elevation = 15.dp,
-                shape = RoundedCornerShape(15), border = BorderStroke(0.dp, Color.Black),
-                modifier = Modifier.padding(start = 15.dp, end = 15.dp)
+                },
+                elevation = 15.dp,
+                shape = RoundedCornerShape(15),
+                modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+                backgroundColor = mainSecondColor
             ) {
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .background(mainSecondColor)
+//                        .background(mainSecondColor)
                         .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
