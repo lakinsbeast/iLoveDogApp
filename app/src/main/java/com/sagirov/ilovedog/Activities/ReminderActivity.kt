@@ -1,6 +1,9 @@
 package com.sagirov.ilovedog.Activities
 
-import android.app.*
+import android.app.Activity
+import android.app.AlarmManager
+import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.content.Intent
 import android.content.SharedPreferences
 import android.icu.util.Calendar
@@ -10,15 +13,20 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,13 +41,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sagirov.ilovedog.NotificationReceiver
 import com.sagirov.ilovedog.R
-import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
+import com.sagirov.ilovedog.ui.theme.*
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.scopes.ActivityScoped
 import java.util.*
 
 // TODO{НЕРЕАЛЬНО СДЕЛАТЬ - Поменять смену времени с кликов на scroll wheel(придется делать самописный
@@ -88,11 +96,16 @@ class ReminderActivity : ComponentActivity() {
         }
 
         setContent {
+            val systemUiController = rememberSystemUiController()
+            systemUiController.setSystemBarsColor(mainBackgroundColor)
             Column(
                 Modifier
                     .fillMaxSize()
                     .background(mainBackgroundColor)
-                    .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 time()
             }
         }
@@ -117,34 +130,77 @@ class ReminderActivity : ComponentActivity() {
 
         val screenWidth = LocalConfiguration.current.screenWidthDp
 
-        Text(text = "Текст:", fontSize = 15.sp, modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 75.dp), textAlign = TextAlign.Start)
+        Text(
+            text = "Текст:", fontSize = 15.sp, modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 75.dp), textAlign = TextAlign.Start, color = mainTextColor
+        )
 
-        TextField(modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 60.dp, end = 60.dp)
-            .focusRequester(reasonFocusRequester),colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, focusedIndicatorColor = Color.Black,
-            focusedLabelColor = Color.Black, cursorColor = Color.Black), keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 60.dp, end = 60.dp)
+                .focusRequester(reasonFocusRequester), colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.Transparent,
+                focusedIndicatorColor = mainTextColor,
+                focusedLabelColor = mainTextColor,
+                cursorColor = mainTextColor,
+                textColor = mainTextColor,
+                unfocusedIndicatorColor = textFieldUnFocusedIndicatorColor
+            ), keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { dayFocusRequester.requestFocus() }),
 //            label = { Text(text = "Причина:", fontSize = 15.sp)},
-            value = reason.value, onValueChange = { if (it.length <= 150) { reason.value = it } }, textStyle = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Medium),
-            singleLine = true)
-        Text(text = reason.value.length.toString()+"/150", fontSize = 15.sp, modifier = Modifier
-            .fillMaxWidth()
-            .padding(end = 60.dp), textAlign = TextAlign.End)
+            value = reason.value, onValueChange = {
+                if (it.length <= 150) {
+                    reason.value = it
+                }
+            }, textStyle = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Medium),
+            singleLine = true
+        )
+        Text(
+            text = reason.value.length.toString() + "/150", fontSize = 15.sp, modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 60.dp), textAlign = TextAlign.End, color = mainTextColor
+        )
         Row() {
-            Card(onClick = { calendarHourText.value += 1 ; if (calendarHourText.value > 24) {calendarHourText.value = 0 ; calendarHourTextModified.value = "00"};
-                calendarHourTextModified.value = calendarHourText.value.toString();if (calendarHourText.value < 10) {calendarHourTextModified.value = "0"+calendarHourText.value.toString()}},) {
-                Text(text = calendarHourTextModified.value, fontSize = 120.sp )
+            Card(
+                onClick = {
+                    calendarHourText.value += 1; if (calendarHourText.value > 24) {
+                    calendarHourText.value = 0; calendarHourTextModified.value = "00"
+                };
+                    calendarHourTextModified.value =
+                        calendarHourText.value.toString();if (calendarHourText.value < 10) {
+                    calendarHourTextModified.value = "0" + calendarHourText.value.toString()
+                }
+                },
+                backgroundColor = mainSecondColor, shape = RoundedCornerShape(10)
+            ) {
+                Text(
+                    text = calendarHourTextModified.value,
+                    fontSize = 120.sp,
+                    color = mainTextColor
+                )
             }
-            Text(text = ":", fontSize = 120.sp)
-            Card(onClick = { calendarMinuteText.value += 5
-                calendarMinuteTextModified.value = calendarMinuteText.value.toString()
-                if (calendarMinuteText.value > 60) {calendarMinuteText.value = 0; calendarMinuteTextModified.value = "00"}
-                if (calendarMinuteTextModified.value.toInt() < 10) {calendarMinuteTextModified.value = "0${calendarMinuteText.value}"}})
+            Text(text = ":", fontSize = 120.sp, color = mainTextColor)
+            Card(
+                onClick = {
+                    calendarMinuteText.value += 5
+                    calendarMinuteTextModified.value = calendarMinuteText.value.toString()
+                    if (calendarMinuteText.value > 60) {
+                        calendarMinuteText.value = 0; calendarMinuteTextModified.value = "00"
+                    }
+                    if (calendarMinuteTextModified.value.toInt() < 10) {
+                        calendarMinuteTextModified.value = "0${calendarMinuteText.value}"
+                    }
+                },
+                backgroundColor = mainSecondColor, shape = RoundedCornerShape(10)
+            )
             {
-                Text(text = calendarMinuteTextModified.value, fontSize = 120.sp)
+                Text(
+                    text = calendarMinuteTextModified.value,
+                    fontSize = 120.sp,
+                    color = mainTextColor
+                )
             }
         }
 
@@ -162,48 +218,90 @@ class ReminderActivity : ComponentActivity() {
             TextField(modifier = Modifier
                 .width((screenWidth / 5).dp)
                 .focusRequester(dayFocusRequester),
-                colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, focusedIndicatorColor = Color.Black,
-                    focusedLabelColor = Color.Black, cursorColor = Color.Black),textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium)
-                ,singleLine = true,  label = { Text(text = "Д", fontSize = 17.sp)},value = calendarDayText.value, keyboardActions = KeyboardActions(onNext = {
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent,
+                    focusedIndicatorColor = mainTextColor,
+                    focusedLabelColor = mainTextColor,
+                    cursorColor = mainTextColor,
+                    textColor = mainTextColor,
+                    unfocusedIndicatorColor = textFieldUnFocusedIndicatorColor
+                ),
+                textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium),
+                singleLine = true,
+                label = { Text(text = "Д", fontSize = 17.sp, color = mainTextColor) },
+                value = calendarDayText.value,
+                keyboardActions = KeyboardActions(onNext = {
                     monthFocusRequester.requestFocus()
                 }),
-                onValueChange = { calendarDayText.value = it;
-                    if (calendarDayText.value.length >= 2) {if (calendarDayText.value.toInt() > days || calendarDayText.value.toInt() < 0)
-                    {calendarDayText.value = days.toString()}; monthFocusRequester.requestFocus()}
-                })
-            TextField(modifier = Modifier
-                .focusRequester(monthFocusRequester)
-                .width((screenWidth / 5).dp)
-                , colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, focusedIndicatorColor = Color.Black,
-                    focusedLabelColor = Color.Black, cursorColor = Color.Black),textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium)
-                ,singleLine = true,label = { Text(text = "M", fontSize = 17.sp)},value = calendarMonthText.value,
-                onValueChange = { calendarMonthText.value = it; if (calendarMonthText.value.length >= 2)
-                {if (calendarMonthText.value.toInt() > 13 || calendarMonthText.value.toInt() < 0) {calendarMonthText.value = 12.toString() };
+                onValueChange = {
+                    calendarDayText.value = it;
+                    if (calendarDayText.value.length >= 2) {
+                        if (calendarDayText.value.toInt() > days || calendarDayText.value.toInt() < 0) {
+                            calendarDayText.value = days.toString()
+                        }; monthFocusRequester.requestFocus()
                     }
                 })
             TextField(modifier = Modifier
-                .width((screenWidth / 5).dp)
-                , colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, focusedIndicatorColor = Color.Black,
-                    focusedLabelColor = Color.Black, cursorColor = Color.Black), textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium),
-                singleLine = true,label = { Text(text = "ГОД", fontSize = 17.sp)},value = calendarYearText.value,
-                onValueChange = { if (calendarYearText.value.length < 4) calendarYearText.value = it })
+                .focusRequester(monthFocusRequester)
+                .width((screenWidth / 5).dp),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent,
+                    focusedIndicatorColor = mainTextColor,
+                    focusedLabelColor = mainTextColor,
+                    cursorColor = mainTextColor,
+                    textColor = mainTextColor,
+                    unfocusedIndicatorColor = textFieldUnFocusedIndicatorColor
+                ),
+                textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium),
+                singleLine = true,
+                label = { Text(text = "M", fontSize = 17.sp, color = mainTextColor) },
+                value = calendarMonthText.value,
+                onValueChange = {
+                    calendarMonthText.value = it; if (calendarMonthText.value.length >= 2) {
+                    if (calendarMonthText.value.toInt() > 13 || calendarMonthText.value.toInt() < 0) {
+                        calendarMonthText.value = 12.toString()
+                    };
+                }
+                })
+            TextField(modifier = Modifier
+                .width((screenWidth / 5).dp),
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent,
+                    focusedIndicatorColor = mainTextColor,
+                    focusedLabelColor = mainTextColor,
+                    cursorColor = mainTextColor,
+                    textColor = mainTextColor,
+                    unfocusedIndicatorColor = textFieldUnFocusedIndicatorColor
+                ),
+                textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium),
+                singleLine = true,
+                label = { Text(text = "ГОД", fontSize = 17.sp, color = mainTextColor) },
+                value = calendarYearText.value,
+                onValueChange = {
+                    if (calendarYearText.value.length < 4) calendarYearText.value = it
+                })
             IconButton(onClick = { datePickerDialog.show()}) {
-                Icon(Icons.Outlined.DateRange, contentDescription = "")
+                Icon(Icons.Outlined.DateRange, contentDescription = "", tint = mainTextColor)
             }
         }
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(start = 60.dp, end = 60.dp),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("Уведомления", fontSize = 15.sp)
+            Text("Уведомления", fontSize = 15.sp, color = mainTextColor)
             Switch(
                 checked = checkNotification.value,
-                onCheckedChange = { checkNotification.value = it }, colors = SwitchDefaults.colors(checkedThumbColor = Color.Black))
+                onCheckedChange = { checkNotification.value = it },
+                colors = SwitchDefaults.colors(checkedThumbColor = switcherColor)
+            )
         }
         Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 60.dp, end = 60.dp, top = 10.dp),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
-            Text("Повтор", fontSize = 15.sp)
-            Switch(checked = checkRepeat.value, onCheckedChange = {checkRepeat.value = it}, colors = SwitchDefaults.colors(checkedThumbColor = Color.Black))
+            .padding(start = 60.dp, end = 60.dp, top = 10.dp),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Text("Повтор", fontSize = 15.sp, color = mainTextColor)
+            Switch(
+                checked = checkRepeat.value, onCheckedChange = { checkRepeat.value = it },
+                colors = SwitchDefaults.colors(checkedThumbColor = switcherColor)
+            )
         }
         OutlinedButton(onClick = {
                 if (reason.value.isNotEmpty() && calendarDayText.value.isNotEmpty() && calendarMonthText.value.isNotEmpty() && calendarYearText.value.isNotEmpty()) {
@@ -268,7 +366,11 @@ class ReminderActivity : ComponentActivity() {
                     shape = RoundedCornerShape(50)
                 )
                 .clip(RoundedCornerShape(50)),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White, contentColor = Color.Black)) {
-            Text("Добавить напоминание!")
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = mainSecondColor,
+                contentColor = Color.Black
+            )
+        ) {
+            Text("Добавить напоминание", color = mainTextColor)
         }}}
 

@@ -17,14 +17,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaEntity
 import com.sagirov.ilovedog.ViewModels.DogsBreedEncyclopediaViewModel
 import com.sagirov.ilovedog.ViewModels.DogsBreedEncyclopediaViewModelFactory
 import com.sagirov.ilovedog.ui.theme.encyclopediaDogBarColor
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
+import com.sagirov.ilovedog.ui.theme.mainTextColor
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.scopes.ActivityScoped
 
 @AndroidEntryPoint
 class DetailedDogActivity : ComponentActivity() {
@@ -49,15 +50,26 @@ class DetailedDogActivity : ComponentActivity() {
                 resImage = -578358347
             }
             setContent {
+                val systemUiController = rememberSystemUiController()
+                systemUiController.setSystemBarsColor(mainBackgroundColor)
                 Column(
                     Modifier
-                        .fillMaxSize().background(mainBackgroundColor)
-                        .verticalScroll(rememberScrollState(), enabled = true)) {
+                        .fillMaxSize()
+                        .background(mainBackgroundColor)
+                        .verticalScroll(rememberScrollState(), enabled = true)
+                ) {
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .background(encyclopediaDogBarColor), contentAlignment = Alignment.Center) {
-                        Text(dogsEncyclopedia[0].breedName, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                            .background(encyclopediaDogBarColor),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            dogsEncyclopedia[0].breedName,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = mainTextColor
+                        )
                     }
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         if (resImage != -578358347){
@@ -69,66 +81,125 @@ class DetailedDogActivity : ComponentActivity() {
                         Modifier
                             .fillMaxWidth()
                             .background(encyclopediaDogBarColor), contentAlignment = Alignment.Center) {
-                        Text("Происхождение", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            "Происхождение",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = mainTextColor
+                        )
                     }
                     Row(Modifier.padding(start = 10.dp)) {
-                        Text(text = "Место", fontWeight = FontWeight.Bold)
-                        Text(text = dogsEncyclopedia[0].origin, Modifier.padding(start = 41.dp))
+                        Text(text = "Место", fontWeight = FontWeight.Bold, color = mainTextColor)
+                        Text(
+                            text = dogsEncyclopedia[0].origin,
+                            Modifier.padding(start = 41.dp),
+                            color = mainTextColor
+                        )
                     }
                     Box(
                         Modifier
                             .fillMaxWidth()
                             .background(encyclopediaDogBarColor), contentAlignment = Alignment.Center) {
-                        Text("Характеристики", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            "Характеристики",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = mainTextColor
+                        )
                     }
                     Row(Modifier.padding(start = 10.dp)) {
-                        Text(text = "Рост", fontWeight = FontWeight.Bold)
+                        Text(text = "Рост", fontWeight = FontWeight.Bold, color = mainTextColor)
                         Column(Modifier.padding(start = 50.dp)) {
-                           Text(text = "Кобели")
-                           Text(text = "Суки")
+                            Text(text = "Кобели", color = mainTextColor)
+                            Text(text = "Суки", color = mainTextColor)
                         }
                         Column(Modifier.padding(start = 50.dp)) {
-                            Text(text = dogsEncyclopedia[0].male_height, Modifier.padding(start = 50.dp))
-                            Text(text = dogsEncyclopedia[0].female_height, Modifier.padding(start = 50.dp))
+                            Text(
+                                text = dogsEncyclopedia[0].male_height,
+                                Modifier.padding(start = 50.dp),
+                                color = mainTextColor
+                            )
+                            Text(
+                                text = dogsEncyclopedia[0].female_height,
+                                Modifier.padding(start = 50.dp),
+                                color = mainTextColor
+                            )
                         }
 
                     }
                     Row(Modifier.padding(start = 10.dp)) {
-                        Text(text = "Масса", fontWeight = FontWeight.Bold)
+                        Text(text = "Масса", fontWeight = FontWeight.Bold, color = mainTextColor)
                         Column(Modifier.padding(start = 40.dp, top = 5.dp)) {
-                            Text(text = "Кобели")
-                            Text(text = "Суки")
+                            Text(text = "Кобели", color = mainTextColor)
+                            Text(text = "Суки", color = mainTextColor)
                         }
                         Column(Modifier.padding(start = 50.dp, top = 5.dp)) {
-                            Text(text = dogsEncyclopedia[0].male_weight, Modifier.padding(start = 50.dp))
-                            Text(text = dogsEncyclopedia[0].female_weight, Modifier.padding(start = 50.dp))
+                            Text(
+                                text = dogsEncyclopedia[0].male_weight,
+                                Modifier.padding(start = 50.dp),
+                                color = mainTextColor
+                            )
+                            Text(
+                                text = dogsEncyclopedia[0].female_weight,
+                                Modifier.padding(start = 50.dp),
+                                color = mainTextColor
+                            )
                         }
                     }
                     Row(Modifier.padding(top = 5.dp, start = 10.dp)) {
-                        Text(text = "Цвета", fontWeight = FontWeight.Bold)
-                        Text(text = dogsEncyclopedia[0].colors, Modifier.padding(start = 40.dp))
+                        Text(text = "Цвета", fontWeight = FontWeight.Bold, color = mainTextColor)
+                        Text(
+                            text = dogsEncyclopedia[0].colors,
+                            Modifier.padding(start = 40.dp),
+                            color = mainTextColor
+                        )
                     }
                     Row(Modifier.padding(top = 5.dp, start = 10.dp)) {
-                        Text(text = "Срок \nжизни", fontWeight = FontWeight.Bold)
-                        Text(text = dogsEncyclopedia[0].lifeSpan, Modifier.padding(start = 37.dp))
+                        Text(
+                            text = "Срок \nжизни",
+                            fontWeight = FontWeight.Bold,
+                            color = mainTextColor
+                        )
+                        Text(
+                            text = dogsEncyclopedia[0].lifeSpan,
+                            Modifier.padding(start = 37.dp),
+                            color = mainTextColor
+                        )
                     }
                     Row(Modifier.padding(top = 5.dp, start = 10.dp)) {
-                        Text(text = "Тип", fontWeight = FontWeight.Bold)
-                        Text(text = dogsEncyclopedia[0].type, Modifier.padding(start = 57.dp))
+                        Text(text = "Тип", fontWeight = FontWeight.Bold, color = mainTextColor)
+                        Text(
+                            text = dogsEncyclopedia[0].type,
+                            Modifier.padding(start = 57.dp),
+                            color = mainTextColor
+                        )
                     }
                     Row(Modifier.padding(top = 5.dp, start = 10.dp)) {
-                        Text(text = "Поводок", fontWeight = FontWeight.Bold)
-                        Text(text = dogsEncyclopedia[0].litterSize, Modifier.padding(start = 25.dp))
+                        Text(text = "Поводок", fontWeight = FontWeight.Bold, color = mainTextColor)
+                        Text(
+                            text = dogsEncyclopedia[0].litterSize,
+                            Modifier.padding(start = 25.dp),
+                            color = mainTextColor
+                        )
                     }
                     Box(
                         Modifier
                             .fillMaxWidth()
                             .background(encyclopediaDogBarColor), contentAlignment = Alignment.Center) {
-                        Text("Другие классификации", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            "Другие классификации",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = mainTextColor
+                        )
                     }
                     Row(Modifier.padding(start = 10.dp)) {
-                        Text(text = "Группы", fontWeight = FontWeight.Bold)
-                        Text(text = dogsEncyclopedia[0].breedGroup, Modifier.padding(start = 35.dp))
+                        Text(text = "Группы", fontWeight = FontWeight.Bold, color = mainTextColor)
+                        Text(
+                            text = dogsEncyclopedia[0].breedGroup,
+                            Modifier.padding(start = 35.dp),
+                            color = mainTextColor
+                        )
                     }
                 }
             }

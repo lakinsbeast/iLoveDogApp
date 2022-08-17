@@ -2,7 +2,6 @@ package com.sagirov.ilovedog.Activities
 
 import android.Manifest
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.icu.text.SimpleDateFormat
@@ -17,6 +16,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -36,21 +36,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.DogsApplication
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.*
+import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
+import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoViewModel
+import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoViewModelFactory
+import com.sagirov.ilovedog.PreferencesUtils
+import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
+import com.sagirov.ilovedog.ui.theme.mainTextColor
+import com.sagirov.ilovedog.ui.theme.textFieldUnFocusedIndicatorColor
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class NewPetActivity : ComponentActivity() {
     private val PREF_NAME = "first_launch"
-    private lateinit var prefs: SharedPreferences
+
+    @Inject
+    private var newPrefs: PreferencesUtils = PreferencesUtils(this)
+
     private var camera_uri: Uri? = null
     private var cameraUriPhoto = mutableStateOf("")
     private var cameraUriToUpdate = mutableStateOf("")
@@ -63,25 +73,37 @@ class NewPetActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
-        val frstLaunchEdit = prefs.edit()
         val intentID = mutableStateOf(intent.getIntExtra("id", -543253425))
         var petName =  mutableStateOf("")
 
         setContent {
+            val systemUiController = rememberSystemUiController()
+            systemUiController.setSystemBarsColor(mainBackgroundColor)
             val dialogChooseActive = remember { mutableStateOf(false) }
 
-            var petNameBreed = remember { mutableStateOf("")}
-            var petAge = remember { mutableStateOf("")}
-            var petAgeMonth = remember { mutableStateOf("")}
-            var petPaddock = remember { mutableStateOf("")}
-            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            var petNameBreed = remember { mutableStateOf("") }
+            var petAge = remember { mutableStateOf("") }
+            var petAgeMonth = remember { mutableStateOf("") }
+            var petPaddock = remember { mutableStateOf("") }
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .background(mainBackgroundColor),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 if (cameraUriPhoto.value.isNotBlank() /*&& camera_uri != null*/) {
-                    GlideImage(Uri.parse(cameraUriPhoto.value.toString()), contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
-                        .size(100.dp))
+                    GlideImage(
+                        Uri.parse(cameraUriPhoto.value.toString()),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(100.dp)
+                    )
                 }
                 if (dialogChooseActive.value) {
-                    AlertDialog(onDismissRequest = { dialogChooseActive.value = false },
+                    AlertDialog(
+                        onDismissRequest = { dialogChooseActive.value = false },
                         buttons = {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 OutlinedButton(
@@ -91,14 +113,13 @@ class NewPetActivity : ComponentActivity() {
                                     },
                                     Modifier
                                         .height(60.dp)
-                                        .fillMaxWidth()
-                                    ,shape = RoundedCornerShape(0),
+                                        .fillMaxWidth(),shape = RoundedCornerShape(0),
                                     colors = ButtonDefaults.buttonColors(
                                         backgroundColor = mainSecondColor,
                                         contentColor = Color.Black
                                     ), contentPadding = PaddingValues(0.dp)
                                 ) {
-                                    Text(text = "Галерея")
+                                    Text(text = "Галерея", color = mainTextColor)
                                 }
                                 OutlinedButton(
                                     onClick = {
@@ -118,21 +139,20 @@ class NewPetActivity : ComponentActivity() {
                                     },
                                     Modifier
                                         .height(60.dp)
-                                        .fillMaxWidth()
-                                    ,shape = RoundedCornerShape(0),
+                                        .fillMaxWidth(),shape = RoundedCornerShape(0),
                                     colors = ButtonDefaults.buttonColors(
                                         backgroundColor = mainSecondColor,
                                         contentColor = Color.Black
                                     ), contentPadding = PaddingValues(0.dp)
                                 ) {
-                                    Text(text = "Камера")
+                                    Text(text = "Камера", color = mainTextColor)
                                 }
                             }
                         })
                 }
                 OutlinedButton(onClick = {
-                     dialogChooseActive.value = true
-                    },
+                    dialogChooseActive.value = true
+                },
                     Modifier
                         .padding(
                             start = 20.dp,
@@ -145,12 +165,29 @@ class NewPetActivity : ComponentActivity() {
                             shape = RoundedCornerShape(50)
                         )
                         .clip(RoundedCornerShape(50)),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = mainSecondColor, contentColor = Color.Black)) {
-                    Text("Фото")
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = mainSecondColor,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text("Фото", color = mainTextColor)
                 }
-                TextField(label = { Text(text = "Имя питомца:", fontSize = 15.sp)}, value = petName.value, onValueChange = {petName.value = it},
-                    colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, focusedIndicatorColor = Color.Black,
-                    focusedLabelColor = Color.Black, cursorColor = Color.Black), singleLine = true)
+                TextField(label = {
+                    Text(
+                        text = "Имя питомца:",
+                        fontSize = 15.sp,
+                        color = mainTextColor
+                    )
+                }, value = petName.value, onValueChange = { petName.value = it },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        focusedIndicatorColor = mainTextColor,
+                        focusedLabelColor = mainTextColor,
+                        cursorColor = mainTextColor,
+                        textColor = mainTextColor,
+                        unfocusedIndicatorColor = textFieldUnFocusedIndicatorColor
+                    ), singleLine = true
+                )
                 // ПОКА ЧТО УДАЛИЛ, ИБО ЛИШНЕЕ, НАДО ПО-ДРУГОМУ ДОБАВЛЯТЬ ДАТУ РОЖДЕНИЯ!
 //                Row() {
 //                    TextField(keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),
@@ -158,29 +195,73 @@ class NewPetActivity : ComponentActivity() {
 //                    TextField(keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent),
 //                        value = petAgeMonth.value, onValueChange = {petAgeMonth.value = it}, label = {Text("Месяцев")}, modifier = Modifier.width((screenWidth / 2.79).dp))
 //                }
-                TextField(placeholder = { Text(text = "Порода питомца:", fontSize = 15.sp)},value = petNameBreed.value, onValueChange = {petNameBreed.value = it},
-                    colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, focusedIndicatorColor = Color.Black,
-                        focusedLabelColor = Color.Black, cursorColor = Color.Black), singleLine = true)
-                TextField(placeholder = { Text(text = "Время выгула питомца?(минут):", fontSize = 15.sp)}, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent, focusedIndicatorColor = Color.Black,
-                        focusedLabelColor = Color.Black, cursorColor = Color.Black),
-                    value = petPaddock.value, onValueChange = {petPaddock.value = it}, singleLine = true)
-                OutlinedButton(onClick = {
-                    if ((/*petAge.value!= "" &&*/ petName.value != "" && petNameBreed.value != "" && petPaddock.value != "")) {
-                        if (petPaddock.value.contains("[0-999]".toRegex()) && !petPaddock.value.contains(" ")) {
-                            petPaddock.value = (petPaddock.value.toLong()*60000).toString()
-                            frstLaunchEdit.putBoolean("firstOpen", false).apply()
-                            dogsInfoViewModel.insertDogProfile(DogsInfoEntity(0,petName.value,Calendar.getInstance().time,
-                                petPaddock.value.toLong(),Calendar.getInstance().time, petNameBreed.value,"Сука",
-                                petPaddock.value.toLong(), 56,cameraUriPhoto.value))
-                            startActivity(Intent(this@NewPetActivity, MainActivity::class.java))
-                            finish()
+                TextField(placeholder = {
+                    Text(
+                        text = "Порода питомца:",
+                        fontSize = 15.sp,
+                        color = mainTextColor
+                    )
+                }, value = petNameBreed.value, onValueChange = { petNameBreed.value = it },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        focusedIndicatorColor = mainTextColor,
+                        focusedLabelColor = mainTextColor,
+                        cursorColor = mainTextColor,
+                        textColor = mainTextColor,
+                        unfocusedIndicatorColor = textFieldUnFocusedIndicatorColor
+                    ), singleLine = true
+                )
+                TextField(placeholder = {
+                    Text(
+                        text = "Время выгула питомца?(минут):",
+                        fontSize = 15.sp,
+                        color = mainTextColor
+                    )
+                },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        focusedIndicatorColor = mainTextColor,
+                        focusedLabelColor = mainTextColor,
+                        cursorColor = mainTextColor,
+                        textColor = mainTextColor,
+                        unfocusedIndicatorColor = textFieldUnFocusedIndicatorColor
+                    ),
+                    value = petPaddock.value,
+                    onValueChange = { petPaddock.value = it },
+                    singleLine = true
+                )
+                OutlinedButton(
+                    onClick = {
+                        if ((/*petAge.value!= "" &&*/ petName.value != "" && petNameBreed.value != "" && petPaddock.value != "")) {
+                            if (petPaddock.value.contains("[0-999]".toRegex()) && !petPaddock.value.contains(
+                                    " "
+                                )
+                            ) {
+                                petPaddock.value = (petPaddock.value.toLong() * 60000).toString()
+                                newPrefs.putBoolean(PREF_NAME, "firstOpen", false)
+                                dogsInfoViewModel.insertDogProfile(
+                                    DogsInfoEntity(
+                                        0,
+                                        petName.value,
+                                        Calendar.getInstance().time,
+                                        petPaddock.value.toLong(),
+                                        Calendar.getInstance().time,
+                                        petNameBreed.value,
+                                        "Сука",
+                                        petPaddock.value.toLong(),
+                                        56,
+                                        cameraUriPhoto.value
+                                    )
+                                )
+                                startActivity(Intent(this@NewPetActivity, MainActivity::class.java))
+                                finish()
+                            } else {
+                                Toast.makeText(this@NewPetActivity, "Неправильный формат времени выгула", Toast.LENGTH_LONG).show()
+                            }
                         } else {
-                            Toast.makeText(this@NewPetActivity, "Неправильный формат времени выгула", Toast.LENGTH_LONG).show()
-                        }
-                    } else {
-                        Toast.makeText(this@NewPetActivity, "Заполните все поля", Toast.LENGTH_LONG).show()
-                    } },
+                            Toast.makeText(this@NewPetActivity, "Заполните все поля", Toast.LENGTH_LONG).show()
+                        } },
                     Modifier
                         .padding(
                             start = 20.dp,
@@ -194,7 +275,7 @@ class NewPetActivity : ComponentActivity() {
                         )
                         .clip(RoundedCornerShape(50)),
                     colors = ButtonDefaults.buttonColors(backgroundColor = mainSecondColor, contentColor = Color.Black)) {
-                    Text("Добавить питомца")
+                    Text("Добавить питомца", color = mainTextColor)
                 }
                 if (intentID.value != -543253425) {
                     dogsInfoViewModel.getAllDogsProfiles.observe(this@NewPetActivity) {
@@ -210,18 +291,18 @@ class NewPetActivity : ComponentActivity() {
                         if ((petName.value != "" && petNameBreed.value != "" && petPaddock.value != "")) {
                             if (petPaddock.value.contains("[0-999]".toRegex()) && !petPaddock.value.contains(" ")) {
                                 dogsInfoViewModel.updateDogProfile(
-                                DogsInfoEntity(dogsProfileArray[intentID.value].id,
-                                    petName.value,
-                                    dogsProfileArray[intentID.value].dateBirth,
-                                    (petPaddock.value.toLong()*60000),
-                                    dogsProfileArray[intentID.value].lastWalk,
-                                    petNameBreed.value,
-                                    dogsProfileArray[intentID.value].gender,
-                                    (petPaddock.value.toLong()*60000),
-                                    dogsProfileArray[intentID.value].weight,
-                                    cameraUriToUpdate.value))
-                            startActivity(Intent(this@NewPetActivity, MainActivity::class.java))
-                            finish()
+                                    DogsInfoEntity(dogsProfileArray[intentID.value].id,
+                                        petName.value,
+                                        dogsProfileArray[intentID.value].dateBirth,
+                                        (petPaddock.value.toLong()*60000),
+                                        dogsProfileArray[intentID.value].lastWalk,
+                                        petNameBreed.value,
+                                        dogsProfileArray[intentID.value].gender,
+                                        (petPaddock.value.toLong()*60000),
+                                        dogsProfileArray[intentID.value].weight,
+                                        cameraUriToUpdate.value))
+                                startActivity(Intent(this@NewPetActivity, MainActivity::class.java))
+                                finish()
                             } else {
                                 Toast.makeText(this@NewPetActivity, "Неправильный формат времени выгула", Toast.LENGTH_LONG).show()
                             }
@@ -241,7 +322,7 @@ class NewPetActivity : ComponentActivity() {
                             )
                             .clip(RoundedCornerShape(50)),
                         colors = ButtonDefaults.buttonColors(backgroundColor = mainSecondColor, contentColor = Color.Black)) {
-                        Text("Обновить питомца")
+                        Text("Обновить питомца", color = mainTextColor)
                     }
                     OutlinedButton(onClick = {
                         if (dogsProfileArray.size > 1) {
@@ -264,7 +345,7 @@ class NewPetActivity : ComponentActivity() {
                             )
                             .clip(RoundedCornerShape(50)),
                         colors = ButtonDefaults.buttonColors(backgroundColor = mainSecondColor, contentColor = Color.Black)) {
-                        Text("Удалить питомца")
+                        Text("Удалить питомца", color = mainTextColor)
                     }
                 }
 

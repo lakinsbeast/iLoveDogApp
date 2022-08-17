@@ -22,12 +22,14 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.ui.theme.homeButtonColor
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
+import com.sagirov.ilovedog.ui.theme.mainTextColor
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.launch
+
 @AndroidEntryPoint
 class DogNutritionActivity : ComponentActivity() {
     @OptIn(ExperimentalPagerApi::class)
@@ -46,15 +48,27 @@ class DogNutritionActivity : ComponentActivity() {
         val illegalProducts = listOf("Хлебобулочные изделия", "Сладости", "Макароны", "Жирное мясо - нежелательно", "Соленья и консервация", "Грибы",
             "Жареное", "Кукураз и крупа", "Соевые продукть", "Винограды", "Чеснок, лук", "Специи", "Соль", "Кофе, чай", "Зеленые томаты", "Авокадо")
         setContent {
+            val systemUiController = rememberSystemUiController()
+            systemUiController.setSystemBarsColor(mainBackgroundColor)
             var pagerState = rememberPagerState()
             val scope = rememberCoroutineScope()
             Column {
-                ScrollableTabRow(selectedTabIndex = pagerState.currentPage, backgroundColor = mainBackgroundColor, contentColor = Color.Black,
-                indicator = {
-                    TabRowDefaults.Indicator(Modifier.pagerTabIndicatorOffset(pagerState, tabPositions = it))
-                }) {
+                ScrollableTabRow(selectedTabIndex = pagerState.currentPage,
+                    backgroundColor = mainBackgroundColor,
+                    contentColor = Color.Black,
+                    indicator = {
+                        TabRowDefaults.Indicator(
+                            Modifier.pagerTabIndicatorOffset(
+                                pagerState,
+                                tabPositions = it
+                            )
+                        )
+                    }) {
                     titles.forEachIndexed { index, s ->
-                        Tab(text = { Text(s) },selected = pagerState.currentPage == index, onClick = { scope.launch { pagerState.scrollToPage(index) } })
+                        Tab(
+                            text = { Text(s, color = mainTextColor) },
+                            selected = pagerState.currentPage == index,
+                            onClick = { scope.launch { pagerState.scrollToPage(index) } })
                     }
                 }
 //                if (tabRowState.value == 1) {
@@ -64,8 +78,11 @@ class DogNutritionActivity : ComponentActivity() {
 //                    }
 //                }
 //                }
-                HorizontalPager(count = 5, state = pagerState, modifier = Modifier.fillMaxSize().background(
-                    homeButtonColor)) {
+                HorizontalPager(count = 5, state = pagerState, modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        homeButtonColor
+                    )) {
                     when (it) {
                         0 -> { TitleText() }
                         1 -> MeatTitle(list = meat)
@@ -92,9 +109,21 @@ fun TitleText() {
         Modifier
             .verticalScroll(rememberScrollState())
             .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)) {
-        Text("Диета B.A.R.F означает две общие фразы: \"Биологически подходящая сырая пища\" и \"Кости и сырая пища\". Принцип диеты, основанной ветеринаром и диетологом доктором Яном Биллингхерстом, заключается в том, чтобы кормить собак тем рационом, на котором они эволюционировали - сырой пищей, состоящей из свежего, неприготовленного и дикого мяса и зелени. \n", fontSize = 20.sp)
-        Text("По мнению основателя системы кормления для животных БАРФ, собаки – это хищники, поэтому основой их питания должен являться природный рацион диких предков. Такая пища является полезной и здоровой для животных. А что касается сырых продуктов, по мнению автора этой методики кормления, пища после термической обработки утрачивает ряд питательных веществ, необходимых для организма, поэтому является бесполезной для животного. \n", fontSize = 20.sp)
-        Text("Приучать собаку к питанию по системе BARF нужно постепенно, соблюдая некоторые рекомендации создателя методики. Чтобы организм привык к такой пище, первое время за 30 минут до еды нужно давать собаке пребиотик и бифидобактерии, нормализующие кишечную микрофлору. Каждый новый продукт вводится постепенно, в небольшом количестве. Как только собака полностью перейдет на новый рацион, можно исключать лекарственные компоненты, так как они уже будут не нужны здоровому организму. ", fontSize = 20.sp)
+        Text(
+            "Диета B.A.R.F означает две общие фразы: \"Биологически подходящая сырая пища\" и \"Кости и сырая пища\". Принцип диеты, основанной ветеринаром и диетологом доктором Яном Биллингхерстом, заключается в том, чтобы кормить собак тем рационом, на котором они эволюционировали - сырой пищей, состоящей из свежего, неприготовленного и дикого мяса и зелени. \n",
+            fontSize = 20.sp,
+            color = mainTextColor
+        )
+        Text(
+            "По мнению основателя системы кормления для животных БАРФ, собаки – это хищники, поэтому основой их питания должен являться природный рацион диких предков. Такая пища является полезной и здоровой для животных. А что касается сырых продуктов, по мнению автора этой методики кормления, пища после термической обработки утрачивает ряд питательных веществ, необходимых для организма, поэтому является бесполезной для животного. \n",
+            fontSize = 20.sp,
+            color = mainTextColor
+        )
+        Text(
+            "Приучать собаку к питанию по системе BARF нужно постепенно, соблюдая некоторые рекомендации создателя методики. Чтобы организм привык к такой пище, первое время за 30 минут до еды нужно давать собаке пребиотик и бифидобактерии, нормализующие кишечную микрофлору. Каждый новый продукт вводится постепенно, в небольшом количестве. Как только собака полностью перейдет на новый рацион, можно исключать лекарственные компоненты, так как они уже будут не нужны здоровому организму. ",
+            fontSize = 20.sp,
+            color = mainTextColor
+        )
 
     }
 }
@@ -111,7 +140,7 @@ fun MeatTitle(list: List<String>) {
                             .background(mainSecondColor)
                             .padding(top = 20.dp, bottom = 20.dp),
                             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                            Text(it, fontSize = 20.sp)
+                            Text(it, fontSize = 20.sp, color = mainTextColor)
                         }
                     }
                 }

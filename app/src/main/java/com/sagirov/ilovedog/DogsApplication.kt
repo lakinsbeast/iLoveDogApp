@@ -15,17 +15,27 @@ import kotlinx.coroutines.SupervisorJob
 
 @HiltAndroidApp
 class DogsApplication: Application() {
-    val applicationScope = CoroutineScope(SupervisorJob())
+    private val applicationScope = CoroutineScope(SupervisorJob())
 
-    val DocumentAppDatabase by lazy { DocumentDatabase.getDb(this, applicationScope) }
+    private val DocumentAppDatabase by lazy { DocumentDatabase.getDb(this, applicationScope) }
     val DocumentAppRepo by lazy { DocumentRepository(DocumentAppDatabase.getDao()) }
 
-    val DogsBreedEncyclopediaAppDatabase by lazy { DogsBreedEncyclopediaDatabase.getDb(this, applicationScope) }
-    val DogsBreedEncyclopediaAppRepo by lazy { DogsBreedEncyclopediaRepository(DogsBreedEncyclopediaAppDatabase.getDao()) }
+    private val DogsBreedEncyclopediaAppDatabase by lazy {
+        DogsBreedEncyclopediaDatabase.getDb(
+            this,
+            applicationScope
+        )
+    }
+    val DogsBreedEncyclopediaAppRepo by lazy {
+        DogsBreedEncyclopediaRepository(
+            DogsBreedEncyclopediaAppDatabase.getDao()
+        )
+    }
 
-    val DogsInfoAppDatabase by lazy { DogsInfoDatabase.getDb(this, applicationScope) }
+    private val DogsInfoAppDatabase by lazy { DogsInfoDatabase.getDb(this, applicationScope) }
     val DogsInfoRepo by lazy { DogsInfoRepository(DogsInfoAppDatabase.getDao()) }
 
-    val VaccinationAppDatabase by lazy { VaccinationDatabase.getDb(this, applicationScope) }
+    private val VaccinationAppDatabase by lazy { VaccinationDatabase.getDb(this, applicationScope) }
     val VaccinationAppRepo by lazy { VaccinationRepository(VaccinationAppDatabase.getDao()) }
+
 }

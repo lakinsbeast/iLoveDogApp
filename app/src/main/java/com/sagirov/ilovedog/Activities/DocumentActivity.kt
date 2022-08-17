@@ -15,6 +15,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -22,7 +23,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
-import androidx.compose.runtime.*
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,16 +34,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ViewModels.DocumentViewModel
 import com.sagirov.ilovedog.ViewModels.DocumentViewModelFactory
 import com.sagirov.ilovedog.ui.theme.homeButtonColor
+import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
+import com.sagirov.ilovedog.ui.theme.mainTextColor
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.scopes.ActivityScoped
 import java.io.File
 
 @AndroidEntryPoint
@@ -129,22 +134,26 @@ class DocumentActivity : ComponentActivity() {
         }
 
         setContent {
-//            val systemUiController: SystemUiController = rememberSystemUiController()
+            val systemUiController = rememberSystemUiController()
+            systemUiController.setSystemBarsColor(mainBackgroundColor)
             val dialogState = remember { mutableStateOf(false) }
             val dialogChooseActive = remember { mutableStateOf(false) }
 
-                Column(Modifier.fillMaxSize()) {
-                    if (isImageOpened.value) {
-                        Box(Modifier.fillMaxSize()) {
-                            IconButton(onClick = { isImageOpened.value = false }) {
-                                GlideImage(Uri.parse(keyUriDocument), contentScale = ContentScale.Fit)
-                            }
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .background(mainBackgroundColor)) {
+                if (isImageOpened.value) {
+                    Box(Modifier.fillMaxSize()) {
+                        IconButton(onClick = { isImageOpened.value = false }) {
+                            GlideImage(Uri.parse(keyUriDocument), contentScale = ContentScale.Fit)
                         }
-                    } else {
                     }
-                    if (dialogState.value) {
-                        AlertDialog(onDismissRequest = { dialogState.value = false },
-                            buttons = {
+                }
+                if (dialogState.value) {
+                    AlertDialog(
+                        onDismissRequest = { dialogState.value = false },
+                        buttons = {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     OutlinedButton(
                                         onClick = {
@@ -183,9 +192,12 @@ class DocumentActivity : ComponentActivity() {
                                     ) {
                                         when {
                                             File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "document" ->
-                                                Text(text = "Открыть документ")
+                                                Text(
+                                                    text = "Открыть документ",
+                                                    color = mainTextColor
+                                                )
                                             File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "image" ->
-                                                Text(text = "Открыть фото")
+                                                Text(text = "Открыть фото", color = mainTextColor)
                                         }
                                     }
                                     OutlinedButton(
@@ -204,9 +216,12 @@ class DocumentActivity : ComponentActivity() {
                                     ) {
                                         when {
                                             File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "document" ->
-                                                Text(text = "Удалить документ")
+                                                Text(
+                                                    text = "Удалить документ",
+                                                    color = mainTextColor
+                                                )
                                             File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "image" ->
-                                                Text(text = "Удалить фото")
+                                                Text(text = "Удалить фото", color = mainTextColor)
                                         }
 //                                        Text(text = "Удалить документ")
                                     }
@@ -225,15 +240,33 @@ class DocumentActivity : ComponentActivity() {
                                         ), contentPadding = PaddingValues(0.dp)
                                     ) {
                                         Row() {
-                                            TextField(label = { Text(text = "Название:", fontSize = 15.sp)}, value = newDocumentName.value, onValueChange = {newDocumentName.value = it},
-                                                colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent))
+                                            TextField(label = {
+                                                Text(
+                                                    text = "Название:",
+                                                    fontSize = 15.sp,
+                                                    color = mainTextColor
+                                                )
+                                            },
+                                                value = newDocumentName.value,
+                                                onValueChange = { newDocumentName.value = it },
+                                                colors = TextFieldDefaults.textFieldColors(
+                                                    backgroundColor = Color.Transparent
+                                                )
+                                            )
                                             IconButton(onClick = {
                                                 if (newDocumentName.value.isNotEmpty() || newDocumentName.value.isNotBlank()) {
-                                                    documentViewModeld.updateDocumentFile(allDocsIds[idDocument.value], mapOf(keyUriDocument to newDocumentName.value))
+                                                    documentViewModeld.updateDocumentFile(
+                                                        allDocsIds[idDocument.value],
+                                                        mapOf(keyUriDocument to newDocumentName.value)
+                                                    )
                                                     dialogState.value = false
                                                     newDocumentName.value = ""
                                                 } else {
-                                                    Toast.makeText(this@DocumentActivity, "Не удалось обновить название", Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(
+                                                        this@DocumentActivity,
+                                                        "Не удалось обновить название",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
                                                 }
                                             }) {
                                                 Icon(
@@ -295,7 +328,7 @@ class DocumentActivity : ComponentActivity() {
                                                 contentColor = Color.Black
                                             ), contentPadding = PaddingValues(0.dp)
                                         ) {
-                                            Text(text = "Галерея")
+                                            Text(text = "Галерея", color = mainTextColor)
                                         }
                                         OutlinedButton(
                                             onClick = {
@@ -312,7 +345,7 @@ class DocumentActivity : ComponentActivity() {
                                                 contentColor = Color.Black
                                             ), contentPadding = PaddingValues(0.dp)
                                         ) {
-                                            Text(text = "Документ")
+                                            Text(text = "Документ", color = mainTextColor)
                                         }
                                     }
                                 })
@@ -335,7 +368,7 @@ class DocumentActivity : ComponentActivity() {
                             ), contentPadding = PaddingValues(0.dp)
                         ) {
                             Row(Modifier.padding(start = 30.dp, end = 30.dp)){
-                                Text("Новый документ/анализ!")
+                                Text("Новый документ/анализ!", color = mainTextColor)
                             }
                         }
                     }
@@ -365,11 +398,17 @@ class DocumentActivity : ComponentActivity() {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     when {
                                         File(Uri.parse(item).path.toString()).name.split(":")[0] == "document" ->
-                                            Icon(imageVector = ImageVector.vectorResource(R.drawable.documenticon48px), contentDescription = "")
+                                            Icon(
+                                                imageVector = ImageVector.vectorResource(R.drawable.documenticon48px),
+                                                contentDescription = "", tint = mainTextColor
+                                            )
                                         File(Uri.parse(item).path.toString()).name.split(":")[0] == "image" ->
-                                            Icon(imageVector = ImageVector.vectorResource(R.drawable.imageicon48px), contentDescription = "")
+                                            Icon(
+                                                imageVector = ImageVector.vectorResource(R.drawable.imageicon48px),
+                                                contentDescription = "", tint = mainTextColor
+                                            )
                                     }
-                                    Text(text = (allDocsValues[index]))
+                                    Text(text = (allDocsValues[index]), color = mainTextColor)
                                 }
                             }
                         }

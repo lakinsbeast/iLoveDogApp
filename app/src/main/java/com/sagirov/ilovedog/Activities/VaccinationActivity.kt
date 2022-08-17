@@ -27,14 +27,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.VaccinationsEntity
 import com.sagirov.ilovedog.ViewModels.VaccinationViewModel
 import com.sagirov.ilovedog.ViewModels.VaccinationViewModelFactory
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
+import com.sagirov.ilovedog.ui.theme.mainTextColor
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.scopes.ActivityScoped
 import java.util.*
 
 @ExperimentalMaterialApi
@@ -58,10 +59,18 @@ class VaccinationActivity : ComponentActivity() {
         }
 
         setContent {
-            val dialogDeleteVaccine = remember { mutableStateOf(false)}
+            val systemUiController = rememberSystemUiController()
+            systemUiController.setSystemBarsColor(mainBackgroundColor)
+            val dialogDeleteVaccine = remember { mutableStateOf(false) }
             Scaffold(topBar = {}, floatingActionButton = {
-                FloatingActionButton(onClick = { startActivity(Intent(this@VaccinationActivity,
-                    NewVaccineActivity::class.java))}, content = {
+                FloatingActionButton(onClick = {
+                    startActivity(
+                        Intent(
+                            this@VaccinationActivity,
+                            NewVaccineActivity::class.java
+                        )
+                    )
+                }, content = {
                     Icon(
                         Icons.Filled.Add,
                         contentDescription = ""
@@ -79,14 +88,13 @@ class VaccinationActivity : ComponentActivity() {
                                 },
                                 Modifier
                                     .height(60.dp)
-                                    .fillMaxWidth()
-                                ,shape = RoundedCornerShape(0),
+                                    .fillMaxWidth(),shape = RoundedCornerShape(0),
                                 colors = ButtonDefaults.buttonColors(
                                     backgroundColor = mainSecondColor,
                                     contentColor = Color.Black
                                 ), contentPadding = PaddingValues(0.dp)
                             ) {
-                                Text(text = "Удалить")
+                                Text(text = "Удалить", color = mainTextColor)
                             }
                         }
                     })
@@ -96,9 +104,14 @@ class VaccinationActivity : ComponentActivity() {
                         Modifier
                             .fillMaxSize()
                             .background(mainBackgroundColor), verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "Добавьте новую вакцинацию, нажав на кнопку снизу справа",
-                            fontWeight = FontWeight.Bold, fontSize = 40.sp, textAlign = TextAlign.Center)
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "Добавьте новую вакцинацию, нажав на кнопку снизу справа",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 40.sp,
+                            textAlign = TextAlign.Center,
+                            color = mainTextColor
+                        )
                     }
                 } else {
                     Column(
@@ -109,22 +122,38 @@ class VaccinationActivity : ComponentActivity() {
                             itemsIndexed(vaccinationList) { index, item ->
                                 Card(onClick = {dialogDeleteVaccine.value = true; idOfColumn = vaccinationList[index].id} ,modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 10.dp, start = 10.dp, end = 10.dp, top = 5.dp), elevation = 5.dp
-                                    , backgroundColor = mainSecondColor) {
+                                    .padding(bottom = 10.dp, start = 10.dp, end = 10.dp, top = 5.dp), elevation = 5.dp, backgroundColor = mainSecondColor) {
                                     Column(modifier = Modifier.padding(start = 10.dp)) {
-                                        Text(text = vaccinationList[index].name, fontWeight = FontWeight.SemiBold, fontSize = 20.sp,
-                                            modifier = Modifier.padding(top = 5.dp, bottom = 5.dp))
+                                        Text(
+                                            text = vaccinationList[index].name,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 20.sp,
+                                            modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+                                            color = mainTextColor
+                                        )
                                         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(bottom = 5.dp)) {
                                             Column() {
-                                                Text(text = "Название лекарства", color = Color.Gray)
-                                                Text(vaccinationList[index].drugName, fontSize = 17.sp, fontWeight = FontWeight.Medium)
+                                                Text(
+                                                    text = "Название лекарства",
+                                                    color = Color.Gray
+                                                )
+                                                Text(
+                                                    vaccinationList[index].drugName,
+                                                    fontSize = 17.sp,
+                                                    fontWeight = FontWeight.Medium,
+                                                    color = mainTextColor
+                                                )
                                             }
                                             Column(modifier = Modifier.padding(end = 10.dp)) {
                                                 Text(text = "Дата вакцинации", color = Color.Gray)
-                                                Text(dateFormatter(vaccinationList[index].dateOfVaccinations),
-                                                    fontSize = 17.sp, fontWeight = FontWeight.Medium)
+                                                Text(
+                                                    dateFormatter(vaccinationList[index].dateOfVaccinations),
+                                                    fontSize = 17.sp,
+                                                    fontWeight = FontWeight.Medium,
+                                                    color = mainTextColor
+                                                )
                                             }
                                         }
                                     }
