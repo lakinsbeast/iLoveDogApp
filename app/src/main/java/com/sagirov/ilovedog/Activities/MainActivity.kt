@@ -484,7 +484,7 @@ class MainActivity : ComponentActivity() {
                                         DocumentActivity::class.java
                                     )
                                 )
-                            }) {
+                            }, shape = RoundedCornerShape(0.dp)) {
                                 Row(
                                     Modifier
                                         .fillMaxWidth()
@@ -519,7 +519,7 @@ class MainActivity : ComponentActivity() {
                                         VaccinationActivity::class.java
                                     )
                                 )
-                            }) {
+                            }, shape = RoundedCornerShape(0.dp)) {
                                 Row(
                                     Modifier
                                         .fillMaxWidth()
@@ -603,7 +603,7 @@ class MainActivity : ComponentActivity() {
                                         AboutAuthorPageActivity::class.java
                                     )
                                 )
-                            }) {
+                            }, shape = RoundedCornerShape(0.dp)) {
                                 Row(
                                     Modifier
                                         .fillMaxWidth()
@@ -638,7 +638,7 @@ class MainActivity : ComponentActivity() {
                                         DogNutritionActivity::class.java
                                     )
                                 )
-                            }) {
+                            }, shape = RoundedCornerShape(0.dp)) {
                                 Row(
                                     Modifier
                                         .fillMaxWidth()
@@ -730,20 +730,28 @@ class MainActivity : ComponentActivity() {
                     alertDelete.setNegativeButton("Нет") { dialog, _ ->
                         dialog.cancel()
                     }
-                    Card(onClick = {
-                        val alert = android.app.AlertDialog.Builder(this@MainActivity)
+                    Card(
+                        onClick = {
+                            val alert = android.app.AlertDialog.Builder(this@MainActivity)
 //                        alert.setTitle(it.value)
-                        alert.setMessage(it.value)
-                        alert.setCancelable(true)
-                        alert.setPositiveButton("Удалить") { _, _ ->
-                            alertDelete.create().show()
-                        }
-                        alert.create().show()
-                    }, Modifier.padding(top = 0.dp, bottom = 10.dp)) {
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .background(mainSecondColor)
-                            .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            alert.setMessage(it.value)
+                            alert.setCancelable(true)
+                            alert.setPositiveButton("Удалить") { _, _ ->
+                                alertDelete.create().show()
+                            }
+                            alert.create().show()
+                        },
+                        Modifier.padding(top = 0.dp, bottom = 10.dp),
+                        shape = RoundedCornerShape(0.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(mainSecondColor)
+                                .padding(start = 20.dp, end = 20.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 textReduces(it.value),
                                 fontWeight = FontWeight.Bold,
@@ -797,11 +805,15 @@ class MainActivity : ComponentActivity() {
                             alertDelete.create().show()
                         }
                         alert.create().show()
-                    }) {
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .background(mainSecondColor)
-                            .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    }, shape = RoundedCornerShape(0.dp)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(mainSecondColor)
+                                .padding(start = 20.dp, end = 20.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 textReduces(it.value),
                                 fontWeight = FontWeight.Bold,
@@ -855,11 +867,15 @@ class MainActivity : ComponentActivity() {
                             alertDelete.create().show()
                         }
                         alert.create().show()
-                    }) {
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .background(mainSecondColor)
-                            .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    }, shape = RoundedCornerShape(0.dp)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(mainSecondColor)
+                                .padding(start = 20.dp, end = 20.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 textReduces(it.value),
                                 fontWeight = FontWeight.Bold,
@@ -926,11 +942,15 @@ class MainActivity : ComponentActivity() {
                             alertDelete.create().show()
                         }
                         alert.create().show()
-                    }) {
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .background(mainSecondColor)
-                            .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    }, shape = RoundedCornerShape(0.dp)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(mainSecondColor)
+                                .padding(start = 20.dp, end = 20.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 textReduces(it.value),
                                 fontWeight = FontWeight.Bold,
@@ -981,14 +1001,18 @@ class MainActivity : ComponentActivity() {
                         alert.setMessage(it.value)
                         alert.setCancelable(true)
                         alert.setPositiveButton("Удалить") { _, _ ->
-                           alertDelete.create().show()
+                            alertDelete.create().show()
                         }
                         alert.create().show()
-                    }) {
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .background(healthBarPastReminderColor)
-                            .padding(start = 20.dp, end = 20.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    }, shape = RoundedCornerShape(0.dp)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(healthBarPastReminderColor)
+                                .padding(start = 20.dp, end = 20.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 textReduces(it.value),
                                 fontWeight = FontWeight.Bold,
@@ -1045,7 +1069,8 @@ class MainActivity : ComponentActivity() {
         )
         Card(
             shape = RoundedCornerShape(10.dp),
-            modifier = Modifier.padding(start = 15.dp, end = 15.dp)
+            modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+            border = BorderStroke(0.dp, Color.Black)
         ) {
             Row(
                 Modifier
@@ -1067,10 +1092,18 @@ class MainActivity : ComponentActivity() {
                         color = Color.Gray
                     )
                 }
-                CircularProgressIndicator(progress = resReverse.value, color = planProgressColor, strokeWidth = 5.dp)
+                CircularProgressIndicator(
+                    progress = resReverse.value,
+                    color = planProgressColor,
+                    strokeWidth = 5.dp
+                )
             }
         }
-        Card(modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 10.dp), shape = RoundedCornerShape(10.dp)) {
+        Card(
+            modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 10.dp),
+            shape = RoundedCornerShape(10.dp),
+            border = BorderStroke(0.dp, Color.Black)
+        ) {
             Row(
                 Modifier
                     .fillMaxWidth()
@@ -1205,11 +1238,16 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun ListRowDogs(model: DogsBreedEncyclopediaEntity) {
-        Card(onClick = {
-            val intent = Intent(this@MainActivity, DetailedDogActivity::class.java)
-            intent.putExtra("id", model.id)
-            startActivity(intent)
-        }, modifier = Modifier.padding(top = 10.dp))
+        Card(
+            onClick = {
+                val intent = Intent(this@MainActivity, DetailedDogActivity::class.java)
+                intent.putExtra("id", model.id)
+                startActivity(intent)
+            },
+            modifier = Modifier.padding(top = 10.dp),
+            border = BorderStroke(0.dp, Color.Black),
+            shape = RoundedCornerShape(0.dp)
+        )
         {
             Row(
                 Modifier
@@ -1305,15 +1343,21 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier.padding(start = 15.dp, end = 15.dp),
             color = mainTextColor
         )
-
+//        colors = ButtonDefaults.buttonColors(
+//            backgroundColor = homeButtonColor,
+//            contentColor = Color.Black
+//        )
         HorizontalPager(count = list.size, state = pagerState) {
             currentDogId.value = pagerState.currentPage
             Card(
                 onClick = {
                     val intent = Intent(ctx, NewPetActivity::class.java)
-                intent.putExtra("id", currentDogId.value)
-                startActivity(intent)}, elevation = 15.dp,
-                shape = RoundedCornerShape(15.dp), modifier = Modifier.padding(start = 15.dp, end = 15.dp)) {
+                    intent.putExtra("id", currentDogId.value)
+                    startActivity(intent)
+                }, elevation = 15.dp,
+                shape = RoundedCornerShape(15), border = BorderStroke(0.dp, Color.Black),
+                modifier = Modifier.padding(start = 15.dp, end = 15.dp)
+            ) {
                 Row(
                     Modifier
                         .fillMaxWidth()
