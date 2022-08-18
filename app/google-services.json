@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "54943790308",
+    "project_id": "ilovedogproj",
+    "storage_bucket": "ilovedogproj.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54943790308:android:7a46298367d866d68428f1",
+        "android_client_info": {
+          "package_name": "com.sagirov.ilovedog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "54943790308-a2q4m6414495plc2b9k6l5rq3mom56hj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sagirov.ilovedog",
+            "certificate_hash": "d2e7c7334bf89713bae2193405bda31bf4e248e3"
+          }
+        },
+        {
+          "client_id": "54943790308-61mto79tadn0qalscu1mcgb2thp575sa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzmmJq8KH25m2lGjT61OYQD50v4EqJIyo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "54943790308-61mto79tadn0qalscu1mcgb2thp575sa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

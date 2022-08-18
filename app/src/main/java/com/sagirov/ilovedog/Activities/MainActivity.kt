@@ -42,6 +42,10 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.connector.AnalyticsConnector
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.huawei.hms.analytics.HiAnalytics
@@ -56,6 +60,8 @@ import com.sagirov.ilovedog.PreferencesUtils
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ViewModels.DogsBreedEncyclopediaViewModel
 import com.sagirov.ilovedog.ViewModels.DogsBreedEncyclopediaViewModelFactory
+import com.sagirov.ilovedog.analytics.google.GMS
+import com.sagirov.ilovedog.analytics.huawei.HMS
 import com.sagirov.ilovedog.ui.theme.*
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
@@ -76,7 +82,12 @@ class MainActivity : ComponentActivity() {
 
     //    @Inject
 //    lateinit var prefs: SharedPreferences
-    private lateinit var instance: HiAnalyticsInstance
+    private lateinit var HMSinstance: HiAnalyticsInstance
+    private var HMSUtils: HMS = HMS()
+    private var GMSUtils: GMS = GMS()
+    private lateinit var GMSinstance: AnalyticsConnector
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
+
 
     @Inject
     private var newPrefs: PreferencesUtils = PreferencesUtils(this)
@@ -114,9 +125,16 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        HiAnalyticsTools.enableLog()
-        instance = HiAnalytics.getInstance(this)
-        instance.setAnalyticsEnabled(true)
+        if (HMSUtils.checkHuaweiApi(this)) {
+            HiAnalyticsTools.enableLog()
+            HMSinstance = HiAnalytics.getInstance(this)
+            HMSinstance.setAnalyticsEnabled(true)
+        }
+        if (GMSUtils.checkGoogleApi(this)) {
+            firebaseAnalytics = Firebase.analytics
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
+
+        }
 
         isNightMode.value = newPrefs.getBoolean(PREF_NIGHT_MODE, "isNightModeOn", false)
 

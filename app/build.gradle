@@ -3,7 +3,9 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.huawei.agconnect'
+    id 'com.google.gms.google-services'
 }
+
 
 android {
     compileSdk 32
@@ -56,6 +58,9 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
+    implementation platform('com.google.firebase:firebase-bom:30.3.2')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.huawei.hms:hianalytics:6.7.0.300'
 
     implementation "com.google.accompanist:accompanist-pager:0.25.0"
@@ -104,5 +109,5 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 }
 apply plugin: 'com.huawei.agconnect'
-
+apply plugin: 'com.google.gms.google-services'
 
