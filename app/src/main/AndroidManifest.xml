@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
+    <uses-sdk tools:overrideLibrary="com.huawei.agconnect.credential,com.huawei.agconnect.core,com.huawei.agconnect.https,com.huawei.agconnect.datastore" />
     <application
         android:name=".DogsApplication"
         android:allowBackup="true"
@@ -80,6 +80,12 @@
             android:name=".TimerService"
             android:enabled="true"
             android:exported="true" />
+
+        <meta-data
+            android:name="install_channel"
+            android:value="AppGallery">
+
+        </meta-data>
 
         <receiver
             android:name=".NotificationReceiver"

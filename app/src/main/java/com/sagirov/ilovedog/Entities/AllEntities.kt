@@ -52,6 +52,9 @@ data class VaccinationsEntity(
     val name: String,
     val drugName: String,
     val dateOfVaccinations: Long,
+//    val expirationDateOfVaccinations: Long,
+//    val veterinarianName: String,
+//    val vetClinicName: String,
 )
 @Entity
 data class Analyzes(

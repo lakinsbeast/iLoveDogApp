@@ -2,7 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
-//    id 'com.huawei.agconnect'
+    id 'com.huawei.agconnect'
 }
 
 android {
@@ -14,6 +14,8 @@ android {
         targetSdk 32
         versionCode 3
         versionName "1.03"
+        //если выскочит ошибка multidexчего-то там, то включить его
+//        multiDexEnabled = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -27,10 +29,9 @@ android {
     }
 
 
-
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -55,6 +56,8 @@ android {
 }
 
 dependencies {
+    implementation 'com.huawei.hms:hianalytics:6.7.0.300'
+
     implementation "com.google.accompanist:accompanist-pager:0.25.0"
 
     // If using indicators, also depend on
@@ -100,5 +103,6 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 }
+apply plugin: 'com.huawei.agconnect'
 
 

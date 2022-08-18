@@ -44,6 +44,9 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.huawei.hms.analytics.HiAnalytics
+import com.huawei.hms.analytics.HiAnalyticsInstance
+import com.huawei.hms.analytics.HiAnalyticsTools
 import com.sagirov.ilovedog.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaEntity
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
@@ -70,8 +73,10 @@ class MainActivity : ComponentActivity() {
     private val PREF_NAME_PET = "mypets"
     private val PREF_NAME_DATES = "dates"
     private val PREF_NIGHT_MODE = "night_mode"
-//    @Inject
+
+    //    @Inject
 //    lateinit var prefs: SharedPreferences
+    private lateinit var instance: HiAnalyticsInstance
 
     @Inject
     private var newPrefs: PreferencesUtils = PreferencesUtils(this)
@@ -109,6 +114,9 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        HiAnalyticsTools.enableLog()
+        instance = HiAnalytics.getInstance(this)
+        instance.setAnalyticsEnabled(true)
 
         isNightMode.value = newPrefs.getBoolean(PREF_NIGHT_MODE, "isNightModeOn", false)
 
