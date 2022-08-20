@@ -39,21 +39,71 @@ class DogNutritionActivity : ComponentActivity() {
         val tabRowState = mutableStateOf(0)
 
 //        val tabRowSecondState = mutableStateOf(0)
-        val titles = listOf("Примечание", "Мясо", "Кости", "Фрукты и овощи", "Запрещенные продукты!")
+        val titlesRu =
+            listOf("Примечание", "Мясо", "Кости", "Фрукты и овощи", "Запрещенные продукты!")
+        val titlesEn =
+            listOf("Примечание", "Мясо", "Кости", "Фрукты и овощи", "Запрещенные продукты!")
+
 //        val meatTitles = listOf("Грудина", "Филе", "Сердце","Трахея","Легкое","Рыба и яйца")
-        val meat = listOf("Говядина", "Телятина", "Мерлушка", "Печень", "Курятина и птица", "Дичина", "Рыба")
-        val bone = listOf("Сырые крылышки","Шейки","Спинка курицы","Крылья и шейки индюшки","Разнообразные птичьи субпродукты","Говяжья грудинка","Ребрышки",
-            "Хвосты", "Рыба")
-        val fruitsAndVegetables = listOf("Огурцы","Кольраби","Морковь","Банан","Груша","Персик","Клубника","Капуста","Кукуруза","Салат","Рукола")
-        val illegalProducts = listOf("Хлебобулочные изделия", "Сладости", "Макароны", "Жирное мясо - нежелательно", "Соленья и консервация", "Грибы",
-            "Жареное", "Кукураз и крупа", "Соевые продукть", "Винограды", "Чеснок, лук", "Специи", "Соль", "Кофе, чай", "Зеленые томаты", "Авокадо")
+        val meatRu = listOf(
+            "Говядина",
+            "Телятина",
+            "Мерлушка",
+            "Печень",
+            "Курятина и птица",
+            "Дичина",
+            "Рыба"
+        )
+        val boneRu = listOf(
+            "Сырые крылышки",
+            "Шейки",
+            "Спинка курицы",
+            "Крылья и шейки индюшки",
+            "Разнообразные птичьи субпродукты",
+            "Говяжья грудинка",
+            "Ребрышки",
+            "Хвосты",
+            "Рыба"
+        )
+        val fruitsAndVegetablesRu = listOf(
+            "Огурцы",
+            "Кольраби",
+            "Морковь",
+            "Банан",
+            "Груша",
+            "Персик",
+            "Клубника",
+            "Капуста",
+            "Кукуруза",
+            "Салат",
+            "Рукола"
+        )
+        val illegalProductsRu = listOf(
+            "Хлебобулочные изделия",
+            "Сладости",
+            "Макароны",
+            "Жирное мясо - нежелательно",
+            "Соленья и консервация",
+            "Грибы",
+            "Жареное",
+            "Кукураз и крупа",
+            "Соевые продукть",
+            "Винограды",
+            "Чеснок, лук",
+            "Специи",
+            "Соль",
+            "Кофе, чай",
+            "Зеленые томаты",
+            "Авокадо"
+        )
         setContent {
             val systemUiController = rememberSystemUiController()
             systemUiController.setSystemBarsColor(mainBackgroundColor)
             var pagerState = rememberPagerState()
             val scope = rememberCoroutineScope()
             Column {
-                ScrollableTabRow(selectedTabIndex = pagerState.currentPage,
+                ScrollableTabRow(
+                    selectedTabIndex = pagerState.currentPage,
                     backgroundColor = mainBackgroundColor,
                     contentColor = Color.Black,
                     indicator = {
@@ -64,7 +114,7 @@ class DogNutritionActivity : ComponentActivity() {
                             )
                         )
                     }) {
-                    titles.forEachIndexed { index, s ->
+                    titlesRu.forEachIndexed { index, s ->
                         Tab(
                             text = { Text(s, color = mainTextColor) },
                             selected = pagerState.currentPage == index,
@@ -84,11 +134,13 @@ class DogNutritionActivity : ComponentActivity() {
                         homeButtonColor
                     )) {
                     when (it) {
-                        0 -> { TitleText() }
-                        1 -> MeatTitle(list = meat)
-                        2 -> MeatTitle(list = bone)
-                        3 -> MeatTitle(list = fruitsAndVegetables)
-                        4 -> MeatTitle(list = illegalProducts)
+                        0 -> {
+                            TitleText()
+                        }
+                        1 -> MeatTitle(list = meatRu)
+                        2 -> MeatTitle(list = boneRu)
+                        3 -> MeatTitle(list = fruitsAndVegetablesRu)
+                        4 -> MeatTitle(list = illegalProductsRu)
                     }
                 }
 //                when (tabRowState.value) {

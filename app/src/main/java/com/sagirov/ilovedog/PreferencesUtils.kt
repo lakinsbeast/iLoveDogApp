@@ -15,9 +15,9 @@ class PreferencesUtils @Inject constructor(@ApplicationContext ctx: Context) {
     @Inject
     private lateinit var prefsEdit: SharedPreferences
 
-    fun getBoolean(nameOfPrefs: String, name: String, bool: Boolean): Boolean {
+    fun getBoolean(nameOfPrefs: String, name: String, defValue: Boolean): Boolean {
         prefsEdit = contextOfApplication.applicationContext.getSharedPreferences(nameOfPrefs, MODE)
-        return prefsEdit.getBoolean(name, bool)
+        return prefsEdit.getBoolean(name, defValue)
     }
 
     fun putBoolean(nameOfPrefs: String, key: String, value: Boolean): Unit {
@@ -25,9 +25,9 @@ class PreferencesUtils @Inject constructor(@ApplicationContext ctx: Context) {
         return prefsEdit.edit().putBoolean(key, value).apply()
     }
 
-    fun getString(nameOfPrefs: String, name: String, standard: String): String? {
+    fun getString(nameOfPrefs: String, name: String, defValue: String): String? {
         prefsEdit = contextOfApplication.applicationContext.getSharedPreferences(nameOfPrefs, MODE)
-        return prefsEdit.getString(name, standard)
+        return prefsEdit.getString(name, defValue)
     }
 
     fun putString(nameOfPrefs: String, key: String, value: String): Unit {
@@ -35,4 +35,23 @@ class PreferencesUtils @Inject constructor(@ApplicationContext ctx: Context) {
         return prefsEdit.edit().putString(key, value).apply()
     }
 
+    fun getInt(nameOfPrefs: String, key: String, defValue: Int): Int {
+        prefsEdit = contextOfApplication.applicationContext.getSharedPreferences(nameOfPrefs, MODE)
+        return prefsEdit.getInt(key, defValue)
+    }
+
+    fun putInt(nameOfPrefs: String, key: String, value: Int): Unit {
+        prefsEdit = contextOfApplication.applicationContext.getSharedPreferences(nameOfPrefs, MODE)
+        return prefsEdit.edit().putInt(key, value).apply()
+    }
+
+    fun getLong(nameOfPrefs: String, key: String, defValue: Long): Long {
+        prefsEdit = contextOfApplication.applicationContext.getSharedPreferences(nameOfPrefs, MODE)
+        return prefsEdit.getLong(key, defValue)
+    }
+
+    fun putLong(nameOfPrefs: String, key: String, value: Long): Unit {
+        prefsEdit = contextOfApplication.applicationContext.getSharedPreferences(nameOfPrefs, MODE)
+        return prefsEdit.edit().putLong(key, value).apply()
+    }
 }

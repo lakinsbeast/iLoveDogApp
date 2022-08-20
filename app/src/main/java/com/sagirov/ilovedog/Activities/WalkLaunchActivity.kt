@@ -36,6 +36,7 @@ import com.sagirov.ilovedog.Activities.MainActivity.Companion.myPetPaddockT
 import com.sagirov.ilovedog.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoViewModelFactory
+import com.sagirov.ilovedog.PreferencesUtils
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.TimerService
 import com.sagirov.ilovedog.ui.theme.circularColor
@@ -43,6 +44,8 @@ import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.sagirov.ilovedog.ui.theme.mainTextColor
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 var currentTimeInMinutes: Long by mutableStateOf(0)
 var stopTimer: Long by mutableStateOf(0)
@@ -51,23 +54,35 @@ var timeToString by mutableStateOf("")
 
 @AndroidEntryPoint
 class WalkLaunchActivity : ComponentActivity() {
-
+    private val PREF_SCORE = "multiplier"
     private val PREF_NAME_PET = "mypets"
     private lateinit var prefsMyPet: SharedPreferences
     private lateinit var timer: CountDownTimer
 
+    private var startTimeForScore = 0L
+    private var score = 0
+    private var multiplier = 1
+
     private val statsCurrentTime = mutableStateOf(0L)
     private val statsConstTime = mutableStateOf(0L)
 
-    private val inCycleNotif = NotificationCompat.Builder(this, "channelID")
-        .setSmallIcon(R.drawable.ic_launcher_background).setContentTitle("Прогулка началась").setContentText("Осталось ещё "+
-            (currentTimeInMinutes /60000).toString()+" минут")
+    @Inject
+    private var newPrefs: PreferencesUtils = PreferencesUtils(this)
+
+    private var inCycleNotif = NotificationCompat.Builder(this, "channelID")
+        .setSmallIcon(R.mipmap.dog_icon_new).setContentTitle("Прогулка началась").setContentText(
+            "Осталось ещё " +
+                    (currentTimeInMinutes / 60000).toString() + " минут"
+        )
     val endCycleNotif = NotificationCompat.Builder(this, "channelID")
-        .setSmallIcon(R.drawable.ic_launcher_background).setContentTitle("Всё, можете закругляться!")
+        .setSmallIcon(R.mipmap.dog_icon_new).setContentTitle("Всё, можете закругляться!")
         .setContentText("Завершить?")
 
     override fun onBackPressed() {
-        if (isStartTimer){
+        if (isStartTimer) {
+            score += (TimeUnit.MILLISECONDS.toMinutes(startTimeForScore) -
+                    TimeUnit.MILLISECONDS.toMinutes(currentTimeInMinutes)).toInt() * multiplier
+            newPrefs.putInt(PREF_SCORE, "score", score)
             Toast.makeText(this@WalkLaunchActivity, "Таймер остановлен", Toast.LENGTH_SHORT).show()
             timer.cancel()
             isStartTimer = false
@@ -91,6 +106,7 @@ class WalkLaunchActivity : ComponentActivity() {
             statsCurrentTime.value = it[id].currentTimeWalk
             statsConstTime.value =  it[id].walkingTimeConst
             currentTimeInMinutes = statsCurrentTime.value
+            startTimeForScore = currentTimeInMinutes
             stopTimer = statsConstTime.value
         }
 
@@ -103,7 +119,8 @@ class WalkLaunchActivity : ComponentActivity() {
         var textColor = mutableStateOf(mainTextColor)
         var buttonBackgroundColor = mutableStateOf(mainSecondColor)
         var cautionText = ""
-
+        multiplier = newPrefs.getInt(PREF_SCORE, "multiplierScore", 1)
+        score = newPrefs.getInt(PREF_SCORE, "score", 1)
         setContent {
             val systemUiController = rememberSystemUiController()
             systemUiController.setSystemBarsColor(mainBackgroundColor)
@@ -115,26 +132,45 @@ class WalkLaunchActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Давайте погуляем!", fontSize = 24.sp, color = textColor.value)
+                Text(
+                    text = resources.getString(R.string.walk_activity_go_run_text),
+                    fontSize = 24.sp,
+                    color = textColor.value
+                ) //Давайте погуляем
                 CircularProgressIndicator(
                     progress = (currentTimeInMinutes.toFloat() / (stopTimer)),
                     strokeWidth = 20.dp,
                     color = circularColor.value,
                     modifier = Modifier.size(350.dp)
                 )
-                Text(text = DateUtils.formatElapsedTime(currentTimeInMinutes / 1000).toString(), color = textColor.value)
+                Text(
+                    text = DateUtils.formatElapsedTime(currentTimeInMinutes / 1000).toString(),
+                    color = textColor.value
+                )
                 OutlinedButton(
                     onClick = {
                         if (!isStartTimer) {
+                            inCycleNotif =
+                                NotificationCompat.Builder(this@WalkLaunchActivity, "channelID")
+                                    .setSmallIcon(R.mipmap.dog_icon_new)
+                                    .setContentTitle("Прогулка началась").setContentText(
+                                        "Осталось ещё " +
+                                                (currentTimeInMinutes / 60000).toString() + " минут"
+                                    )
                             startCount(); isStartTimer = true
                             buttonBackgroundColor.value = Color(0xFF7BAA7A)
                             circularColor.value = Color(0xFF588157)
                             backgroundColor.value = Color(0xFF344E41)
                             textColor.value = Color(0xFFFFFFFF)
-                            cautionText = "Не нажимайте на кнопку назад и не выгружайте приложение из памяти"
+                            cautionText =
+                                resources.getString(R.string.walk_activity_caution_text) //Не нажимайте на кнопку назад и не выгружайте приложение из памяти
                         } else {
+                            score += (TimeUnit.MILLISECONDS.toMinutes(startTimeForScore) -
+                                    TimeUnit.MILLISECONDS.toMinutes(currentTimeInMinutes)).toInt() * multiplier
+                            newPrefs.putInt(PREF_SCORE, "score", score)
                             dogsInfoViewModel.updateDogsTime(idOfProfile, currentTimeInMinutes)
-                            backgroundColor.value = mainBackgroundColor; textColor.value = mainTextColor
+                            backgroundColor.value = mainBackgroundColor; textColor.value =
+                                mainTextColor
                             buttonBackgroundColor.value = mainSecondColor
                             circularColor.value = com.sagirov.ilovedog.ui.theme.circularColor
                             timer.cancel(); isStartTimer = false
@@ -150,9 +186,15 @@ class WalkLaunchActivity : ComponentActivity() {
                     ), contentPadding = PaddingValues(0.dp)
                 ) {
                     if (!isStartTimer) {
-                        Text("Run", color = mainTextColor)
+                        Text(
+                            resources.getString(R.string.walk_activity_go_run_button_text),
+                            color = mainTextColor
+                        ) //Run
                     } else {
-                        Text("Stop", color = mainTextColor)
+                        Text(
+                            resources.getString(R.string.walk_activity_go_stop_button_text),
+                            color = mainTextColor
+                        ) //Stop
                     }
                 }
                 Text(text = cautionText, fontSize = 24.sp, color = Color.White, textAlign = TextAlign.Center)
@@ -162,7 +204,6 @@ class WalkLaunchActivity : ComponentActivity() {
 
     private fun startCount() {
         prefsMyPet = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
-        val edit = prefsMyPet.edit()
         val standartPaddock = prefsMyPet.getString("mypetPaddockStandart", "")
 
         val mNotifMan = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -176,18 +217,19 @@ class WalkLaunchActivity : ComponentActivity() {
         timer = object : CountDownTimer(currentTimeInMinutes, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 currentTimeInMinutes = millisUntilFinished
-//                edit.putString("mypetPaddock", currentTimeInMinutes.toString()).apply()
                 timeToString = currentTimeInMinutes.toString()
             }
             override fun onFinish() {
-                if (standartPaddock != null) {
+                score += (TimeUnit.MILLISECONDS.toMinutes(startTimeForScore)).toInt() * multiplier
+                newPrefs.putInt(PREF_SCORE, "score", score)
+                currentTimeInMinutes = if (standartPaddock != null) {
                     if (standartPaddock.isNotEmpty()) {
-                        currentTimeInMinutes = standartPaddock!!.toLong()
+                        standartPaddock.toLong()
                     } else {
-                        currentTimeInMinutes = 3600000
+                        3600000
                     }
                 } else {
-                    currentTimeInMinutes = 3600000
+                    3600000
                 }
                 mNotifMan.notify(0, endCycleNotif.build())
                 cancel()

@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.VaccinationsEntity
+import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ViewModels.VaccinationViewModel
 import com.sagirov.ilovedog.ViewModels.VaccinationViewModelFactory
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
@@ -94,7 +95,10 @@ class VaccinationActivity : ComponentActivity() {
                                     contentColor = Color.Black
                                 ), contentPadding = PaddingValues(0.dp)
                             ) {
-                                Text(text = "Удалить", color = mainTextColor)
+                                Text(
+                                    text = resources.getString(R.string.vaccination_activity_delete),
+                                    color = mainTextColor
+                                ) //Удалить
                             }
                         }
                     })
@@ -106,7 +110,7 @@ class VaccinationActivity : ComponentActivity() {
                             .background(mainBackgroundColor), verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Добавьте новую вакцинацию, нажав на кнопку снизу справа",
+                            text = resources.getString(R.string.vaccination_activity_empty_list), //Добавьте новую вакцинацию, нажав на кнопку снизу справа
                             fontWeight = FontWeight.Bold,
                             fontSize = 40.sp,
                             textAlign = TextAlign.Center,
@@ -136,7 +140,7 @@ class VaccinationActivity : ComponentActivity() {
                                             .padding(bottom = 5.dp)) {
                                             Column() {
                                                 Text(
-                                                    text = "Название лекарства",
+                                                    text = resources.getString(R.string.vaccination_activity_drug_name), //Название лекарства
                                                     color = Color.Gray
                                                 )
                                                 Text(
@@ -147,7 +151,10 @@ class VaccinationActivity : ComponentActivity() {
                                                 )
                                             }
                                             Column(modifier = Modifier.padding(end = 10.dp)) {
-                                                Text(text = "Дата вакцинации", color = Color.Gray)
+                                                Text(
+                                                    text = resources.getString(R.string.vaccination_activity_date_vaccination),
+                                                    color = Color.Gray
+                                                ) //дата вакцинации
                                                 Text(
                                                     dateFormatter(vaccinationList[index].dateOfVaccinations),
                                                     fontSize = 17.sp,

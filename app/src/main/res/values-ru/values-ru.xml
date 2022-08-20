@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ILoveDog</string>
+    <string name="main_menu_title_text">Питомец</string>
+    <string name="main_menu_profile_text">Профиль</string>
+    <string name="main_menu_stats_text">Статистика</string>
+    <string name="main_menu_stats_today_plan_text">Сегодняшний план</string>
+    <string name="main_menu_stats_today_plan_done_text">выполнено</string>
+    <string name="main_menu_stats_energy_enough">Энергии доступно</string>
+    <string name="main_menu_stats_energy_enough_remained">энергии</string>
+    <string name="main_menu_button_walk_text">Прогулка</string>
+
+    <string name="useful_menu_title_text">Полезные статьи</string>
+    <string name="useful_menu_feeding_text">Кормление</string>
+    <string name="useful_menu_activity_text">Активность</string>
+
+    <string name="encyclopedia_menu_title">Энкциклопедия</string>
+
+    <string name="reminder_menu_button_text">Добавить напоминание</string>
+    <string name="reminder_menu_reminder_repeat">Повторяющиеся напоминания</string>
+    <string name="reminder_menu_reminder_day">Дневные напоминания</string>
+    <string name="reminder_menu_reminder_week">Недельные напоминания</string>
+    <string name="reminder_menu_reminder_other">Остальные напоминания</string>
+    <string name="reminder_menu_reminder_past">Прошедшие напоминания</string>
+
+    <string name="menu_menu_button_document_analyzes_text">Документы/анализы</string>
+    <string name="menu_menu_button_vaccine_text">Вакцинации</string>
+    <string name="menu_menu_button_about_author">Об авторе</string>
+    <string name="menu_menu_button_barf_nutrition">Питание BARF</string>
+    <string name="dark_mode_text">Темный режим</string>
+    <string name="coins_count_text">Коины</string>
+
+
+    <string name="walk_activity_go_run_text">Давайте погуляем</string>
+    <string name="walk_activity_go_run_button_text">Вперед</string>
+    <string name="walk_activity_go_stop_button_text">Стоп</string>
+    <string name="walk_activity_caution_text">Не нажимайте на кнопку назад и не выгружайте приложение из памяти</string>
+
+    <string name="reminder_activity_text">Текст</string>
+    <string name="reminder_activity_day_text">Д</string>
+    <string name="reminder_activity_month_text">М</string>
+    <string name="reminder_activity_year_text">ГОД</string>
+    <string name="reminder_activity_reminder_text">Уведомления</string>
+    <string name="reminder_activity_repeat_text">Повтор</string>
+    <string name="reminder_activity_button_add_reminder_text">Добавить напоминание</string>
+
+    <string name="document_analyses_acitvity_button_text">Новый документ/анализ</string>
+    <string name="document_analyses_acitvity_dialog_gallery_text">Галерея</string>
+    <string name="document_analyses_acitvity_dialog_document_text">Документ</string>
+    <string name="document_analyses_acitvity_dialog_open_photo">Открыть фото</string>
+    <string name="document_analyses_acitvity_dialog_delete_photo">Удалить фото</string>
+    <string name="document_analyses_acitvity_dialog_open_doc">Открыть документ</string>
+    <string name="document_analyses_acitvity_dialog_delete_doc">Удалить документ</string>
+    <string name="document_analyses_acitvity_dialog_new_name">Название</string>
+
+    <string name="vaccination_activity_delete">Удалить</string>
+    <string name="vaccination_activity_empty_list">Добавьте новую вакцинацию, нажав на кнопку снизу справа</string>
+    <string name="vaccination_activity_drug_name">Название лекарства</string>
+    <string name="vaccination_activity_date_vaccination">Дата вакцинации</string>
+
+    <string-array name="BARFtitles">
+        <item>FUCK</item>
+    </string-array>
+
+
+</resources>

@@ -1,18 +1,75 @@
 <resources>
-    <string name="app_name">iLoveDog!</string>
-    <string name="title_activity_first_launch">FirstLaunchActivity</string>
-    <string name="title_activity_walk_launch">WalkLaunchActivity</string>
-    <string name="title_activity_notification">NotificationActivity</string>
-    <string name="title_activity_reminder">ReminderActivity</string>
-    <string name="title_activity_my_pets">MyPetsActivity</string>
-    <string name="title_activity_detailed_dog">DetailedDogActivity</string>
-    <string name="title_activity_new_pet">NewPetActivity</string>
-    <string name="title_activity_article_choice">ArticleChoiceActivity</string>
+    <string name="app_name">ILoveDog!</string>
+    <string name="main_menu_title_text">My pets</string>
+    <string name="main_menu_profile_text">Profile</string>
+    <string name="main_menu_stats_text">Statistic</string>
+    <string name="main_menu_stats_today_plan_text">Today\'s plan</string>
+    <string name="main_menu_stats_today_plan_done_text">done</string>
+    <string name="main_menu_stats_energy_enough">Energy enough</string>
+    <string name="main_menu_stats_energy_enough_remained">enough</string>
+    <string name="main_menu_button_walk_text">Walk</string>
+
+    <string name="useful_menu_title_text">Useful articles</string>
+    <string name="useful_menu_feeding_text">Feeding</string>
+    <string name="useful_menu_activity_text">Activity</string>
+
+    <string name="encyclopedia_menu_title">Encyclopedia</string>
+
+    <string name="reminder_menu_button_text">Add reminder</string>
+    <string name="reminder_menu_reminder_repeat">Recurring reminders</string>
+    <string name="reminder_menu_reminder_day">Daily reminders</string>
+    <string name="reminder_menu_reminder_week">Weekly reminders</string>
+    <string name="reminder_menu_reminder_other">Other reminders</string>
+    <string name="reminder_menu_reminder_past">Past reminders</string>
+
+    <string name="menu_menu_button_document_analyzes_text">Documents/analyses</string>
+    <string name="menu_menu_button_vaccine_text">Vaccinations</string>
+    <string name="menu_menu_button_about_author">About author</string>
+    <string name="menu_menu_button_barf_nutrition">BARF Nutrition</string>
+    <string name="dark_mode_text">Dark mode</string>
+    <string name="coins_count_text">Coins</string>
+
+    <string name="walk_activity_go_run_text">Let\'s walk</string>
+    <string name="walk_activity_go_run_button_text">Run</string>
+    <string name="walk_activity_go_stop_button_text">Stop</string>
+    <string name="walk_activity_caution_text">Do not press the back button and do not unload the application from memory</string>
+
+    <string name="reminder_activity_text">Text</string>
+    <string name="reminder_activity_day_text">D</string>
+    <string name="reminder_activity_month_text">M</string>
+    <string name="reminder_activity_year_text">YEAR</string>
+    <string name="reminder_activity_reminder_text">Reminder</string>
+    <string name="reminder_activity_repeat_text">Repeat</string>
+    <string name="reminder_activity_button_add_reminder_text">Add reminder</string>
+
+    <string name="document_analyses_acitvity_button_text">New document/analyses</string>
+    <string name="document_analyses_acitvity_dialog_gallery_text">Gallery</string>
+    <string name="document_analyses_acitvity_dialog_document_text">Document</string>
+    <string name="document_analyses_acitvity_dialog_open_photo">Open photo</string>
+    <string name="document_analyses_acitvity_dialog_delete_photo">Delete photo</string>
+    <string name="document_analyses_acitvity_dialog_open_doc">Open document</string>
+    <string name="document_analyses_acitvity_dialog_delete_doc">Delete document</string>
+    <string name="document_analyses_acitvity_dialog_new_name">Name</string>
+
+    <string name="vaccination_activity_delete">Delete</string>
+    <string name="vaccination_activity_empty_list">Add a new vaccination by clicking on the button on the bottom right</string>
+    <string name="vaccination_activity_drug_name">Name of the medicine</string>
+    <string name="vaccination_activity_date_vaccination">Date of vaccination</string>
+
+
+    <string name="title_activity_first_launch" translatable="false">FirstLaunchActivity</string>
+    <string name="title_activity_walk_launch" translatable="false">WalkLaunchActivity</string>
+    <string name="title_activity_notification" translatable="false">NotificationActivity</string>
+    <string name="title_activity_reminder" translatable="false">ReminderActivity</string>
+    <string name="title_activity_my_pets" translatable="false">MyPetsActivity</string>
+    <string name="title_activity_detailed_dog" translatable="false">DetailedDogActivity</string>
+    <string name="title_activity_new_pet" translatable="false">NewPetActivity</string>
+    <string name="title_activity_article_choice" translatable="false">ArticleChoiceActivity</string>
 
 
     <!--    FEEDING-->
-    <string name="dog_feeding">Кормление собак</string>
-    <string name="dog_feeding_text">
+    <string name="dog_feeding" translatable="false">Кормление собак</string>
+    <string name="dog_feeding_text" translatable="false">
         <b><h1>Кормление собак</h1></b>
 \n
 \t\t\t\tБиологически собака относится к хищникам. Также как ее предок волк, собака предпочитает такую же мясную диету. Известно, что кроме животных, волк ест фрукты, травы, ягоды, корни, насекомых и экскременты травоядных. Волки едят мелких животных целиком.

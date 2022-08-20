@@ -14,8 +14,8 @@ android {
         applicationId "com.sagirov.ilovedog"
         minSdk 26
         targetSdk 32
-        versionCode 3
-        versionName "1.03"
+        versionCode 4
+        versionName "1.04"
         //если выскочит ошибка multidexчего-то там, то включить его
 //        multiDexEnabled = true
 
@@ -58,10 +58,12 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.android.gms:play-services-location:20.0.0'
     implementation platform('com.google.firebase:firebase-bom:30.3.2')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.huawei.hms:hianalytics:6.7.0.300'
+    implementation 'com.huawei.agconnect:agconnect-crash:1.5.1.300'
 
     implementation "com.google.accompanist:accompanist-pager:0.25.0"
 
@@ -110,4 +112,5 @@ dependencies {
 }
 apply plugin: 'com.huawei.agconnect'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 

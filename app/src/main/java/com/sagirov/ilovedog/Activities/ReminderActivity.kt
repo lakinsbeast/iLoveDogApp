@@ -131,9 +131,13 @@ class ReminderActivity : ComponentActivity() {
         val screenWidth = LocalConfiguration.current.screenWidthDp
 
         Text(
-            text = "Текст:", fontSize = 15.sp, modifier = Modifier
+            text = resources.getString(R.string.reminder_activity_text) + ":",
+            fontSize = 15.sp,
+            modifier = Modifier //Text
                 .fillMaxWidth()
-                .padding(start = 75.dp), textAlign = TextAlign.Start, color = mainTextColor
+                .padding(start = 75.dp),
+            textAlign = TextAlign.Start,
+            color = mainTextColor
         )
 
         TextField(
@@ -228,7 +232,13 @@ class ReminderActivity : ComponentActivity() {
                 ),
                 textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium),
                 singleLine = true,
-                label = { Text(text = "Д", fontSize = 17.sp, color = mainTextColor) },
+                label = {
+                    Text(
+                        text = resources.getString(R.string.reminder_activity_day_text),
+                        fontSize = 15.sp,
+                        color = mainTextColor
+                    )
+                }, //D
                 value = calendarDayText.value,
                 keyboardActions = KeyboardActions(onNext = {
                     monthFocusRequester.requestFocus()
@@ -254,7 +264,13 @@ class ReminderActivity : ComponentActivity() {
                 ),
                 textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium),
                 singleLine = true,
-                label = { Text(text = "M", fontSize = 17.sp, color = mainTextColor) },
+                label = {
+                    Text(
+                        text = resources.getString(R.string.reminder_activity_month_text),
+                        fontSize = 15.sp,
+                        color = mainTextColor
+                    )
+                }, //M
                 value = calendarMonthText.value,
                 onValueChange = {
                     calendarMonthText.value = it; if (calendarMonthText.value.length >= 2) {
@@ -275,7 +291,13 @@ class ReminderActivity : ComponentActivity() {
                 ),
                 textStyle = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Medium),
                 singleLine = true,
-                label = { Text(text = "ГОД", fontSize = 17.sp, color = mainTextColor) },
+                label = {
+                    Text(
+                        text = resources.getString(R.string.reminder_activity_year_text),
+                        fontSize = 15.sp,
+                        color = mainTextColor
+                    )
+                }, //YEAR
                 value = calendarYearText.value,
                 onValueChange = {
                     if (calendarYearText.value.length < 4) calendarYearText.value = it
@@ -287,7 +309,11 @@ class ReminderActivity : ComponentActivity() {
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(start = 60.dp, end = 60.dp),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("Уведомления", fontSize = 15.sp, color = mainTextColor)
+            Text(
+                resources.getString(R.string.reminder_activity_reminder_text),
+                fontSize = 15.sp,
+                color = mainTextColor
+            ) // reminder
             Switch(
                 checked = checkNotification.value,
                 onCheckedChange = { checkNotification.value = it },
@@ -297,7 +323,11 @@ class ReminderActivity : ComponentActivity() {
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(start = 60.dp, end = 60.dp, top = 10.dp),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("Повтор", fontSize = 15.sp, color = mainTextColor)
+            Text(
+                resources.getString(R.string.reminder_activity_repeat_text),
+                fontSize = 15.sp,
+                color = mainTextColor
+            ) //Repeat
             Switch(
                 checked = checkRepeat.value, onCheckedChange = { checkRepeat.value = it },
                 colors = SwitchDefaults.colors(checkedThumbColor = switcherColor)
@@ -371,6 +401,9 @@ class ReminderActivity : ComponentActivity() {
                 contentColor = Color.Black
             )
         ) {
-            Text("Добавить напоминание", color = mainTextColor)
+            Text(
+                resources.getString(R.string.reminder_activity_button_add_reminder_text),
+                color = mainTextColor
+            ) //Add reminder
         }}}
 

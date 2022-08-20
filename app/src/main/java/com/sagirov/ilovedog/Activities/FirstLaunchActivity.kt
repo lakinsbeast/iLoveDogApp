@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,21 +23,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.sagirov.ilovedog.PreferencesUtils
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.sagirov.ilovedog.ui.theme.mainTextColor
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FirstLaunchActivity : ComponentActivity() {
+    @Inject
+    private var newPrefs: PreferencesUtils = PreferencesUtils(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             val systemUiController = rememberSystemUiController()
             systemUiController.setSystemBarsColor(mainBackgroundColor)
-            Column(Modifier.fillMaxSize()) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .background(mainBackgroundColor)) {
                 Box(
                     Modifier
                         .weight(0.5f)
@@ -91,6 +100,7 @@ class FirstLaunchActivity : ComponentActivity() {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                         OutlinedButton(
                             onClick = {
+                                newPrefs.putLong("multiplier", "time", System.currentTimeMillis())
                                 startActivity(
                                     Intent(
                                         applicationContext,

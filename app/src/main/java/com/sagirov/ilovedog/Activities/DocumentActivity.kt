@@ -40,10 +40,7 @@ import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ViewModels.DocumentViewModel
 import com.sagirov.ilovedog.ViewModels.DocumentViewModelFactory
-import com.sagirov.ilovedog.ui.theme.homeButtonColor
-import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
-import com.sagirov.ilovedog.ui.theme.mainSecondColor
-import com.sagirov.ilovedog.ui.theme.mainTextColor
+import com.sagirov.ilovedog.ui.theme.*
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -191,13 +188,20 @@ class DocumentActivity : ComponentActivity() {
                                         ), contentPadding = PaddingValues(0.dp)
                                     ) {
                                         when {
-                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "document" ->
+                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(
+                                                ":"
+                                            )[0] == "document" ->
                                                 Text(
-                                                    text = "Открыть документ",
+                                                    text = resources.getString(R.string.document_analyses_acitvity_dialog_open_doc), //Открыть документ
                                                     color = mainTextColor
                                                 )
-                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "image" ->
-                                                Text(text = "Открыть фото", color = mainTextColor)
+                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(
+                                                ":"
+                                            )[0] == "image" ->
+                                                Text(
+                                                    text = resources.getString(R.string.document_analyses_acitvity_dialog_open_photo),
+                                                    color = mainTextColor
+                                                ) //Открыть фото
                                         }
                                     }
                                     OutlinedButton(
@@ -215,13 +219,20 @@ class DocumentActivity : ComponentActivity() {
                                         ), contentPadding = PaddingValues(0.dp)
                                     ) {
                                         when {
-                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "document" ->
+                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(
+                                                ":"
+                                            )[0] == "document" ->
                                                 Text(
-                                                    text = "Удалить документ",
+                                                    text = resources.getString(R.string.document_analyses_acitvity_dialog_delete_doc), //Удалить документ
                                                     color = mainTextColor
                                                 )
-                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "image" ->
-                                                Text(text = "Удалить фото", color = mainTextColor)
+                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(
+                                                ":"
+                                            )[0] == "image" ->
+                                                Text(
+                                                    text = resources.getString(R.string.document_analyses_acitvity_dialog_open_photo),
+                                                    color = mainTextColor
+                                                ) //Удалить фото
                                         }
 //                                        Text(text = "Удалить документ")
                                     }
@@ -242,7 +253,7 @@ class DocumentActivity : ComponentActivity() {
                                         Row() {
                                             TextField(label = {
                                                 Text(
-                                                    text = "Название:",
+                                                    text = resources.getString(R.string.document_analyses_acitvity_dialog_new_name) + ":", //Название
                                                     fontSize = 15.sp,
                                                     color = mainTextColor
                                                 )
@@ -250,7 +261,12 @@ class DocumentActivity : ComponentActivity() {
                                                 value = newDocumentName.value,
                                                 onValueChange = { newDocumentName.value = it },
                                                 colors = TextFieldDefaults.textFieldColors(
-                                                    backgroundColor = Color.Transparent
+                                                    backgroundColor = Color.Transparent,
+                                                    focusedIndicatorColor = mainTextColor,
+                                                    focusedLabelColor = mainTextColor,
+                                                    cursorColor = mainTextColor,
+                                                    textColor = mainTextColor,
+                                                    unfocusedIndicatorColor = textFieldUnFocusedIndicatorColor
                                                 )
                                             )
                                             IconButton(onClick = {
@@ -271,7 +287,7 @@ class DocumentActivity : ComponentActivity() {
                                             }) {
                                                 Icon(
                                                     imageVector = Icons.Filled.Send,
-                                                    contentDescription = ""
+                                                    contentDescription = "", tint = mainTextColor
                                                 )
                                             }
                                         }
@@ -328,7 +344,10 @@ class DocumentActivity : ComponentActivity() {
                                                 contentColor = Color.Black
                                             ), contentPadding = PaddingValues(0.dp)
                                         ) {
-                                            Text(text = "Галерея", color = mainTextColor)
+                                            Text(
+                                                text = resources.getString(R.string.document_analyses_acitvity_dialog_gallery_text),
+                                                color = mainTextColor
+                                            ) //gallery
                                         }
                                         OutlinedButton(
                                             onClick = {
@@ -345,7 +364,10 @@ class DocumentActivity : ComponentActivity() {
                                                 contentColor = Color.Black
                                             ), contentPadding = PaddingValues(0.dp)
                                         ) {
-                                            Text(text = "Документ", color = mainTextColor)
+                                            Text(
+                                                text = resources.getString(R.string.document_analyses_acitvity_dialog_document_text),
+                                                color = mainTextColor
+                                            ) //document
                                         }
                                     }
                                 })
@@ -368,7 +390,10 @@ class DocumentActivity : ComponentActivity() {
                             ), contentPadding = PaddingValues(0.dp)
                         ) {
                             Row(Modifier.padding(start = 30.dp, end = 30.dp)){
-                                Text("Новый документ/анализ!", color = mainTextColor)
+                                Text(
+                                    resources.getString(R.string.document_analyses_acitvity_button_text),
+                                    color = mainTextColor
+                                ) //New docs/analyses
                             }
                         }
                     }

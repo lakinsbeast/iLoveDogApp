@@ -79,6 +79,7 @@ class MainActivity : ComponentActivity() {
     private val PREF_NAME_PET = "mypets"
     private val PREF_NAME_DATES = "dates"
     private val PREF_NIGHT_MODE = "night_mode"
+    private val PREF_SCORE = "multiplier"
 
     //    @Inject
 //    lateinit var prefs: SharedPreferences
@@ -136,6 +137,30 @@ class MainActivity : ComponentActivity() {
 
         }
 
+        val checkTimeScore = newPrefs.getLong(PREF_SCORE, "time", System.currentTimeMillis())
+        var multiplierScore = mutableStateOf(newPrefs.getInt(PREF_SCORE, "multiplierScore", 1))
+        var score = mutableStateOf(newPrefs.getInt(PREF_SCORE, "score", 1))
+        if (checkTimeScore < System.currentTimeMillis()) {
+            if (checkTimeScore + 86400000 < System.currentTimeMillis()) {
+                if (checkTimeScore + 172800000 > System.currentTimeMillis()) {
+                    multiplierScore.value += 1
+                    newPrefs.putInt(PREF_SCORE, "multiplierScore", multiplierScore.value)
+                }
+            }
+        } else {
+            multiplierScore.value = 1
+            newPrefs.putInt(PREF_SCORE, "multiplierScore", multiplierScore.value)
+        }
+
+//        val locale = Locale("en")
+//        Locale.setDefault(locale)
+//        val config = this.resources.configuration
+//        config.setLocale(locale)
+//        this.createConfigurationContext(config)
+//        @Suppress("DEPRECATION")
+//        this.resources.updateConfiguration(config, this.resources.displayMetrics)
+
+
         isNightMode.value = newPrefs.getBoolean(PREF_NIGHT_MODE, "isNightModeOn", false)
 
         CheckDarkMode.isDarkMode(isNightMode.value)
@@ -144,6 +169,7 @@ class MainActivity : ComponentActivity() {
 //        prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE)
         val frst_lnch = newPrefs.getBoolean(PREF_NAME, "firstOpen", true)
         if (frst_lnch) {
+            newPrefs.putLong(PREF_SCORE, "time", System.currentTimeMillis())
             startActivity(Intent(this, FirstLaunchActivity::class.java))
             finish()
         }
@@ -220,6 +246,7 @@ class MainActivity : ComponentActivity() {
         }
 
         myPetPaddockT.observe(this) {
+            score.value = newPrefs.getInt(PREF_SCORE, "score", 1)
             try {
                 if (dogsProfileArray.isNotEmpty()) {
                     dogsInfoViewModel.updateDogsTime(dogsProfileArray[currentDogId.value].id, currentTimeInMinutes)
@@ -258,7 +285,7 @@ class MainActivity : ComponentActivity() {
 //                                Text(text = "Питомец", fontWeight = FontWeight.SemiBold, fontSize = 36.sp)
 //                            }
 //                        }
-                            titleText("Питомец")
+                            titleText(resources.getString(R.string.main_menu_title_text))
                             if (dogsProfileArray.isNotEmpty()) {
                                 Dashboard(dogsProfileArray)
                             }
@@ -292,7 +319,10 @@ class MainActivity : ComponentActivity() {
                                         contentColor = Color.Black
                                     )
                                 ) {
-                                    Text("Прогулка!", color = mainTextColor)
+                                    Text(
+                                        resources.getString(R.string.main_menu_button_walk_text),
+                                        color = mainTextColor
+                                    ) //Прогулка
                                 }
 //                            OutlinedButton(
 //                                onClick = {
@@ -331,7 +361,7 @@ class MainActivity : ComponentActivity() {
 //                                )
 //                            }
 //                        }
-                            titleText("Полезные статьи")
+                            titleText(resources.getString(R.string.useful_menu_title_text)) //полезные статьи
 
                             Card(
                                 onClick = {
@@ -362,7 +392,7 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         Column(horizontalAlignment = Alignment.Start) {
                                             Text(
-                                                text = "Кормление",
+                                                text = resources.getString(R.string.useful_menu_feeding_text), //Кормление
                                                 fontSize = 18.sp,
                                                 color = mainTextColor
                                             )
@@ -402,7 +432,7 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         Column(horizontalAlignment = Alignment.Start) {
                                             Text(
-                                                text = "Активность",
+                                                text = resources.getString(R.string.useful_menu_activity_text), //Активность
                                                 fontSize = 18.sp,
                                                 color = mainTextColor
                                             )
@@ -432,7 +462,7 @@ class MainActivity : ComponentActivity() {
 //                                )
 //                            }
 //                        }
-                            titleText("Энциклопедия")
+                            titleText(resources.getString(R.string.encyclopedia_menu_title)) //Энциклопедия
                             listDogs()
                         }
                     }
@@ -470,29 +500,47 @@ class MainActivity : ComponentActivity() {
                                     contentColor = Color.Black
                                 )
                             ) {
-                                Text("Добавить напоминание", color = mainTextColor)
+                                Text(
+                                    resources.getString(R.string.reminder_menu_button_text),
+                                    color = mainTextColor
+                                ) //Добавить напоминание
                             }
                             /*
                             * Я поменял внутри циклов items с item.value На item.key
                             * */
                             if (repeatReminderMap.isNotEmpty()) {
-                                Text("Повторяющиеся напоминания:", color = mainTextColor)
+                                Text(
+                                    resources.getString(R.string.reminder_menu_reminder_repeat),
+                                    color = mainTextColor
+                                ) //Повторяющиеся напоминания
                                 RepeatReminderColumn(data = repeatReminderMap)
                             }
                             if (dayReminderMap.isNotEmpty()) {
-                                Text("Дневные напоминания:", color = mainTextColor)
+                                Text(
+                                    resources.getString(R.string.reminder_menu_reminder_day),
+                                    color = mainTextColor
+                                ) //Дневные напоминания
                                 DayReminderColumn(data = dayReminderMap)
                             }
                             if (weeklyReminderMap.isNotEmpty()) {
-                                Text("Недельные напоминания:", color = mainTextColor)
+                                Text(
+                                    resources.getString(R.string.reminder_menu_reminder_week),
+                                    color = mainTextColor
+                                ) //Недельные напоминания
                                 WeeklyReminderColumn(data = weeklyReminderMap)
                             }
                             if (otherReminderMapp.isNotEmpty()) {
-                                Text("Остальные напоминания:", color = mainTextColor)
+                                Text(
+                                    resources.getString(R.string.reminder_menu_reminder_other),
+                                    color = mainTextColor
+                                ) //Остальные напоминания
                                 OtherReminderLazyColumn(data = otherReminderMapp)
                             }
                             if (pastReminderMap.isNotEmpty()) {
-                                Text("Прошедшие напоминания:", color = mainTextColor)
+                                Text(
+                                    resources.getString(R.string.reminder_menu_reminder_past),
+                                    color = mainTextColor
+                                ) //Прошедшие напоминания
                                 PastReminderColumn(data = pastReminderMap)
                             }
 
@@ -533,7 +581,7 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         Column(horizontalAlignment = Alignment.Start) {
                                             Text(
-                                                text = "Документы/Анализы",
+                                                text = resources.getString(R.string.menu_menu_button_document_analyzes_text), //Документы/Анализы
                                                 fontSize = 18.sp,
                                                 color = mainTextColor
                                             )
@@ -568,7 +616,7 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         Column(horizontalAlignment = Alignment.Start) {
                                             Text(
-                                                text = "Вакцинации",
+                                                text = resources.getString(R.string.menu_menu_button_vaccine_text), //Vaccination
                                                 fontSize = 18.sp,
                                                 color = mainTextColor
                                             )
@@ -652,7 +700,7 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         Column(horizontalAlignment = Alignment.Start) {
                                             Text(
-                                                text = "Об авторе",
+                                                text = resources.getString(R.string.menu_menu_button_about_author), //about author
                                                 fontSize = 18.sp,
                                                 color = mainTextColor
                                             )
@@ -687,7 +735,7 @@ class MainActivity : ComponentActivity() {
                                     ) {
                                         Column(horizontalAlignment = Alignment.Start) {
                                             Text(
-                                                text = "Питание BARF",
+                                                text = resources.getString(R.string.menu_menu_button_barf_nutrition), //barf nutrition
                                                 fontSize = 18.sp,
                                                 color = mainTextColor
                                             )
@@ -707,7 +755,11 @@ class MainActivity : ComponentActivity() {
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(text = "Темный режим", fontSize = 18.sp, color = mainTextColor)
+                                Text(
+                                    text = resources.getString(R.string.dark_mode_text),
+                                    fontSize = 18.sp,
+                                    color = mainTextColor
+                                )//Dark mode
                                 Switch(
                                     checked = isNightMode.value, onCheckedChange = {
                                         isNightMode.value = it;
@@ -720,6 +772,39 @@ class MainActivity : ComponentActivity() {
                                     colors = SwitchDefaults.colors(checkedThumbColor = switcherColor)
                                 )
                             }
+//                            Card(onClick = {
+//                            }, shape = RoundedCornerShape(0.dp)) {
+//                                Row(
+//                                    Modifier
+//                                        .fillMaxWidth()
+//                                        .background(mainSecondColor)
+//                                        .padding(
+//                                            start = 20.dp,
+//                                            end = 20.dp,
+//                                            top = 10.dp,
+//                                            bottom = 10.dp
+//                                        ),
+//                                    verticalAlignment = Alignment.CenterVertically,
+//                                    horizontalArrangement = Arrangement.SpaceBetween
+//                                ) {
+//                                    Row(
+//                                        Modifier.padding(top = 10.dp, bottom = 10.dp).fillMaxWidth(),
+//                                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
+//                                    ) {
+//                                            Text(
+//                                                text = resources.getString(R.string.coins_count_text), //coins count
+//                                                fontSize = 18.sp,
+//                                                color = mainTextColor
+//                                            )
+//                                            Text(
+//                                                text = (score.value.toString()+"x"+multiplierScore.value.toString()),
+//                                                fontSize = 18.sp,
+//                                                color = mainTextColor
+//                                            )
+//
+//                                    }
+//                                }
+//                            }
                         }
                     }
 
@@ -1090,7 +1175,7 @@ class MainActivity : ComponentActivity() {
             }
         }
         Text(
-            text = "Статистика",
+            text = resources.getString(R.string.main_menu_stats_text), //Статистика
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 15.dp, end = 15.dp),
@@ -1109,13 +1194,13 @@ class MainActivity : ComponentActivity() {
             ) {
                 Column() {
                     Text(
-                        text = "Сегодняшний план",
+                        text = resources.getString(R.string.main_menu_stats_today_plan_text), //Сегодняшний план
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = mainTextColor
                     )
                     Text(
-                        text = "${(resReverse.value * 100).toInt()}% выполнено",
+                        text = "${(resReverse.value * 100).toInt()}% " + resources.getString(R.string.main_menu_stats_today_plan_done_text), //выполнено
                         color = Color.Gray
                     )
                 }
@@ -1139,13 +1224,16 @@ class MainActivity : ComponentActivity() {
             ) {
                 Column {
                     Text(
-                        text = "Энергии доступно",
+                        text = resources.getString(R.string.main_menu_stats_energy_enough), //Энергии доступно
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = mainTextColor
                     )
 //                    Text(text = res.toString(), fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    Text(text = "${(res.value*100).toInt()}% энергии", color = Color.Gray)
+                    Text(
+                        text = "${(res.value * 100).toInt()}% " + resources.getString(R.string.main_menu_stats_energy_enough_remained),
+                        color = Color.Gray
+                    ) //энергии
                 }
                 CircularProgressIndicator(progress = res.value, color = availableProgressColor, strokeWidth = 5.dp)
             }
@@ -1361,7 +1449,7 @@ class MainActivity : ComponentActivity() {
         val ctx = LocalContext.current
         var pagerState = rememberPagerState()
         Text(
-            text = "Профиль",
+            text = resources.getString(R.string.main_menu_profile_text), //Профиль
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(start = 15.dp, end = 15.dp),
