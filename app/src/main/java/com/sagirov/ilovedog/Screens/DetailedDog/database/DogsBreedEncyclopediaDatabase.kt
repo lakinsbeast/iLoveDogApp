@@ -1,32 +1,28 @@
-package com.sagirov.ilovedog.Databases
+package com.sagirov.ilovedog.Screens.DetailedDog.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import com.sagirov.ilovedog.DAOs.DogsInfoDAO
-import com.sagirov.ilovedog.DataConverter
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
+import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaEntity
+import com.sagirov.ilovedog.Screens.DetailedDog.dao.DogsBreedEncyclopediaDAO
 
-
-@Database(entities = [DogsInfoEntity::class], version = 5, exportSchema = true/*,autoMigrations = [AutoMigration(from = 4, to = 5)]*/)
-@TypeConverters(DataConverter::class)
+@Database(entities = [DogsBreedEncyclopediaEntity::class], version = 1, exportSchema = true,/*autoMigrations = [AutoMigration(from = 4, to = 5)]*/)
 //@Module// свой вклад в граф объектов внедрения зависимостей.
 //@InstallIn(SingletonComponent::class) //говорит, что активности этой зависимость должны быть активными в течении жизни приложения
-abstract class DogsInfoDatabase: RoomDatabase() {
-    abstract fun getDao(): DogsInfoDAO
+abstract class DogsBreedEncyclopediaDatabase: RoomDatabase() {
+    abstract fun getDao(): DogsBreedEncyclopediaDAO
 
 
 //    companion object {
 //        // Singleton предотвращает одновременное открытие нескольких экземпляров базы данных //
 //        @Volatile
-//        private var INSTANCE: DogsInfoDatabase? = null
+//        private var INSTANCE: DogsBreedEncyclopediaDatabase? = null
 //        // если ЭКЗЕМПЛЯР != null, то верните его,
 //        // если равен null, то создайте базу данных
 //        @Provides
 //        @Singleton
-//        fun getDb(@ApplicationContext ctx: Context, scope: CoroutineScope): DogsInfoDatabase {
+//        fun getDb(@ApplicationContext ctx: Context, scope: CoroutineScope): DogsBreedEncyclopediaDatabase {
 //            return INSTANCE ?: synchronized(this) {
-//                val instance = Room.databaseBuilder(ctx, DogsInfoDatabase::class.java, "dogsInfo")
+//                val instance = Room.databaseBuilder(ctx, DogsBreedEncyclopediaDatabase::class.java, "dogsBreed")
 //                    .createFromAsset("wtfdb.db")
 //                    .build()
 //                INSTANCE = instance

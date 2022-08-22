@@ -1,4 +1,4 @@
-package com.sagirov.ilovedog
+package com.sagirov.ilovedog.Utils
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,13 +7,20 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class PreferencesUtils @Inject constructor(@ApplicationContext ctx: Context) {
-    private val PREF_NAME = "first_launch"
-    private val PREF_NAME_DATES = "dates"
+
+    companion object {
+        const val PREF_NAME = "first_launch"
+        const val PREF_NAME_PET = "mypets"
+        const val PREF_NAME_DATES = "dates"
+        const val PREF_NIGHT_MODE = "night_mode"
+        const val PREF_SCORE = "multiplier"
+
+    }
     private val MODE = ComponentActivity.MODE_PRIVATE
     var contextOfApplication: Context = ctx
 
     @Inject
-    private lateinit var prefsEdit: SharedPreferences
+    lateinit var prefsEdit: SharedPreferences
 
     fun getBoolean(nameOfPrefs: String, name: String, defValue: Boolean): Boolean {
         prefsEdit = contextOfApplication.applicationContext.getSharedPreferences(nameOfPrefs, MODE)

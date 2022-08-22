@@ -24,16 +24,6 @@
         android:theme="@style/Theme.ILoveDog"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.NewVaccineActivity"
-            android:exported="false"
-            android:label="@string/title_activity_new_vaccine"
-            android:theme="@style/Theme.ILoveDog" />
-        <activity
-            android:name=".Activities.VaccinationActivity"
-            android:exported="false"
-            android:label="@string/title_activity_vaccination"
-            android:theme="@style/Theme.ILoveDog" />
-        <activity
             android:name=".Activities.DogNutritionActivity"
             android:exported="false"
             android:label="@string/title_activity_dog_nutrition"
@@ -64,21 +54,8 @@
             android:exported="false"
             android:label="@string/title_activity_new_pet"
             android:theme="@style/Theme.ILoveDog" />
-        <activity
-            android:name=".Activities.DetailedDogActivity"
-            android:exported="false"
-            android:label="@string/title_activity_detailed_dog"
-            android:theme="@style/Theme.ILoveDog" />
-        <activity
-            android:name=".Activities.ReminderActivity"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"
-            android:label="@string/title_activity_reminder"
-            android:theme="@style/Theme.ILoveDog"
-            android:windowSoftInputMode="adjustResize" />
-
         <service
-            android:name=".TimerService"
+            android:name=".ServicesAndReceivers.TimerService"
             android:enabled="true"
             android:exported="true" />
 
@@ -89,7 +66,7 @@
         </meta-data>
 
         <receiver
-            android:name=".NotificationReceiver"
+            android:name=".ServicesAndReceivers.NotificationReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>

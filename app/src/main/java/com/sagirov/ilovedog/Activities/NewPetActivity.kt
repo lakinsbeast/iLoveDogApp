@@ -37,11 +37,9 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sagirov.ilovedog.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoViewModel
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoViewModelFactory
-import com.sagirov.ilovedog.PreferencesUtils
+import com.sagirov.ilovedog.Utils.PreferencesUtils
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.sagirov.ilovedog.ui.theme.mainTextColor
@@ -59,7 +57,7 @@ class NewPetActivity : ComponentActivity() {
     private val PREF_NAME = "first_launch"
 
     @Inject
-    private var newPrefs: PreferencesUtils = PreferencesUtils(this)
+    lateinit var newPrefs: PreferencesUtils
 
     private var camera_uri: Uri? = null
     private var cameraUriPhoto = mutableStateOf("")
@@ -67,15 +65,13 @@ class NewPetActivity : ComponentActivity() {
 
     private val dogsProfileArray = mutableStateListOf<DogsInfoEntity>()
 
-    private val dogsInfoViewModel: DogsInfoViewModel by viewModels {
-        DogsInfoViewModelFactory((application as DogsApplication).DogsInfoRepo)
-    }
+    private val dogsInfoViewModel: DogsInfoViewModel by viewModels ()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val intentID = mutableStateOf(intent.getIntExtra("id", -543253425))
         var petName =  mutableStateOf("")
-
+        newPrefs = PreferencesUtils(this)
         setContent {
             val systemUiController = rememberSystemUiController()
             systemUiController.setSystemBarsColor(mainBackgroundColor)

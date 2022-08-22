@@ -1,15 +1,14 @@
 package com.sagirov.ilovedog.Repos
 
-import androidx.lifecycle.LiveData
 import com.sagirov.ilovedog.DAOs.DocumentDAO
-import com.sagirov.ilovedog.DAOs.DogsInfoDAO
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DocumentRepository@Inject constructor(private val dogsDao: DocumentDAO) {
-    fun getAllDocuments(): LiveData<MutableList<DocumentsEntity>> = dogsDao.getAllDocuments()
+    fun getAllDocuments(): Flow<MutableList<DocumentsEntity>> = dogsDao.getAllDocuments()
 
     suspend fun insertDocumentFile(file: DocumentsEntity) {
         dogsDao.insertDocumentFile(file)

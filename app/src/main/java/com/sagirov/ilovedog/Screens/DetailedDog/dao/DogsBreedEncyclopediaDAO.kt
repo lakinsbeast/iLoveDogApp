@@ -1,4 +1,4 @@
-package com.sagirov.ilovedog.DAOs
+package com.sagirov.ilovedog.Screens.DetailedDog.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -9,5 +9,4 @@ import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaEntity
 interface DogsBreedEncyclopediaDAO {
     @Query("SELECT * FROM DogsBreedEncyclopediaEntity")
     fun getAll(): LiveData<MutableList<DogsBreedEncyclopediaEntity>>
-
 }

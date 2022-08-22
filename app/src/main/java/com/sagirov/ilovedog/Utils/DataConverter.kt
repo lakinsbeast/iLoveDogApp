@@ -17,7 +17,7 @@ class DataConverter {
     }
 }
 
-class MapConverter {
+class MapStringToStringConverter {
 
     private val mapAdapter = Moshi.Builder().build().adapter<Map<String, String>>(Map::class.java)
 
@@ -38,4 +38,15 @@ class MapConverter {
 //        val gson = Gson()
 //        return gson.toJson(map)
 //    }
+}
+class MapLongToStringConverter {
+
+    private val mapAdapter = Moshi.Builder().build().adapter<Map<Long, String>>(Map::class.java)
+
+    @TypeConverter
+    fun fromJson(str: String?): Map<Long,String>? = str?.let { mapAdapter.fromJson(it) }
+    @TypeConverter
+    fun toJson(map: Map<Long,String>?): String? = map?.let { mapAdapter.toJson(it) }
+
+
 }

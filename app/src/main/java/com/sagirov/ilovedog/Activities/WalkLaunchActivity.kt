@@ -33,12 +33,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.Activities.MainActivity.Companion.myPetPaddockT
-import com.sagirov.ilovedog.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoViewModel
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoViewModelFactory
-import com.sagirov.ilovedog.PreferencesUtils
 import com.sagirov.ilovedog.R
-import com.sagirov.ilovedog.TimerService
+import com.sagirov.ilovedog.ServicesAndReceivers.TimerService
+import com.sagirov.ilovedog.Utils.PreferencesUtils
 import com.sagirov.ilovedog.ui.theme.circularColor
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
@@ -59,6 +57,8 @@ class WalkLaunchActivity : ComponentActivity() {
     private lateinit var prefsMyPet: SharedPreferences
     private lateinit var timer: CountDownTimer
 
+
+
     private var startTimeForScore = 0L
     private var score = 0
     private var multiplier = 1
@@ -67,7 +67,7 @@ class WalkLaunchActivity : ComponentActivity() {
     private val statsConstTime = mutableStateOf(0L)
 
     @Inject
-    private var newPrefs: PreferencesUtils = PreferencesUtils(this)
+    lateinit var newPrefs: PreferencesUtils
 
     private var inCycleNotif = NotificationCompat.Builder(this, "channelID")
         .setSmallIcon(R.mipmap.dog_icon_new).setContentTitle("Прогулка началась").setContentText(
@@ -93,12 +93,11 @@ class WalkLaunchActivity : ComponentActivity() {
         myPetPaddockT.value = false
         super.onBackPressed()}
 
-    private val dogsInfoViewModel: DogsInfoViewModel by viewModels {
-        DogsInfoViewModelFactory((application as DogsApplication).DogsInfoRepo)
-    }
+    private val dogsInfoViewModel: DogsInfoViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        newPrefs = PreferencesUtils(this)
         val id = intent.getIntExtra("id", 0)
         var idOfProfile: Int = id
         dogsInfoViewModel.getAllDogsProfiles.observe(this) {
@@ -111,10 +110,6 @@ class WalkLaunchActivity : ComponentActivity() {
         }
 
         prefsMyPet = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
-        val myPetPaddock = prefsMyPet.getString("mypetPaddock", "")
-        val myPetPaddockStandart = prefsMyPet.getString("mypetPaddockStandart", "")
-//        Log.d("myPetPaddock", myPetPaddock.toString())
-//        currentTimeInMinutes = myPetPaddock!!.toLong()
         var backgroundColor = mutableStateOf(mainBackgroundColor)
         var textColor = mutableStateOf(mainTextColor)
         var buttonBackgroundColor = mutableStateOf(mainSecondColor)

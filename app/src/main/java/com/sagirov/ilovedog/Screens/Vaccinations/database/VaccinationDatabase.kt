@@ -1,33 +1,27 @@
-package com.sagirov.ilovedog.Databases
+package com.sagirov.ilovedog.Screens.Vaccinations.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import com.sagirov.ilovedog.DAOs.DogsInfoDAO
-import com.sagirov.ilovedog.DataConverter
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
+import com.sagirov.ilovedog.DogsEncyclopediaDatabase.VaccinationsEntity
+import com.sagirov.ilovedog.Screens.Vaccinations.dao.VaccinationDAO
 
-
-@Database(entities = [DogsInfoEntity::class], version = 5, exportSchema = true/*,autoMigrations = [AutoMigration(from = 4, to = 5)]*/)
-@TypeConverters(DataConverter::class)
+@Database(entities = [VaccinationsEntity::class], version = 1, exportSchema = true,/*autoMigrations = [AutoMigration(from = 4, to = 5)]*/)
 //@Module// свой вклад в граф объектов внедрения зависимостей.
 //@InstallIn(SingletonComponent::class) //говорит, что активности этой зависимость должны быть активными в течении жизни приложения
-abstract class DogsInfoDatabase: RoomDatabase() {
-    abstract fun getDao(): DogsInfoDAO
-
+abstract class VaccinationDatabase: RoomDatabase() {
+    abstract fun getDao(): VaccinationDAO
 
 //    companion object {
 //        // Singleton предотвращает одновременное открытие нескольких экземпляров базы данных //
 //        @Volatile
-//        private var INSTANCE: DogsInfoDatabase? = null
+//        private var INSTANCE: VaccinationDatabase? = null
 //        // если ЭКЗЕМПЛЯР != null, то верните его,
 //        // если равен null, то создайте базу данных
 //        @Provides
 //        @Singleton
-//        fun getDb(@ApplicationContext ctx: Context, scope: CoroutineScope): DogsInfoDatabase {
+//        fun getDb(@ApplicationContext ctx: Context, scope: CoroutineScope): VaccinationDatabase {
 //            return INSTANCE ?: synchronized(this) {
-//                val instance = Room.databaseBuilder(ctx, DogsInfoDatabase::class.java, "dogsInfo")
-//                    .createFromAsset("wtfdb.db")
+//                val instance = Room.databaseBuilder(ctx, VaccinationDatabase::class.java, "vaccine")
 //                    .build()
 //                INSTANCE = instance
 //                instance

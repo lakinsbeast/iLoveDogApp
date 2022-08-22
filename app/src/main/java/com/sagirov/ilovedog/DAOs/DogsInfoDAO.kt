@@ -1,9 +1,11 @@
 package com.sagirov.ilovedog.DAOs
 
-import androidx.lifecycle.LiveData
-import androidx.room.*
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaEntity
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
+import kotlinx.coroutines.flow.Flow
 import java.util.*
 
 @Dao
@@ -24,6 +26,6 @@ interface DogsInfoDAO {
     suspend fun deleteDogProfile(id: Int)
 
     @Query("SELECT * FROM DogsInfoEntity")
-    fun getAllDogsProfiles(): LiveData<MutableList<DogsInfoEntity>>
+    fun getAllDogsProfiles(): Flow<MutableList<DogsInfoEntity>>
 
 }

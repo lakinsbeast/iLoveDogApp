@@ -1,9 +1,8 @@
-package com.sagirov.ilovedog.Repos
+package com.sagirov.ilovedog.Screens.DetailedDog.repos
 
 import androidx.lifecycle.LiveData
-import com.sagirov.ilovedog.DAOs.DogsBreedEncyclopediaDAO
-import com.sagirov.ilovedog.DAOs.DogsInfoDAO
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaEntity
+import com.sagirov.ilovedog.Screens.DetailedDog.dao.DogsBreedEncyclopediaDAO
 import javax.inject.Inject
 import javax.inject.Singleton
 

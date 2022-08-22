@@ -1,8 +1,8 @@
-package com.sagirov.ilovedog.Repos
+package com.sagirov.ilovedog.Screens.Vaccinations.repos
 
 import androidx.lifecycle.LiveData
-import com.sagirov.ilovedog.DAOs.VaccinationDAO
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.VaccinationsEntity
+import com.sagirov.ilovedog.Screens.Vaccinations.dao.VaccinationDAO
 import javax.inject.Inject
 import javax.inject.Singleton
 

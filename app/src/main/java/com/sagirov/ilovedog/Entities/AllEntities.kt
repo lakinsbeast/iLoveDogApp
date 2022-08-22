@@ -47,6 +47,12 @@ data class DocumentsEntity(
 )
 
 @Entity
+data class ReminderEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val reminder: Map<String, String>
+)
+
+@Entity
 data class VaccinationsEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,

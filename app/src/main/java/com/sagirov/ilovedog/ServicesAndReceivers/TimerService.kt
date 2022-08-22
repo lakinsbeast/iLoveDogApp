@@ -1,4 +1,4 @@
-package com.sagirov.ilovedog
+package com.sagirov.ilovedog.ServicesAndReceivers
 
 import android.app.Service
 import android.content.Intent

@@ -34,15 +34,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sagirov.ilovedog.DogsApplication
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ViewModels.DocumentViewModel
-import com.sagirov.ilovedog.ViewModels.DocumentViewModelFactory
 import com.sagirov.ilovedog.ui.theme.*
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.io.File
 
 @AndroidEntryPoint
@@ -59,27 +63,52 @@ class DocumentActivity : ComponentActivity() {
 
     private val isImageOpened = mutableStateOf(false)
 
-    private val documentViewModeld: DocumentViewModel by viewModels {
-        DocumentViewModelFactory((application as DogsApplication).DocumentAppRepo)
-    }
+    private val documentViewModel: DocumentViewModel by viewModels()
 
     @SuppressLint("Range")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        documentViewModeld.getAllDocuments.observe(this) {
-            allDocsIds.clear()
-            allDocsIdsState.clear()
-            allDocsKeys.clear()
-            allDocsValues.clear()
-            it.forEach {
-                allDocsIds.add(it.id)
-                allDocsKeys.add(Uri.parse(it.docs.keys.toString()).toString().replace("[", "").replace("]", ""))
-                allDocsValues.add(Uri.parse(it.docs.values.toString()).toString().replace("[", "").replace("]", ""))
-            }
-            allDocsIdsState.addAll(allDocsIds)
 
-
+        lifecycleScope.launch {
+            documentViewModel.getAllDocuments.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).onEach {
+                if (it.isNotEmpty()) {
+                    allDocsIds.clear()
+                    allDocsIdsState.clear()
+                    allDocsKeys.clear()
+                    allDocsValues.clear()
+                    it.forEach {
+                        allDocsIds.add(it.id)
+                        allDocsKeys.add(Uri.parse(it.docs.keys.toString()).toString().replace("[", "").replace("]", ""))
+                        allDocsValues.add(Uri.parse(it.docs.values.toString()).toString().replace("[", "").replace("]", ""))
+                    }
+                    allDocsIdsState.addAll(allDocsIds)
+                }
+            }.launchIn(lifecycleScope)
+//            documentViewModel.getAllDocuments.collect {
+//                allDocsIds.clear()
+//                allDocsIdsState.clear()
+//                allDocsKeys.clear()
+//                allDocsValues.clear()
+//                it.forEach {
+//                    allDocsIds.add(it.id)
+//                    allDocsKeys.add(Uri.parse(it.docs.keys.toString()).toString().replace("[", "").replace("]", ""))
+//                    allDocsValues.add(Uri.parse(it.docs.values.toString()).toString().replace("[", "").replace("]", ""))
+//                }
+//                allDocsIdsState.addAll(allDocsIds)
+//            }
         }
+//        documentViewModeld.getAllDocuments.observe(this) {
+//            allDocsIds.clear()
+//            allDocsIdsState.clear()
+//            allDocsKeys.clear()
+//            allDocsValues.clear()
+//            it.forEach {
+//                allDocsIds.add(it.id)
+//                allDocsKeys.add(Uri.parse(it.docs.keys.toString()).toString().replace("[", "").replace("]", ""))
+//                allDocsValues.add(Uri.parse(it.docs.values.toString()).toString().replace("[", "").replace("]", ""))
+//            }
+//            allDocsIdsState.addAll(allDocsIds)
+//        }
         val getDocument = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
             if (it != null) {
                 this@DocumentActivity.contentResolver.takePersistableUriPermission(
@@ -97,7 +126,7 @@ class DocumentActivity : ComponentActivity() {
                 Log.d("doc", "doc Uri: $it")
                 Log.d("docName", File(it.path.toString()).name)
                 Log.d("docName1", File(it.path.toString()).name.split(":")[0])
-                documentViewModeld.insertDocumentFile(
+                documentViewModel.insertDocumentFile(
                     DocumentsEntity(
                         0,
                         mapOf(it.toString() to displayName)
@@ -121,7 +150,7 @@ class DocumentActivity : ComponentActivity() {
                 }
                 cursor.close()
 
-                documentViewModeld.insertDocumentFile(
+                documentViewModel.insertDocumentFile(
                     DocumentsEntity(
                         0,
                         mapOf(it.toString() to displayName)
@@ -206,7 +235,7 @@ class DocumentActivity : ComponentActivity() {
                                     }
                                     OutlinedButton(
                                         onClick = {
-                                            documentViewModeld.deleteDocumentFile(allDocsIdsState[idDocument.value])
+                                            documentViewModel.deleteDocumentFile(allDocsIdsState[idDocument.value])
                                             dialogState.value = false
                                         },
                                         Modifier
@@ -271,7 +300,7 @@ class DocumentActivity : ComponentActivity() {
                                             )
                                             IconButton(onClick = {
                                                 if (newDocumentName.value.isNotEmpty() || newDocumentName.value.isNotBlank()) {
-                                                    documentViewModeld.updateDocumentFile(
+                                                    documentViewModel.updateDocumentFile(
                                                         allDocsIds[idDocument.value],
                                                         mapOf(keyUriDocument to newDocumentName.value)
                                                     )

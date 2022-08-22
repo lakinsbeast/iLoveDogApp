@@ -2,12 +2,9 @@ package com.sagirov.ilovedog.ViewModels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.VaccinationsEntity
-import com.sagirov.ilovedog.Repos.DogsInfoRepository
-import com.sagirov.ilovedog.Repos.VaccinationRepository
+import com.sagirov.ilovedog.Screens.Vaccinations.repos.VaccinationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,11 +20,11 @@ class VaccinationViewModel @Inject constructor(private val repo: VaccinationRepo
         repo.deleteVaccination(id)
     }
 }
-class VaccinationViewModelFactory(private val repo: VaccinationRepository): ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(VaccinationViewModel::class.java)) {
-            return VaccinationViewModel(repo) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
+//class VaccinationViewModelFactory(private val repo: VaccinationRepository): ViewModelProvider.Factory {
+//    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//        if (modelClass.isAssignableFrom(VaccinationViewModel::class.java)) {
+//            return VaccinationViewModel(repo) as T
+//        }
+//        throw IllegalArgumentException("Unknown ViewModel class")
+//    }
+//}

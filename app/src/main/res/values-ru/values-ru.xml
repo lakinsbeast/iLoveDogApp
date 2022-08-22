@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="home">Главный экран</string>
+    <string name="knowledges">Знания</string>
+    <string name="dogCards">Карточки собак</string>
+    <string name="health">Здоровье</string>
+    <string name="menu">Меню</string>
+
     <string name="app_name">ILoveDog</string>
     <string name="main_menu_title_text">Питомец</string>
     <string name="main_menu_profile_text">Профиль</string>

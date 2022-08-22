@@ -1,4 +1,4 @@
-package com.sagirov.ilovedog.DAOs
+package com.sagirov.ilovedog.Screens.Vaccinations.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao

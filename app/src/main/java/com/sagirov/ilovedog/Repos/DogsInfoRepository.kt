@@ -1,16 +1,15 @@
 package com.sagirov.ilovedog.Repos
 
-import androidx.lifecycle.LiveData
 import com.sagirov.ilovedog.DAOs.DogsInfoDAO
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsBreedEncyclopediaEntity
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
+import kotlinx.coroutines.flow.Flow
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DogsInfoRepository @Inject constructor(private val dogsDao: DogsInfoDAO) {
-    fun getAllDogsProfiles(): LiveData<MutableList<DogsInfoEntity>> = dogsDao.getAllDogsProfiles()
+    fun getAllDogsProfiles(): Flow<MutableList<DogsInfoEntity>> = dogsDao.getAllDogsProfiles()
 
     suspend fun updateDogsTime(id: Int, time: Long){
         dogsDao.updateDogsTime(id, time)

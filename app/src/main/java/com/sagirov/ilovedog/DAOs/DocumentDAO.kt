@@ -1,10 +1,10 @@
 package com.sagirov.ilovedog.DAOs
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DocumentDAO {
@@ -20,6 +20,6 @@ interface DocumentDAO {
     suspend fun updateDocumentFile(id: Int, doc: Map<String, String>)
 
     @Query("SELECT * FROM DocumentsEntity")
-    fun getAllDocuments(): LiveData<MutableList<DocumentsEntity>>
+    fun getAllDocuments(): Flow<MutableList<DocumentsEntity>>
 
 }

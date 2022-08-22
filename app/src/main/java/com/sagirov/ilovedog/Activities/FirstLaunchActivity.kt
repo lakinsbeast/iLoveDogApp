@@ -23,8 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sagirov.ilovedog.PreferencesUtils
 import com.sagirov.ilovedog.R
+import com.sagirov.ilovedog.Utils.PreferencesUtils
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.sagirov.ilovedog.ui.theme.mainTextColor
@@ -34,11 +34,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class FirstLaunchActivity : ComponentActivity() {
     @Inject
-    private var newPrefs: PreferencesUtils = PreferencesUtils(this)
+    lateinit var newPrefs: PreferencesUtils
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        newPrefs = PreferencesUtils(this)
         setContent {
             val systemUiController = rememberSystemUiController()
             systemUiController.setSystemBarsColor(mainBackgroundColor)
