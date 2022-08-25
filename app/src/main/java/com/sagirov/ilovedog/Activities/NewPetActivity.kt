@@ -23,9 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,10 +33,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.sagirov.ilovedog.Activities.MainActivity.MainActivity
+import com.sagirov.ilovedog.Activities.MainActivity.viewmodel.DogsInfoViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoViewModel
 import com.sagirov.ilovedog.Utils.PreferencesUtils
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
@@ -47,6 +48,8 @@ import com.sagirov.ilovedog.ui.theme.textFieldUnFocusedIndicatorColor
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
@@ -274,20 +277,36 @@ class NewPetActivity : ComponentActivity() {
                     Text("Добавить питомца", color = mainTextColor)
                 }
                 if (intentID.value != -543253425) {
-                    dogsInfoViewModel.getAllDogsProfiles.observe(this@NewPetActivity) {
-                        dogsProfileArray.clear()
-                        dogsProfileArray.addAll(it)
+                    LaunchedEffect(rememberCoroutineScope()) {
+                        dogsInfoViewModel.getAllDogsProfiles.flowWithLifecycle(
+                            lifecycle,
+                            Lifecycle.State.STARTED
+                        ).onEach {
+                            if (it.isNotEmpty()) {
+                                dogsProfileArray.clear()
+                                dogsProfileArray.addAll(it)
+                            }
+                        }.launchIn(lifecycleScope)
                     }
-                    OutlinedButton(onClick = {
-                        if (!cameraUriPhoto.value.isNullOrBlank()){
-                            cameraUriToUpdate.value = cameraUriPhoto.value
-                        } else {
-                            cameraUriToUpdate.value = dogsProfileArray[intentID.value].image
-                        }
-                        if ((petName.value != "" && petNameBreed.value != "" && petPaddock.value != "")) {
-                            if (petPaddock.value.contains("[0-999]".toRegex()) && !petPaddock.value.contains(" ")) {
-                                dogsInfoViewModel.updateDogProfile(
-                                    DogsInfoEntity(dogsProfileArray[intentID.value].id,
+//                    dogsInfoViewModel.getAllDogsProfiles.observe(this@NewPetActivity) {
+//                        dogsProfileArray.clear()
+//                        dogsProfileArray.addAll(it)
+//                    }
+                    OutlinedButton(
+                        onClick = {
+                            if (!cameraUriPhoto.value.isNullOrBlank()) {
+                                cameraUriToUpdate.value = cameraUriPhoto.value
+                            } else {
+                                cameraUriToUpdate.value = dogsProfileArray[intentID.value].image
+                            }
+                            if ((petName.value != "" && petNameBreed.value != "" && petPaddock.value != "")) {
+                                if (petPaddock.value.contains("[0-999]".toRegex()) && !petPaddock.value.contains(
+                                        " "
+                                    )
+                                ) {
+                                    dogsInfoViewModel.updateDogProfile(
+                                        DogsInfoEntity(
+                                            dogsProfileArray[intentID.value].id,
                                         petName.value,
                                         dogsProfileArray[intentID.value].dateBirth,
                                         (petPaddock.value.toLong()*60000),

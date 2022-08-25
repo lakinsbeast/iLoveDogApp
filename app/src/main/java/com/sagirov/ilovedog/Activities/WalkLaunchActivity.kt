@@ -31,9 +31,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sagirov.ilovedog.Activities.MainActivity.Companion.myPetPaddockT
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoViewModel
+import com.sagirov.ilovedog.Activities.MainActivity.MainActivity.Companion.myPetPaddockT
+import com.sagirov.ilovedog.Activities.MainActivity.viewmodel.DogsInfoViewModel
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ServicesAndReceivers.TimerService
 import com.sagirov.ilovedog.Utils.PreferencesUtils
@@ -42,6 +45,9 @@ import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
 import com.sagirov.ilovedog.ui.theme.mainTextColor
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -87,11 +93,15 @@ class WalkLaunchActivity : ComponentActivity() {
             timer.cancel()
             isStartTimer = false
         }
-        val notifManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notifManager =
+            this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notifManager.cancel(0)
+        /////////////слишком костыльно, потом поменяю
         myPetPaddockT.value = true
         myPetPaddockT.value = false
-        super.onBackPressed()}
+        ///////////
+        super.onBackPressed()
+    }
 
     private val dogsInfoViewModel: DogsInfoViewModel by viewModels()
 
@@ -100,14 +110,29 @@ class WalkLaunchActivity : ComponentActivity() {
         newPrefs = PreferencesUtils(this)
         val id = intent.getIntExtra("id", 0)
         var idOfProfile: Int = id
-        dogsInfoViewModel.getAllDogsProfiles.observe(this) {
-            idOfProfile = it[id].id
-            statsCurrentTime.value = it[id].currentTimeWalk
-            statsConstTime.value =  it[id].walkingTimeConst
-            currentTimeInMinutes = statsCurrentTime.value
-            startTimeForScore = currentTimeInMinutes
-            stopTimer = statsConstTime.value
+
+        lifecycleScope.launch {
+            dogsInfoViewModel.getAllDogsProfiles.flowWithLifecycle(
+                lifecycle,
+                Lifecycle.State.STARTED
+            ).onEach {
+                idOfProfile = it[id].id
+                statsCurrentTime.value = it[id].currentTimeWalk
+                statsConstTime.value = it[id].walkingTimeConst
+                currentTimeInMinutes = statsCurrentTime.value
+                startTimeForScore = currentTimeInMinutes
+                stopTimer = statsConstTime.value
+            }.launchIn(lifecycleScope)
         }
+
+//        dogsInfoViewModel.getAllDogsProfiles.observe(this) {
+//            idOfProfile = it[id].id
+//            statsCurrentTime.value = it[id].currentTimeWalk
+//            statsConstTime.value =  it[id].walkingTimeConst
+//            currentTimeInMinutes = statsCurrentTime.value
+//            startTimeForScore = currentTimeInMinutes
+//            stopTimer = statsConstTime.value
+//        }
 
         prefsMyPet = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
         var backgroundColor = mutableStateOf(mainBackgroundColor)

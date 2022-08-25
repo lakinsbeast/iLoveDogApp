@@ -4,6 +4,7 @@ import android.content.Context
 import com.sagirov.ilovedog.Utils.CheckDarkModeManager
 import com.sagirov.ilovedog.Utils.CheckFirstLaunchManager
 import com.sagirov.ilovedog.Utils.PreferencesUtils
+import com.sagirov.ilovedog.Utils.TextUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,10 +27,16 @@ object AppModule {
     fun provideDarkModeManager(@ApplicationContext ctx: Context): CheckDarkModeManager {
         return CheckDarkModeManager(ctx)
     }
+
     @Provides
     @Singleton
     fun provideFirstLaunchManager(@ApplicationContext ctx: Context): CheckFirstLaunchManager {
         return CheckFirstLaunchManager(ctx)
     }
 
+    @Provides
+    @Singleton
+    fun provideTextUtils(): TextUtils {
+        return TextUtils()
+    }
 }

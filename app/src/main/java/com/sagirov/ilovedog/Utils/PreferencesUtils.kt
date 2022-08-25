@@ -19,7 +19,6 @@ class PreferencesUtils @Inject constructor(@ApplicationContext ctx: Context) {
     private val MODE = ComponentActivity.MODE_PRIVATE
     var contextOfApplication: Context = ctx
 
-    @Inject
     lateinit var prefsEdit: SharedPreferences
 
     fun getBoolean(nameOfPrefs: String, name: String, defValue: Boolean): Boolean {

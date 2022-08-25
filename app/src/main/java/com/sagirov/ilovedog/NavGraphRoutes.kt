@@ -11,4 +11,7 @@ enum class NavGraphRoutes(val route: String) {
     vaccination("vaccination"),
     addVaccination("addVaccination"),
     walkLaunch("walkLaunch"),
+    aboutAuthor("aboutAuthor"),
+    dogNutrition("dogNutrition"),
+    articleScreen("articleScreen"),
 }
