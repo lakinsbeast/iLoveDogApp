@@ -33,12 +33,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.Activities.MainActivity.MainActivity
-import com.sagirov.ilovedog.Activities.MainActivity.viewmodel.DogsInfoViewModel
+import com.sagirov.ilovedog.Activities.MainActivity.presentation.DogsInfoViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
 import com.sagirov.ilovedog.Utils.PreferencesUtils
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
@@ -48,8 +46,6 @@ import com.sagirov.ilovedog.ui.theme.textFieldUnFocusedIndicatorColor
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
@@ -68,7 +64,7 @@ class NewPetActivity : ComponentActivity() {
 
     private val dogsProfileArray = mutableStateListOf<DogsInfoEntity>()
 
-    private val dogsInfoViewModel: DogsInfoViewModel by viewModels ()
+    private val dogsInfoViewModel: DogsInfoViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -239,20 +235,22 @@ class NewPetActivity : ComponentActivity() {
                             ) {
                                 petPaddock.value = (petPaddock.value.toLong() * 60000).toString()
                                 newPrefs.putBoolean(PREF_NAME, "firstOpen", false)
-                                dogsInfoViewModel.insertDogProfile(
-                                    DogsInfoEntity(
-                                        0,
-                                        petName.value,
-                                        Calendar.getInstance().time,
-                                        petPaddock.value.toLong(),
-                                        Calendar.getInstance().time,
-                                        petNameBreed.value,
-                                        "Сука",
-                                        petPaddock.value.toLong(),
-                                        56,
-                                        cameraUriPhoto.value
+                                lifecycleScope.launch {
+                                    dogsInfoViewModel.insert(
+                                        DogsInfoEntity(
+                                            0,
+                                            petName.value,
+                                            Calendar.getInstance().time,
+                                            petPaddock.value.toLong(),
+                                            Calendar.getInstance().time,
+                                            petNameBreed.value,
+                                            "Сука",
+                                            petPaddock.value.toLong(),
+                                            56,
+                                            cameraUriPhoto.value
+                                        )
                                     )
-                                )
+                                }
                                 startActivity(Intent(this@NewPetActivity, MainActivity::class.java))
                                 finish()
                             } else {
@@ -278,15 +276,21 @@ class NewPetActivity : ComponentActivity() {
                 }
                 if (intentID.value != -543253425) {
                     LaunchedEffect(rememberCoroutineScope()) {
-                        dogsInfoViewModel.getAllDogsProfiles.flowWithLifecycle(
-                            lifecycle,
-                            Lifecycle.State.STARTED
-                        ).onEach {
+                        dogsInfoViewModel.dogProfiles.collect {
                             if (it.isNotEmpty()) {
                                 dogsProfileArray.clear()
                                 dogsProfileArray.addAll(it)
                             }
-                        }.launchIn(lifecycleScope)
+                        }
+//                        dogsInfoViewModel.getAllDogsProfiles.flowWithLifecycle(
+//                            lifecycle,
+//                            Lifecycle.State.STARTED
+//                        ).onEach {
+//                            if (it.isNotEmpty()) {
+//                                dogsProfileArray.clear()
+//                                dogsProfileArray.addAll(it)
+//                            }
+//                        }.launchIn(lifecycleScope)
                     }
 //                    dogsInfoViewModel.getAllDogsProfiles.observe(this@NewPetActivity) {
 //                        dogsProfileArray.clear()

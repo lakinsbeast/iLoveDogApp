@@ -17,7 +17,7 @@ data class DogsInfoEntity(
     val walkingTimeConst: Long,
     val weight: Int,
     val image: String
-    )
+)
 
 @Entity
 data class DocumentsEntity(

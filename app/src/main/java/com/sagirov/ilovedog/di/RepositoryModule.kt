@@ -1,9 +1,11 @@
 package com.sagirov.ilovedog.di
 
-import com.sagirov.ilovedog.Activities.Documents.dao.DocumentDAO
-import com.sagirov.ilovedog.Activities.Documents.repo.DocumentRepository
-import com.sagirov.ilovedog.Activities.MainActivity.dao.DogsInfoDAO
-import com.sagirov.ilovedog.Activities.MainActivity.repo.DogsInfoRepository
+import com.sagirov.ilovedog.Activities.Documents.data.database.DocumentDatabase
+import com.sagirov.ilovedog.Activities.Documents.data.repoImpl.DocumentRepositoryImpl
+import com.sagirov.ilovedog.Activities.Documents.domain.repository.DocumentRepository
+import com.sagirov.ilovedog.Activities.MainActivity.data.database.DogsInfoDatabase
+import com.sagirov.ilovedog.Activities.MainActivity.data.repoImpl.DogInfoRepositoryImpl
+import com.sagirov.ilovedog.Activities.MainActivity.domain.repository.DogsInfoRepository
 import com.sagirov.ilovedog.Screens.DetailedDog.data.database.DogsBreedEncyclopediaDatabase
 import com.sagirov.ilovedog.Screens.DetailedDog.data.repositoryImpl.DogsEncyclopediaRepositoryImpl
 import com.sagirov.ilovedog.Screens.DetailedDog.domain.repository.DogsEncyclopediaRepository
@@ -42,9 +44,13 @@ object RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideDocumentRepository(dao: DocumentDAO) = DocumentRepository(dao)
+    fun provideDocumentRepository(db: DocumentDatabase): DocumentRepository {
+        return DocumentRepositoryImpl(db.getDao())
+    }
 
     @Singleton
     @Provides
-    fun provideDogsInfo(dao: DogsInfoDAO) = DogsInfoRepository(dao)
+    fun provideDogsInfoRepository(db: DogsInfoDatabase): DogsInfoRepository {
+        return DogInfoRepositoryImpl(db.getDao())
+    }
 }

@@ -2,10 +2,10 @@ package com.sagirov.ilovedog.di
 
 import android.content.Context
 import androidx.room.Room
-import com.sagirov.ilovedog.Activities.Documents.dao.DocumentDAO
-import com.sagirov.ilovedog.Activities.Documents.database.DocumentDatabase
-import com.sagirov.ilovedog.Activities.MainActivity.dao.DogsInfoDAO
-import com.sagirov.ilovedog.Activities.MainActivity.database.DogsInfoDatabase
+import com.sagirov.ilovedog.Activities.Documents.data.dao.DocumentDAO
+import com.sagirov.ilovedog.Activities.Documents.data.database.DocumentDatabase
+import com.sagirov.ilovedog.Activities.MainActivity.data.dao.DogsInfoDAO
+import com.sagirov.ilovedog.Activities.MainActivity.data.database.DogsInfoDatabase
 import com.sagirov.ilovedog.Screens.DetailedDog.data.dao.DogsBreedEncyclopediaDAO
 import com.sagirov.ilovedog.Screens.DetailedDog.data.database.DogsBreedEncyclopediaDatabase
 import com.sagirov.ilovedog.Screens.Reminder.data.dao.ReminderDAO

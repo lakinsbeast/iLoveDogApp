@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package com.sagirov.ilovedog.Activities.Documents
+package com.sagirov.ilovedog.Activities.Documents.presentation
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sagirov.ilovedog.Activities.Documents.viewmodel.DocumentViewModel
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ui.theme.*
@@ -45,6 +44,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.File
 
+//TODO{ИЗМЕНИТЬ ВСЕ}
 @AndroidEntryPoint
 class DocumentActivity : ComponentActivity() {
     private val allDocsKeys = mutableStateListOf<String>()
@@ -65,7 +65,7 @@ class DocumentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
-            documentViewModel.getAllDocuments.collect {
+            documentViewModel.documents.collect {
                 allDocsIds.clear()
                 allDocsIdsState.clear()
                 allDocsKeys.clear()
@@ -83,6 +83,24 @@ class DocumentActivity : ComponentActivity() {
                 }
                 allDocsIdsState.addAll(allDocsIds)
             }
+//            documentViewModel.getAllDocuments.collect {
+//                allDocsIds.clear()
+//                allDocsIdsState.clear()
+//                allDocsKeys.clear()
+//                allDocsValues.clear()
+//                it.forEach {
+//                    allDocsIds.add(it.id)
+//                    allDocsKeys.add(
+//                        Uri.parse(it.docs.keys.toString()).toString().replace("[", "")
+//                            .replace("]", "")
+//                    )
+//                    allDocsValues.add(
+//                        Uri.parse(it.docs.values.toString()).toString().replace("[", "")
+//                            .replace("]", "")
+//                    )
+//                }
+//                allDocsIdsState.addAll(allDocsIds)
+//            }
         }
 //        documentViewModeld.getAllDocuments.observe(this) {
 //            allDocsIds.clear()
@@ -113,7 +131,7 @@ class DocumentActivity : ComponentActivity() {
                 Log.d("doc", "doc Uri: $it")
                 Log.d("docName", File(it.path.toString()).name)
                 Log.d("docName1", File(it.path.toString()).name.split(":")[0])
-                documentViewModel.insertDocumentFile(
+                documentViewModel.insert(
                     DocumentsEntity(
                         0,
                         mapOf(it.toString() to displayName)
@@ -137,7 +155,7 @@ class DocumentActivity : ComponentActivity() {
                 }
                 cursor.close()
 
-                documentViewModel.insertDocumentFile(
+                documentViewModel.insert(
                     DocumentsEntity(
                         0,
                         mapOf(it.toString() to displayName)
@@ -222,7 +240,7 @@ class DocumentActivity : ComponentActivity() {
                                     }
                                     OutlinedButton(
                                         onClick = {
-                                            documentViewModel.deleteDocumentFile(allDocsIdsState[idDocument.value])
+                                            documentViewModel.delete(allDocsIdsState[idDocument.value])
                                             dialogState.value = false
                                         },
                                         Modifier
@@ -287,7 +305,7 @@ class DocumentActivity : ComponentActivity() {
                                             )
                                             IconButton(onClick = {
                                                 if (newDocumentName.value.isNotEmpty() || newDocumentName.value.isNotBlank()) {
-                                                    documentViewModel.updateDocumentFile(
+                                                    documentViewModel.update(
                                                         allDocsIds[idDocument.value],
                                                         mapOf(keyUriDocument to newDocumentName.value)
                                                     )

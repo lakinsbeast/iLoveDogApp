@@ -1,4 +1,4 @@
-package com.sagirov.ilovedog.Activities.Documents.dao
+package com.sagirov.ilovedog.Activities.Documents.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert

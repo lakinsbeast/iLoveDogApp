@@ -1,9 +1,9 @@
-package com.sagirov.ilovedog.Activities.MainActivity.database
+package com.sagirov.ilovedog.Activities.MainActivity.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.sagirov.ilovedog.Activities.MainActivity.dao.DogsInfoDAO
+import com.sagirov.ilovedog.Activities.MainActivity.data.dao.DogsInfoDAO
 import com.sagirov.ilovedog.DataConverter
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
 

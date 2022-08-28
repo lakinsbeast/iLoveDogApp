@@ -1,5 +1,12 @@
 package com.sagirov.ilovedog.di
 
+import com.sagirov.ilovedog.Activities.Documents.domain.repository.DocumentRepository
+import com.sagirov.ilovedog.Activities.Documents.domain.usecase.deleteDocument
+import com.sagirov.ilovedog.Activities.Documents.domain.usecase.getAllDocuments
+import com.sagirov.ilovedog.Activities.Documents.domain.usecase.insertDocument
+import com.sagirov.ilovedog.Activities.Documents.domain.usecase.updateDocument
+import com.sagirov.ilovedog.Activities.MainActivity.domain.repository.DogsInfoRepository
+import com.sagirov.ilovedog.Activities.MainActivity.domain.usecase.*
 import com.sagirov.ilovedog.Screens.DetailedDog.domain.repository.DogsEncyclopediaRepository
 import com.sagirov.ilovedog.Screens.DetailedDog.domain.usecase.DogsEncyclopedia.getAllDogs
 import com.sagirov.ilovedog.Screens.DetailedDog.domain.usecase.DogsEncyclopedia.getDogById
@@ -45,4 +52,45 @@ class ViewModelModule {
     @Provides
     fun provideDeleteVaccination(repo: VaccinationRepository): deleteVaccination =
         deleteVaccination(repo)
+
+    @Provides
+    fun provideGetAllDocuments(repo: DocumentRepository): getAllDocuments =
+        getAllDocuments(repo)
+
+    @Provides
+    fun provideInsertDocument(repo: DocumentRepository): insertDocument =
+        insertDocument(repo)
+
+    @Provides
+    fun provideUpdateDocument(repo: DocumentRepository): updateDocument =
+        updateDocument(repo)
+
+    @Provides
+    fun provideDeleteDocument(repo: DocumentRepository): deleteDocument =
+        deleteDocument(repo)
+
+    @Provides
+    fun provideGetAllDogProfiles(repo: DogsInfoRepository): getAllProfiles =
+        getAllProfiles(repo)
+
+    @Provides
+    fun provideDeleteDogProfile(repo: DogsInfoRepository): deleteDogProfile =
+        deleteDogProfile(repo)
+
+    @Provides
+    fun provideInsertDogProfile(repo: DogsInfoRepository): insertDogProfile =
+        insertDogProfile(repo)
+
+    @Provides
+    fun provideUpdateDogProfile(repo: DogsInfoRepository): updateDogProfile =
+        updateDogProfile(repo)
+
+    @Provides
+    fun provideUpdateDogsDate(repo: DogsInfoRepository): updateDogsDate =
+        updateDogsDate(repo)
+
+    @Provides
+    fun provideUpdateDogsTime(repo: DogsInfoRepository): updateDogsTime =
+        updateDogsTime(repo)
+
 }
