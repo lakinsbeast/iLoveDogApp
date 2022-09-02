@@ -2,9 +2,10 @@ package com.sagirov.ilovedog.Activities.MainActivity.domain.usecase
 
 import com.sagirov.ilovedog.Activities.MainActivity.domain.repository.DogsInfoRepository
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
+import kotlinx.coroutines.flow.Flow
 
-class insertDogProfile(
+class getAllProfilesUseCase(
     private val repo: DogsInfoRepository
 ) {
-    suspend operator fun invoke(doge: DogsInfoEntity) = repo.insert(doge)
+    operator fun invoke(): Flow<MutableList<DogsInfoEntity>> = repo.getAllProfiles()
 }

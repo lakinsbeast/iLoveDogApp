@@ -247,57 +247,67 @@ fun RepeatReminderColumn(
     LazyColumn {
         data.forEach {
             item(it.key) {
-                val alertDelete = AlertDialog.Builder(ctx)
-                alertDelete.setTitle("Удалить напоминание?")
-                alertDelete.setMessage("Вы уверены, что хотите удалить напоминание: \n${it.value}?")
-                alertDelete.setCancelable(true)
-                alertDelete.setPositiveButton("Да") { _, _ ->
+                alertDialogsForReminders({
                     remindersViewModel.delete(mapOf(it.key.toString() to it.value + ".Повтор%#%:#%:"))
                     dateForVisitToVet.remove(it.key)
                     repeatReminderMap.remove(it.key)
-                }
-                alertDelete.setNegativeButton("Нет") { dialog, _ ->
-                    dialog.cancel()
-                }
-                Card(onClick = {
-                    val alert = AlertDialog.Builder(ctx)
-//                        alert.setTitle(it.value)
-                    alert.setMessage(it.value)
-                    alert.setCancelable(true)
-                    alert.setPositiveButton("Удалить") { _, _ ->
-                        alertDelete.create().show()
-                    }
-                    alert.create().show()
-                }, shape = RoundedCornerShape(0.dp)) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(mainSecondColor)
-                            .padding(start = 20.dp, end = 20.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            textUtils.textReduces(it.value),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            color = mainTextColor
-                        )
-                        Column() {
-                            Text(
-                                text = DateFormat.getDateInstance(DateFormat.SHORT)
-                                    .format(it.key).toString(), color = mainTextColor
-                            )
-                            Text(
-                                text = DateFormat.getTimeInstance(DateFormat.SHORT)
-                                    .format(it.key).toString(), color = mainTextColor
-                            )
-                        }
-                    }
-                }
+                }, it.value, it.key)
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun alertDialogsForReminders(forPositiveBtn: () -> Unit, value: Any, key: Any) {
+    val ctx = LocalContext.current
+    val alertDelete = AlertDialog.Builder(ctx)
+    alertDelete.setTitle("Удалить напоминание?")
+    alertDelete.setMessage("Вы уверены, что хотите удалить напоминание: \n${value}?")
+    alertDelete.setCancelable(true)
+    alertDelete.setPositiveButton("Да") { _, _ ->
+        forPositiveBtn.invoke()
+    }
+    alertDelete.setNegativeButton("Нет") { dialog, _ ->
+        dialog.cancel()
+    }
+    Card(onClick = {
+        val alert = AlertDialog.Builder(ctx)
+//                        alert.setTitle(it.value)
+        alert.setMessage(value as String)
+        alert.setCancelable(true)
+        alert.setPositiveButton("Удалить") { _, _ ->
+            alertDelete.create().show()
+        }
+        alert.create().show()
+    }, shape = RoundedCornerShape(0.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(mainSecondColor)
+                .padding(start = 20.dp, end = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                textUtils.textReduces(value as String),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                color = mainTextColor
+            )
+            Column() {
+                Text(
+                    text = DateFormat.getDateInstance(DateFormat.SHORT)
+                        .format(key).toString(), color = mainTextColor
+                )
+                Text(
+                    text = DateFormat.getTimeInstance(DateFormat.SHORT)
+                        .format(key).toString(), color = mainTextColor
+                )
+            }
+//                            }
         }
     }
 }
@@ -313,57 +323,11 @@ fun DayReminderColumn(
     LazyColumn {
         data.forEach {
             item(it.key) {
-                val alertDelete = AlertDialog.Builder(ctx)
-                alertDelete.setTitle("Удалить напоминание?")
-                alertDelete.setMessage("Вы уверены, что хотите удалить напоминание: \n${it.value}?")
-                alertDelete.setCancelable(true)
-                alertDelete.setPositiveButton("Да") { _, _ ->
-                    remindersViewModel.delete(mapOf(it.key.toString() to it.value.toString()))
-                    dateForVisitToVet.remove(it.key)
+                alertDialogsForReminders({
+                    remindersViewModel.delete(mapOf(it.key.toString() to it.value.toString()));
+                    dateForVisitToVet.remove(it.key);
                     dayReminderMap.remove(it.key)
-                }
-                alertDelete.setNegativeButton("Нет") { dialog, _ ->
-                    dialog.cancel()
-                }
-                Card(onClick = {
-                    val alert = AlertDialog.Builder(ctx)
-//                        alert.setTitle(it.value)
-                    alert.setMessage(it.value)
-                    alert.setCancelable(true)
-                    alert.setPositiveButton("Удалить") { _, _ ->
-                        alertDelete.create().show()
-                    }
-                    alert.create().show()
-                }, shape = RoundedCornerShape(0.dp)) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(mainSecondColor)
-                            .padding(start = 20.dp, end = 20.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            textUtils.textReduces(it.value),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            color = mainTextColor
-                        )
-                        Column() {
-                            Text(
-                                text = DateFormat.getDateInstance(DateFormat.SHORT)
-                                    .format(it.key).toString(), color = mainTextColor
-                            )
-                            Text(
-                                text = DateFormat.getTimeInstance(DateFormat.SHORT)
-                                    .format(it.key).toString(), color = mainTextColor
-                            )
-                        }
-//                            }
-                    }
-                }
+                }, it.value, it.key)
             }
         }
     }
@@ -380,56 +344,11 @@ fun WeeklyReminderColumn(
     LazyColumn {
         data.forEach {
             item(it.key) {
-                val alertDelete = AlertDialog.Builder(ctx)
-                alertDelete.setTitle("Удалить напоминание?")
-                alertDelete.setMessage("Вы уверены, что хотите удалить напоминание: \n${it.value}?")
-                alertDelete.setCancelable(true)
-                alertDelete.setPositiveButton("Да") { _, _ ->
+                alertDialogsForReminders({
                     dateForVisitToVet.remove(it.key)
                     weeklyReminderMap.remove(it.key)
                     remindersViewModel.delete(mapOf(it.key.toString() to it.value.toString()))
-                }
-                alertDelete.setNegativeButton("Нет") { dialog, _ ->
-                    dialog.cancel()
-                }
-                Card(onClick = {
-                    val alert = AlertDialog.Builder(ctx)
-//                        alert.setTitle(it.value)
-                    alert.setMessage(it.value)
-                    alert.setCancelable(true)
-                    alert.setPositiveButton("Удалить") { _, _ ->
-                        alertDelete.create().show()
-                    }
-                    alert.create().show()
-                }, shape = RoundedCornerShape(0.dp)) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(mainSecondColor)
-                            .padding(start = 20.dp, end = 20.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            textUtils.textReduces(it.value),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            color = mainTextColor
-                        )
-                        Column() {
-                            Text(
-                                text = DateFormat.getDateInstance(DateFormat.SHORT)
-                                    .format(it.key).toString(), color = mainTextColor
-                            )
-                            Text(
-                                text = DateFormat.getTimeInstance(DateFormat.SHORT)
-                                    .format(it.key).toString(), color = mainTextColor
-                            )
-                        }
-                    }
-                }
+                }, it.value, it.key)
             }
         }
     }

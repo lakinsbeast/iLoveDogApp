@@ -1,7 +1,8 @@
-package com.sagirov.ilovedog.Utils
+package com.sagirov.ilovedog.Activities.MainActivity.domain.utils
 
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
+import com.sagirov.ilovedog.Utils.PreferencesUtils
 import com.sagirov.ilovedog.ui.theme.CheckDarkMode
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject

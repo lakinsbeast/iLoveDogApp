@@ -1,23 +1,23 @@
 package com.sagirov.ilovedog.di
 
 import com.sagirov.ilovedog.Activities.Documents.domain.repository.DocumentRepository
-import com.sagirov.ilovedog.Activities.Documents.domain.usecase.deleteDocument
-import com.sagirov.ilovedog.Activities.Documents.domain.usecase.getAllDocuments
-import com.sagirov.ilovedog.Activities.Documents.domain.usecase.insertDocument
-import com.sagirov.ilovedog.Activities.Documents.domain.usecase.updateDocument
+import com.sagirov.ilovedog.Activities.Documents.domain.usecase.deleteDocumentUseCase
+import com.sagirov.ilovedog.Activities.Documents.domain.usecase.getAllDocumentsUseCase
+import com.sagirov.ilovedog.Activities.Documents.domain.usecase.insertDocumentUseCase
+import com.sagirov.ilovedog.Activities.Documents.domain.usecase.updateDocumentUseCase
 import com.sagirov.ilovedog.Activities.MainActivity.domain.repository.DogsInfoRepository
 import com.sagirov.ilovedog.Activities.MainActivity.domain.usecase.*
 import com.sagirov.ilovedog.Screens.DetailedDog.domain.repository.DogsEncyclopediaRepository
-import com.sagirov.ilovedog.Screens.DetailedDog.domain.usecase.DogsEncyclopedia.getAllDogs
-import com.sagirov.ilovedog.Screens.DetailedDog.domain.usecase.DogsEncyclopedia.getDogById
+import com.sagirov.ilovedog.Screens.DetailedDog.domain.usecase.getAllDogsUseCase
+import com.sagirov.ilovedog.Screens.DetailedDog.domain.usecase.getDogByIdUseCase
 import com.sagirov.ilovedog.Screens.Reminder.domain.repository.ReminderRepository
-import com.sagirov.ilovedog.Screens.Reminder.domain.usecase.deleteReminder
-import com.sagirov.ilovedog.Screens.Reminder.domain.usecase.getAllReminders
-import com.sagirov.ilovedog.Screens.Reminder.domain.usecase.insertReminder
+import com.sagirov.ilovedog.Screens.Reminder.domain.usecase.deleteReminderUseCase
+import com.sagirov.ilovedog.Screens.Reminder.domain.usecase.getAllRemindersUseCase
+import com.sagirov.ilovedog.Screens.Reminder.domain.usecase.insertReminderUseCase
 import com.sagirov.ilovedog.Screens.Vaccinations.domain.repo.VaccinationRepository
-import com.sagirov.ilovedog.Screens.Vaccinations.domain.usecase.deleteVaccination
-import com.sagirov.ilovedog.Screens.Vaccinations.domain.usecase.getAllVaccinations
-import com.sagirov.ilovedog.Screens.Vaccinations.domain.usecase.insertVaccination
+import com.sagirov.ilovedog.Screens.Vaccinations.domain.usecase.deleteVaccinationUseCase
+import com.sagirov.ilovedog.Screens.Vaccinations.domain.usecase.getAllVaccinationsUseCase
+import com.sagirov.ilovedog.Screens.Vaccinations.domain.usecase.insertVaccinationUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,70 +27,75 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 class ViewModelModule {
     @Provides
-    fun provideGetAllDogs(repo: DogsEncyclopediaRepository): getAllDogs = getAllDogs(repo)
+    fun provideGetAllDogs(repo: DogsEncyclopediaRepository): getAllDogsUseCase =
+        getAllDogsUseCase(repo)
 
     @Provides
-    fun provideGetDogById(repo: DogsEncyclopediaRepository): getDogById = getDogById(repo)
+    fun provideGetDogById(repo: DogsEncyclopediaRepository): getDogByIdUseCase =
+        getDogByIdUseCase(repo)
 
     @Provides
-    fun provideGetAllReminders(repo: ReminderRepository): getAllReminders = getAllReminders(repo)
+    fun provideGetAllReminders(repo: ReminderRepository): getAllRemindersUseCase =
+        getAllRemindersUseCase(repo)
 
     @Provides
-    fun provideDeleteReminders(repo: ReminderRepository): deleteReminder = deleteReminder(repo)
+    fun provideDeleteReminders(repo: ReminderRepository): deleteReminderUseCase =
+        deleteReminderUseCase(repo)
 
     @Provides
-    fun provideInsertReminder(repo: ReminderRepository): insertReminder = insertReminder(repo)
+    fun provideInsertReminder(repo: ReminderRepository): insertReminderUseCase =
+        insertReminderUseCase(repo)
 
     @Provides
-    fun provideGetAllVaccinations(repo: VaccinationRepository): getAllVaccinations =
-        getAllVaccinations(repo)
+    fun provideGetAllVaccinations(repo: VaccinationRepository): getAllVaccinationsUseCase =
+        getAllVaccinationsUseCase(repo)
 
     @Provides
-    fun provideInsertVaccination(repo: VaccinationRepository): insertVaccination =
-        insertVaccination(repo)
+    fun provideInsertVaccination(repo: VaccinationRepository): insertVaccinationUseCase =
+        insertVaccinationUseCase(repo)
 
     @Provides
-    fun provideDeleteVaccination(repo: VaccinationRepository): deleteVaccination =
-        deleteVaccination(repo)
+    fun provideDeleteVaccination(repo: VaccinationRepository): deleteVaccinationUseCase =
+        deleteVaccinationUseCase(repo)
 
     @Provides
-    fun provideGetAllDocuments(repo: DocumentRepository): getAllDocuments =
-        getAllDocuments(repo)
+    fun provideGetAllDocuments(repo: DocumentRepository): getAllDocumentsUseCase =
+        getAllDocumentsUseCase(repo)
 
     @Provides
-    fun provideInsertDocument(repo: DocumentRepository): insertDocument =
-        insertDocument(repo)
+    fun provideInsertDocument(repo: DocumentRepository): insertDocumentUseCase =
+        insertDocumentUseCase(repo)
 
     @Provides
-    fun provideUpdateDocument(repo: DocumentRepository): updateDocument =
-        updateDocument(repo)
+    fun provideUpdateDocument(repo: DocumentRepository): updateDocumentUseCase =
+        updateDocumentUseCase(repo)
 
     @Provides
-    fun provideDeleteDocument(repo: DocumentRepository): deleteDocument =
-        deleteDocument(repo)
+    fun provideDeleteDocument(repo: DocumentRepository): deleteDocumentUseCase =
+        deleteDocumentUseCase(repo)
 
     @Provides
-    fun provideGetAllDogProfiles(repo: DogsInfoRepository): getAllProfiles =
-        getAllProfiles(repo)
+    fun provideGetAllDogProfiles(repo: DogsInfoRepository): getAllProfilesUseCase =
+        getAllProfilesUseCase(repo)
 
     @Provides
-    fun provideDeleteDogProfile(repo: DogsInfoRepository): deleteDogProfile =
-        deleteDogProfile(repo)
+    fun provideDeleteDogProfile(repo: DogsInfoRepository): deleteDogProfileUseCase =
+        deleteDogProfileUseCase(repo)
 
     @Provides
-    fun provideInsertDogProfile(repo: DogsInfoRepository): insertDogProfile =
-        insertDogProfile(repo)
+    fun provideInsertDogProfile(repo: DogsInfoRepository): insertDogProfileUseCase =
+        insertDogProfileUseCase(repo)
 
     @Provides
-    fun provideUpdateDogProfile(repo: DogsInfoRepository): updateDogProfile =
-        updateDogProfile(repo)
+    fun provideUpdateDogProfile(repo: DogsInfoRepository): updateDogProfileUseCase =
+        updateDogProfileUseCase(repo)
 
     @Provides
-    fun provideUpdateDogsDate(repo: DogsInfoRepository): updateDogsDate =
-        updateDogsDate(repo)
+    fun provideUpdateDogsDate(repo: DogsInfoRepository): updateDogsDateUseCase =
+        updateDogsDateUseCase(repo)
 
     @Provides
-    fun provideUpdateDogsTime(repo: DogsInfoRepository): updateDogsTime =
-        updateDogsTime(repo)
+    fun provideUpdateDogsTime(repo: DogsInfoRepository): updateDogsTimeUseCase =
+        updateDogsTimeUseCase(repo)
 
 }

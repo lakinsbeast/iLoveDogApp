@@ -11,31 +11,31 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DogsInfoViewModel @Inject constructor(
-    getAllProfiles: getAllProfiles,
-    private val insertDogProfile: insertDogProfile,
-    private val updateDogsTime: updateDogsTime,
-    private val updateDogsDate: updateDogsDate,
-    private val updateDogProfile: updateDogProfile,
-    private val deleteDogProfile: deleteDogProfile
+    getAllProfilesUseCase: getAllProfilesUseCase,
+    private val insertDogProfileUseCase: insertDogProfileUseCase,
+    private val updateDogsTimeUseCase: updateDogsTimeUseCase,
+    private val updateDogsDateUseCase: updateDogsDateUseCase,
+    private val updateDogProfileUseCase: updateDogProfileUseCase,
+    private val deleteDogProfileUseCase: deleteDogProfileUseCase
 ) : ViewModel() {
-    val dogProfiles = getAllProfiles.invoke()
+    val dogProfiles = getAllProfilesUseCase.invoke()
     fun insert(doge: DogsInfoEntity) = viewModelScope.launch {
-        insertDogProfile.invoke(doge)
+        insertDogProfileUseCase(doge)
     }
 
     fun updateDogsTime(id: Int, time: Long) = viewModelScope.launch {
-        updateDogsTime.invoke(id, time)
+        updateDogsTimeUseCase(id, time)
     }
 
     fun updateDogsDate(id: Int, date: Date) = viewModelScope.launch {
-        updateDogsDate.invoke(id, date)
+        updateDogsDateUseCase(id, date)
     }
 
     fun updateDogProfile(doge: DogsInfoEntity) = viewModelScope.launch {
-        updateDogProfile.invoke(doge)
+        updateDogProfileUseCase(doge)
     }
 
     fun deleteDogProfile(id: Int) = viewModelScope.launch {
-        deleteDogProfile.invoke(id)
+        deleteDogProfileUseCase(id)
     }
 }

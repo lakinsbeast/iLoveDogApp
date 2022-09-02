@@ -4,7 +4,7 @@ import com.sagirov.ilovedog.Activities.Documents.domain.repository.DocumentRepos
 import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
 import kotlinx.coroutines.flow.Flow
 
-class getAllDocuments(
+class getAllDocumentsUseCase(
     private val repo: DocumentRepository
 ) {
     operator fun invoke(): Flow<MutableList<DocumentsEntity>> = repo.getAllDocuments()

@@ -1,10 +1,10 @@
 package com.sagirov.ilovedog.Activities.MainActivity.domain.usecase
 
 import com.sagirov.ilovedog.Activities.MainActivity.domain.repository.DogsInfoRepository
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
+import java.util.*
 
-class updateDogProfile(
+class updateDogsDateUseCase(
     private val repo: DogsInfoRepository
 ) {
-    suspend operator fun invoke(doge: DogsInfoEntity) = repo.updateDogProfile(doge)
+    suspend operator fun invoke(id: Int, date: Date) = repo.updateDogsDate(id, date)
 }
