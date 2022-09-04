@@ -45,18 +45,19 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 //TODO{ИЗМЕНИТЬ ВСЕ}
+/**
+непонятно как убрать брэкеты с после перевода с json в map в конвертере, поэтому приходится так изъявляться
+чуть по-другому перепишу энтити, но это будет когда-нибудь)))))
+ **/
 @AndroidEntryPoint
 class DocumentActivity : ComponentActivity() {
-    private val allDocsKeys = mutableStateListOf<String>()
-    private val allDocsValues = mutableStateListOf<String>()
-    private var allDocsIds = mutableListOf<Int>()
-    private var allDocsIdsState = mutableStateListOf<Int>()
     private var newDocumentState = mutableStateOf(false)
     private var keyUriDocument = ""
     private var idDocument = mutableStateOf(0)
 
+    private var allDocs = mutableStateListOf<DocumentsEntity>()
+    private var AllDocsValues = mutableStateListOf<String>()
     private val newDocumentName = mutableStateOf("")
-
     private val isImageOpened = mutableStateOf(false)
 
     private val documentViewModel: DocumentViewModel by viewModels()
@@ -66,54 +67,15 @@ class DocumentActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             documentViewModel.documents.collect {
-                allDocsIds.clear()
-                allDocsIdsState.clear()
-                allDocsKeys.clear()
-                allDocsValues.clear()
+                allDocs.clear()
+                AllDocsValues.clear()
                 it.forEach {
-                    allDocsIds.add(it.id)
-                    allDocsKeys.add(
-                        Uri.parse(it.docs.keys.toString()).toString().replace("[", "")
-                            .replace("]", "")
-                    )
-                    allDocsValues.add(
-                        Uri.parse(it.docs.values.toString()).toString().replace("[", "")
-                            .replace("]", "")
-                    )
+                    allDocs.add(it)
+                    AllDocsValues.add(it.docs.values.toString().replace("[", "").replace("]", ""))
+                    Log.d("it", it.toString())
                 }
-                allDocsIdsState.addAll(allDocsIds)
             }
-//            documentViewModel.getAllDocuments.collect {
-//                allDocsIds.clear()
-//                allDocsIdsState.clear()
-//                allDocsKeys.clear()
-//                allDocsValues.clear()
-//                it.forEach {
-//                    allDocsIds.add(it.id)
-//                    allDocsKeys.add(
-//                        Uri.parse(it.docs.keys.toString()).toString().replace("[", "")
-//                            .replace("]", "")
-//                    )
-//                    allDocsValues.add(
-//                        Uri.parse(it.docs.values.toString()).toString().replace("[", "")
-//                            .replace("]", "")
-//                    )
-//                }
-//                allDocsIdsState.addAll(allDocsIds)
-//            }
         }
-//        documentViewModeld.getAllDocuments.observe(this) {
-//            allDocsIds.clear()
-//            allDocsIdsState.clear()
-//            allDocsKeys.clear()
-//            allDocsValues.clear()
-//            it.forEach {
-//                allDocsIds.add(it.id)
-//                allDocsKeys.add(Uri.parse(it.docs.keys.toString()).toString().replace("[", "").replace("]", ""))
-//                allDocsValues.add(Uri.parse(it.docs.values.toString()).toString().replace("[", "").replace("]", ""))
-//            }
-//            allDocsIdsState.addAll(allDocsIds)
-//        }
         val getDocument = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
             if (it != null) {
                 this@DocumentActivity.contentResolver.takePersistableUriPermission(
@@ -122,9 +84,11 @@ class DocumentActivity : ComponentActivity() {
                 )
                 var displayName = ""
                 val cursor: Cursor? = contentResolver.query(
-                    it, null, null, null, null, null)
+                    it, null, null, null, null, null
+                )
                 if (cursor!!.moveToFirst()) {
-                    displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    displayName =
+                        cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                     Log.d("name", "Display Name: $displayName")
                 }
                 cursor.close()
@@ -148,9 +112,11 @@ class DocumentActivity : ComponentActivity() {
                 )
                 var displayName = ""
                 val cursor: Cursor? = contentResolver.query(
-                    it, null, null, null, null, null)
+                    it, null, null, null, null, null
+                )
                 if (cursor!!.moveToFirst()) {
-                    displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    displayName =
+                        cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                     Log.d("name", "Display Name: $displayName")
                 }
                 cursor.close()
@@ -170,14 +136,19 @@ class DocumentActivity : ComponentActivity() {
             val dialogState = remember { mutableStateOf(false) }
             val dialogChooseActive = remember { mutableStateOf(false) }
 
+
             Column(
                 Modifier
                     .fillMaxSize()
-                    .background(mainBackgroundColor)) {
+                    .background(mainBackgroundColor)
+            ) {
                 if (isImageOpened.value) {
                     Box(Modifier.fillMaxSize()) {
                         IconButton(onClick = { isImageOpened.value = false }) {
-                            GlideImage(Uri.parse(keyUriDocument), contentScale = ContentScale.Fit)
+                            GlideImage(
+                                Uri.parse(keyUriDocument),
+                                contentScale = ContentScale.Fit
+                            )
                         }
                     }
                 }
@@ -185,262 +156,264 @@ class DocumentActivity : ComponentActivity() {
                     AlertDialog(
                         onDismissRequest = { dialogState.value = false },
                         buttons = {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    OutlinedButton(
-                                        onClick = {
-                                            when {
-                                                File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "document" ->
-                                                    {val intent = Intent(Intent.ACTION_VIEW)
-                                                    val typee = MimeTypeMap.getSingleton().getExtensionFromMimeType(this@DocumentActivity.contentResolver.getType(Uri.parse(keyUriDocument)))
-                                                    when (typee) {
-                                                        "doc" -> intent.setDataAndType(Uri.parse(keyUriDocument), "application/msword")
-                                                        "pdf" -> intent.setDataAndType(Uri.parse(keyUriDocument), "application/pdf")
-                                                        "odt" -> intent.setDataAndType(Uri.parse(keyUriDocument), "application/vnd.oasis.opendocument.text")
-                                                        "docx" -> intent.setDataAndType(Uri.parse(keyUriDocument), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                                                    }
-                                                    intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                                    try {
-                                                        startActivity(intent)
-                                                    } catch (e: Exception) {
-                                                        Log.d("error", e.toString())
-                                                    }
-                                                    dialogState.value = false}
-                                                File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "image" ->
-                                                    {
-                                                        isImageOpened.value = true;dialogState.value = false;dialogChooseActive.value = false
-
-                                                    }
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                OutlinedButton(
+                                    onClick = {
+                                        when {
+                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(
+                                                ":"
+                                            )[0] == "document" -> {
+                                                val intent = Intent(Intent.ACTION_VIEW)
+                                                val typee = MimeTypeMap.getSingleton()
+                                                    .getExtensionFromMimeType(
+                                                        this@DocumentActivity.contentResolver.getType(
+                                                            Uri.parse(keyUriDocument)
+                                                        )
+                                                    )
+                                                when (typee) {
+                                                    "doc" -> intent.setDataAndType(
+                                                        Uri.parse(
+                                                            keyUriDocument
+                                                        ), "application/msword"
+                                                    )
+                                                    "pdf" -> intent.setDataAndType(
+                                                        Uri.parse(
+                                                            keyUriDocument
+                                                        ), "application/pdf"
+                                                    )
+                                                    "odt" -> intent.setDataAndType(
+                                                        Uri.parse(
+                                                            keyUriDocument
+                                                        ),
+                                                        "application/vnd.oasis.opendocument.text"
+                                                    )
+                                                    "docx" -> intent.setDataAndType(
+                                                        Uri.parse(
+                                                            keyUriDocument
+                                                        ),
+                                                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                                    )
+                                                }
+                                                intent.flags =
+                                                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                                try {
+                                                    startActivity(intent)
+                                                } catch (e: Exception) {
+                                                    Log.d("error", e.toString())
+                                                }
+                                                dialogState.value = false
                                             }
-                                                  },
-                                        Modifier
-                                            .height(60.dp)
-                                            .fillMaxWidth()
-                                        ,shape = RoundedCornerShape(0),
-                                        colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = mainSecondColor,
-                                            contentColor = Color.Black
-                                        ), contentPadding = PaddingValues(0.dp)
-                                    ) {
-                                        when {
                                             File(Uri.parse(keyUriDocument).path.toString()).name.split(
                                                 ":"
-                                            )[0] == "document" ->
-                                                Text(
-                                                    text = resources.getString(R.string.document_analyses_acitvity_dialog_open_doc), //Открыть документ
-                                                    color = mainTextColor
-                                                )
-                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(
-                                                ":"
-                                            )[0] == "image" ->
-                                                Text(
-                                                    text = resources.getString(R.string.document_analyses_acitvity_dialog_open_photo),
-                                                    color = mainTextColor
-                                                ) //Открыть фото
+                                            )[0] == "image" -> {
+                                                isImageOpened.value = true;dialogState.value =
+                                                    false;dialogChooseActive.value = false
+                                            }
                                         }
+                                    },
+                                    Modifier
+                                        .height(60.dp)
+                                        .fillMaxWidth(), shape = RoundedCornerShape(0),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = mainSecondColor,
+                                        contentColor = Color.Black
+                                    ), contentPadding = PaddingValues(0.dp)
+                                ) {
+                                    when {
+                                        File(Uri.parse(keyUriDocument).path.toString()).name.split(
+                                            ":"
+                                        )[0] == "document" ->
+                                            Text(
+                                                text = resources.getString(R.string.document_analyses_acitvity_dialog_open_doc), //Открыть документ
+                                                color = mainTextColor
+                                            )
+                                        File(Uri.parse(keyUriDocument).path.toString()).name.split(
+                                            ":"
+                                        )[0] == "image" ->
+                                            Text(
+                                                text = resources.getString(R.string.document_analyses_acitvity_dialog_open_photo),
+                                                color = mainTextColor
+                                            ) //Открыть фото
                                     }
-                                    OutlinedButton(
-                                        onClick = {
-                                            documentViewModel.delete(allDocsIdsState[idDocument.value])
-                                            dialogState.value = false
-                                        },
-                                        Modifier
-                                            .height(60.dp)
-                                            .fillMaxWidth()
-                                        ,shape = RoundedCornerShape(0),
-                                        colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = mainSecondColor,
-                                            contentColor = Color.Black
-                                        ), contentPadding = PaddingValues(0.dp)
-                                    ) {
-                                        when {
-                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(
-                                                ":"
-                                            )[0] == "document" ->
-                                                Text(
-                                                    text = resources.getString(R.string.document_analyses_acitvity_dialog_delete_doc), //Удалить документ
-                                                    color = mainTextColor
-                                                )
-                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(
-                                                ":"
-                                            )[0] == "image" ->
-                                                Text(
-                                                    text = resources.getString(R.string.document_analyses_acitvity_dialog_open_photo),
-                                                    color = mainTextColor
-                                                ) //Удалить фото
-                                        }
+                                }
+                                OutlinedButton(
+                                    onClick = {
+                                        documentViewModel.delete(allDocs[idDocument.value].id /*allDocsIdsState[idDocument.value]*/)
+                                        dialogState.value = false
+                                    },
+                                    Modifier
+                                        .height(60.dp)
+                                        .fillMaxWidth(), shape = RoundedCornerShape(0),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = mainSecondColor,
+                                        contentColor = Color.Black
+                                    ), contentPadding = PaddingValues(0.dp)
+                                ) {
+                                    when {
+                                        File(Uri.parse(keyUriDocument).path.toString()).name.split(
+                                            ":"
+                                        )[0] == "document" ->
+                                            Text(
+                                                text = resources.getString(R.string.document_analyses_acitvity_dialog_delete_doc), //Удалить документ
+                                                color = mainTextColor
+                                            )
+                                        File(Uri.parse(keyUriDocument).path.toString()).name.split(
+                                            ":"
+                                        )[0] == "image" ->
+                                            Text(
+                                                text = resources.getString(R.string.document_analyses_acitvity_dialog_delete_photo),
+                                                color = mainTextColor
+                                            ) //Удалить фото
+                                    }
 //                                        Text(text = "Удалить документ")
-                                    }
-                                    OutlinedButton(
-                                        onClick = {
-
-                                            dialogState.value = false
-                                        },
-                                        Modifier
-                                            .height(60.dp)
-                                            .fillMaxWidth()
-                                        ,shape = RoundedCornerShape(0),
-                                        colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = mainSecondColor,
-                                            contentColor = Color.Black
-                                        ), contentPadding = PaddingValues(0.dp)
-                                    ) {
-                                        Row() {
-                                            TextField(label = {
+                                }
+                                OutlinedButton(
+                                    onClick = {
+                                        dialogState.value = false
+                                    },
+                                    Modifier
+                                        .height(60.dp)
+                                        .fillMaxWidth(), shape = RoundedCornerShape(0),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = mainSecondColor,
+                                        contentColor = Color.Black
+                                    ), contentPadding = PaddingValues(0.dp)
+                                ) {
+                                    Row() {
+                                        TextField(
+                                            label = {
                                                 Text(
                                                     text = resources.getString(R.string.document_analyses_acitvity_dialog_new_name) + ":", //Название
                                                     fontSize = 15.sp,
                                                     color = mainTextColor
                                                 )
                                             },
-                                                value = newDocumentName.value,
-                                                onValueChange = { newDocumentName.value = it },
-                                                colors = TextFieldDefaults.textFieldColors(
-                                                    backgroundColor = Color.Transparent,
-                                                    focusedIndicatorColor = mainTextColor,
-                                                    focusedLabelColor = mainTextColor,
-                                                    cursorColor = mainTextColor,
-                                                    textColor = mainTextColor,
-                                                    unfocusedIndicatorColor = textFieldUnFocusedIndicatorColor
-                                                )
+                                            value = newDocumentName.value,
+                                            onValueChange = { newDocumentName.value = it },
+                                            colors = TextFieldDefaults.textFieldColors(
+                                                backgroundColor = Color.Transparent,
+                                                focusedIndicatorColor = mainTextColor,
+                                                focusedLabelColor = mainTextColor,
+                                                cursorColor = mainTextColor,
+                                                textColor = mainTextColor,
+                                                unfocusedIndicatorColor = textFieldUnFocusedIndicatorColor
                                             )
-                                            IconButton(onClick = {
-                                                if (newDocumentName.value.isNotEmpty() || newDocumentName.value.isNotBlank()) {
-                                                    documentViewModel.update(
-                                                        allDocsIds[idDocument.value],
-                                                        mapOf(keyUriDocument to newDocumentName.value)
-                                                    )
-                                                    dialogState.value = false
-                                                    newDocumentName.value = ""
-                                                } else {
-                                                    Toast.makeText(
-                                                        this@DocumentActivity,
-                                                        "Не удалось обновить название",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                }
-                                            }) {
-                                                Icon(
-                                                    imageVector = Icons.Filled.Send,
-                                                    contentDescription = "", tint = mainTextColor
+                                        )
+                                        IconButton(onClick = {
+                                            if (newDocumentName.value.isNotEmpty() || newDocumentName.value.isNotBlank()) {
+                                                documentViewModel.update(
+                                                    allDocs[idDocument.value].id,
+//                                                        allDocsIds[idDocument.value],
+                                                    mapOf(keyUriDocument to newDocumentName.value)
                                                 )
+                                                dialogState.value = false
+                                                newDocumentName.value = ""
+                                            } else {
+                                                Toast.makeText(
+                                                    this@DocumentActivity,
+                                                    "Не удалось обновить название",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Send,
+                                                contentDescription = "", tint = mainTextColor
+                                            )
                                         }
-
-//                                        when {
-//                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "document" ->
-//                                                Text(text = "Удалить документ")
-//                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "image" ->
-//                                                Text(text = "Удалить фото")
-//                                        }
                                     }
 
-
-//                                    OutlinedButton(
-//                                        onClick = {
-////                                            dogsViewModel.deleteDocumentFile(allDocsIdsState[idDocument.value])
-//                                            dialogState.value = false
-//                                        },
-//                                        Modifier
-//                                            .height(60.dp)
-//                                            .fillMaxWidth()
-//                                        ,shape = RoundedCornerShape(0),
-//                                        colors = ButtonDefaults.buttonColors(
-//                                            backgroundColor = mainSecondColor,
-//                                            contentColor = Color.Black
-//                                        ), contentPadding = PaddingValues(0.dp)
-//                                    ) {
-//                                        when {
-//                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "document" ->
-//                                                Text(text = "Изменить имя документа")
-//                                            File(Uri.parse(keyUriDocument).path.toString()).name.split(":")[0] == "image" ->
-//                                                Text(text = "Изменить имя фото")
-//                                        }
-////                                        Text(text = "Удалить документ")
-//                                    }
                                 }
-                            })
-                    }
-                    if (dialogChooseActive.value) {
-                            AlertDialog(onDismissRequest = { dialogChooseActive.value = false },
-                                buttons = {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        OutlinedButton(
-                                            onClick = {
-                                                getImage.launch(arrayOf("image/*"))
-                                                dialogChooseActive.value = false
-                                            },
-                                            Modifier
-                                                .height(60.dp)
-                                                .fillMaxWidth()
-                                            ,shape = RoundedCornerShape(0),
-                                            colors = ButtonDefaults.buttonColors(
-                                                backgroundColor = mainSecondColor,
-                                                contentColor = Color.Black
-                                            ), contentPadding = PaddingValues(0.dp)
-                                        ) {
-                                            Text(
-                                                text = resources.getString(R.string.document_analyses_acitvity_dialog_gallery_text),
-                                                color = mainTextColor
-                                            ) //gallery
-                                        }
-                                        OutlinedButton(
-                                            onClick = {
-                                                getDocument.launch(arrayOf("application/msword","application/pdf","application/vnd.oasis.opendocument.text",
-                                                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"))
-                                                dialogChooseActive.value = false
-                                            },
-                                            Modifier
-                                                .height(60.dp)
-                                                .fillMaxWidth()
-                                            ,shape = RoundedCornerShape(0),
-                                            colors = ButtonDefaults.buttonColors(
-                                                backgroundColor = mainSecondColor,
-                                                contentColor = Color.Black
-                                            ), contentPadding = PaddingValues(0.dp)
-                                        ) {
-                                            Text(
-                                                text = resources.getString(R.string.document_analyses_acitvity_dialog_document_text),
-                                                color = mainTextColor
-                                            ) //document
-                                        }
-                                    }
-                                })
-                    }
-                    Row(modifier = Modifier
+                            }
+                        })
+                }
+                if (dialogChooseActive.value) {
+                    AlertDialog(onDismissRequest = { dialogChooseActive.value = false },
+                        buttons = {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                OutlinedButton(
+                                    onClick = {
+                                        getImage.launch(arrayOf("image/*"))
+                                        dialogChooseActive.value = false
+                                    },
+                                    Modifier
+                                        .height(60.dp)
+                                        .fillMaxWidth(), shape = RoundedCornerShape(0),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = mainSecondColor,
+                                        contentColor = Color.Black
+                                    ), contentPadding = PaddingValues(0.dp)
+                                ) {
+                                    Text(
+                                        text = resources.getString(R.string.document_analyses_acitvity_dialog_gallery_text),
+                                        color = mainTextColor
+                                    ) //gallery
+                                }
+                                OutlinedButton(
+                                    onClick = {
+                                        getDocument.launch(
+                                            arrayOf(
+                                                "application/msword",
+                                                "application/pdf",
+                                                "application/vnd.oasis.opendocument.text",
+                                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                            )
+                                        )
+                                        dialogChooseActive.value = false
+                                    },
+                                    Modifier
+                                        .height(60.dp)
+                                        .fillMaxWidth(), shape = RoundedCornerShape(0),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = mainSecondColor,
+                                        contentColor = Color.Black
+                                    ), contentPadding = PaddingValues(0.dp)
+                                ) {
+                                    Text(
+                                        text = resources.getString(R.string.document_analyses_acitvity_dialog_document_text),
+                                        color = mainTextColor
+                                    ) //document
+                                }
+                            }
+                        })
+                }
+                Row(
+                    modifier = Modifier
                         .fillMaxWidth()
 //                        .background(mainBackgroundColor)
-                        .padding(top = 10.dp), horizontalArrangement = Arrangement.Center) {
-                        OutlinedButton(
-                            onClick = {
-                                dialogChooseActive.value = true
-                            },
-                            Modifier
-                                .height(70.dp)
-                            ,shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = homeButtonColor,
-                                contentColor = Color.Black
-                            ), contentPadding = PaddingValues(0.dp)
-                        ) {
-                            Row(Modifier.padding(start = 30.dp, end = 30.dp)) {
-                                Text(
-                                    resources.getString(R.string.document_analyses_acitvity_button_text),
-                                    color = mainTextColor
-                                ) //New docs/analyses
-                            }
+                        .padding(top = 10.dp), horizontalArrangement = Arrangement.Center
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            dialogChooseActive.value = true
+                        },
+                        Modifier
+                            .height(70.dp), shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = homeButtonColor,
+                            contentColor = Color.Black
+                        ), contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Row(Modifier.padding(start = 30.dp, end = 30.dp)) {
+                            Text(
+                                resources.getString(R.string.document_analyses_acitvity_button_text),
+                                color = mainTextColor
+                            ) //New docs/analyses
                         }
                     }
-                if (!allDocsKeys.isEmpty()) {
+                }
+                if (!allDocs.isEmpty()) {
                     LazyColumn(
                         Modifier
                             .fillMaxSize()
                             .padding(top = 20.dp)
                     ) {
-                        itemsIndexed(allDocsKeys) { index, item ->
+                        itemsIndexed(allDocs /*allDocsKeys*/) { index, item ->
                             OutlinedButton(
                                 onClick = {
                                     dialogState.value = true
-                                    keyUriDocument = item
+                                    keyUriDocument =
+                                        item.docs.keys.toString().replace("[", "").replace("]", "")
                                     idDocument.value = index
                                 },
                                 Modifier
@@ -453,18 +426,25 @@ class DocumentActivity : ComponentActivity() {
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     when {
-                                        File(Uri.parse(item).path.toString()).name.split(":")[0] == "document" ->
+                                        File(Uri.parse(item.docs.keys.toString()).path.toString()).name.split(
+                                            ":"
+                                        )[0] == "document" ->
                                             Icon(
                                                 imageVector = ImageVector.vectorResource(R.drawable.documenticon48px),
                                                 contentDescription = "", tint = mainTextColor
                                             )
-                                        File(Uri.parse(item).path.toString()).name.split(":")[0] == "image" ->
+                                        File(Uri.parse(item.docs.keys.toString()).path.toString()).name.split(
+                                            ":"
+                                        )[0] == "image" ->
                                             Icon(
                                                 imageVector = ImageVector.vectorResource(R.drawable.imageicon48px),
                                                 contentDescription = "", tint = mainTextColor
                                             )
                                     }
-                                    Text(text = (allDocsValues[index]), color = mainTextColor)
+                                    Text(
+                                        text = (AllDocsValues[index] /*allDocsValues[index]*/),
+                                        color = mainTextColor
+                                    )
                                 }
                             }
                         }
@@ -474,12 +454,6 @@ class DocumentActivity : ComponentActivity() {
 
         }
     }
-//    fun <T> SnapshotStateMap<T,T>.swapMap(newMap: MutableMap<T,T>){
-//        clear()
-//        putAll(newMap)
-//    }
-
-
 
     override fun onBackPressed() {
         if (isImageOpened.value == true) {
