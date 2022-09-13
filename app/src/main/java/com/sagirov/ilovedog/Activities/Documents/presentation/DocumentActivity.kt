@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
+import com.sagirov.ilovedog.Activities.Documents.domain.model.DocumentsEntity
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.ui.theme.*
 import com.skydoves.landscapist.glide.GlideImage

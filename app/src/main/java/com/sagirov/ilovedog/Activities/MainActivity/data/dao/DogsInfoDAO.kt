@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
+import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 

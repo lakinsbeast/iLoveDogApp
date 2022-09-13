@@ -1,6 +1,6 @@
 package com.sagirov.ilovedog.Activities.Documents.domain.repository
 
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
+import com.sagirov.ilovedog.Activities.Documents.domain.model.DocumentsEntity
 import kotlinx.coroutines.flow.Flow
 
 interface DocumentRepository {

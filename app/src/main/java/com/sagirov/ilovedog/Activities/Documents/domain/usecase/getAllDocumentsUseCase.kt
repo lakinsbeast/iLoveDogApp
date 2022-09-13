@@ -1,7 +1,7 @@
 package com.sagirov.ilovedog.Activities.Documents.domain.usecase
 
+import com.sagirov.ilovedog.Activities.Documents.domain.model.DocumentsEntity
 import com.sagirov.ilovedog.Activities.Documents.domain.repository.DocumentRepository
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
 import kotlinx.coroutines.flow.Flow
 
 class getAllDocumentsUseCase(

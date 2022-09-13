@@ -21,4 +21,5 @@ class CheckFirstLaunchManager @Inject constructor(@ApplicationContext ctx: Conte
             (context as Activity).finish()
         }
     }
+
 }

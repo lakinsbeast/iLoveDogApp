@@ -3,7 +3,7 @@ package com.sagirov.ilovedog.Activities.Documents.data.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
+import com.sagirov.ilovedog.Activities.Documents.domain.model.DocumentsEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

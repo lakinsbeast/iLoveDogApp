@@ -116,32 +116,13 @@ class WalkLaunchActivity : ComponentActivity() {
                 startTimeForScore = currentTimeInMinutes
                 stopTimer = statsConstTime.value
             }
-//            dogsInfoViewModel.getAllDogsProfiles.flowWithLifecycle(
-//                lifecycle,
-//                Lifecycle.State.STARTED
-//            ).onEach {
-//                idOfProfile = it[id].id
-//                statsCurrentTime.value = it[id].currentTimeWalk
-//                statsConstTime.value = it[id].walkingTimeConst
-//                currentTimeInMinutes = statsCurrentTime.value
-//                startTimeForScore = currentTimeInMinutes
-//                stopTimer = statsConstTime.value
-//            }.launchIn(lifecycleScope)
         }
 
-//        dogsInfoViewModel.getAllDogsProfiles.observe(this) {
-//            idOfProfile = it[id].id
-//            statsCurrentTime.value = it[id].currentTimeWalk
-//            statsConstTime.value =  it[id].walkingTimeConst
-//            currentTimeInMinutes = statsCurrentTime.value
-//            startTimeForScore = currentTimeInMinutes
-//            stopTimer = statsConstTime.value
-//        }
 
         prefsMyPet = getSharedPreferences(PREF_NAME_PET, MODE_PRIVATE)
-        var backgroundColor = mutableStateOf(mainBackgroundColor)
-        var textColor = mutableStateOf(mainTextColor)
-        var buttonBackgroundColor = mutableStateOf(mainSecondColor)
+        val backgroundColor = mutableStateOf(mainBackgroundColor)
+        val textColor = mutableStateOf(mainTextColor)
+        val buttonBackgroundColor = mutableStateOf(mainSecondColor)
         var cautionText = ""
         multiplier = newPrefs.getInt(PREF_SCORE, "multiplierScore", 1)
         score = newPrefs.getInt(PREF_SCORE, "score", 1)

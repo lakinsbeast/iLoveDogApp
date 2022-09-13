@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.sagirov.ilovedog.Activities.Documents.data.dao.DocumentDAO
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
+import com.sagirov.ilovedog.Activities.Documents.domain.model.DocumentsEntity
 import com.sagirov.ilovedog.MapStringToStringConverter
 
 @Database(entities = [DocumentsEntity::class], version = 1, exportSchema = true/*,autoMigrations = [AutoMigration(from = 4, to = 5)]*/)

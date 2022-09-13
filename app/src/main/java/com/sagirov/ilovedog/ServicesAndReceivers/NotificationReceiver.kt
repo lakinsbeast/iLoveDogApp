@@ -23,7 +23,7 @@ class NotificationReceiver: BroadcastReceiver() {
         )
         notificationManager?.createNotificationChannel(notificationChannel)
         val notification = NotificationCompat.Builder(context!!, "channel_id")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.mipmap.dog_icon_new)
             .setContentTitle("Напоминание!")
             .setContentText(name)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)

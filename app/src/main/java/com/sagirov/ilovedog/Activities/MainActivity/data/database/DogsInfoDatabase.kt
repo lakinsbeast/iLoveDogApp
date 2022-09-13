@@ -4,8 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.sagirov.ilovedog.Activities.MainActivity.data.dao.DogsInfoDAO
+import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
 import com.sagirov.ilovedog.DataConverter
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
 
 
 @Database(entities = [DogsInfoEntity::class], version = 5, exportSchema = true/*,autoMigrations = [AutoMigration(from = 4, to = 5)]*/)

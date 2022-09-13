@@ -18,15 +18,5 @@ object AnalyticsModule {
 
     @Provides
     fun bindGoogleAnalytics(googleAnalytics: GMSImpl): GMS = googleAnalytics
-//    @Provides
-//    @Singleton
-//    fun provideHuaweiAnalytics(): HMS {
-//        return HMSImpl()
-//    }
-//
-//    @Provides
-//    @Singleton
-//    fun provideGoogleAnalytics(): GMS {
-//        return GMSImpl()
-//    }
+
 }

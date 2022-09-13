@@ -36,8 +36,8 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.Activities.MainActivity.MainActivity
+import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
 import com.sagirov.ilovedog.Activities.MainActivity.presentation.DogsInfoViewModel
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
 import com.sagirov.ilovedog.Utils.PreferencesUtils
 import com.sagirov.ilovedog.ui.theme.mainBackgroundColor
 import com.sagirov.ilovedog.ui.theme.mainSecondColor
@@ -311,15 +311,17 @@ class NewPetActivity : ComponentActivity() {
                                     dogsInfoViewModel.updateDogProfile(
                                         DogsInfoEntity(
                                             dogsProfileArray[intentID.value].id,
-                                        petName.value,
-                                        dogsProfileArray[intentID.value].dateBirth,
-                                        (petPaddock.value.toLong()*60000),
-                                        dogsProfileArray[intentID.value].lastWalk,
-                                        petNameBreed.value,
-                                        dogsProfileArray[intentID.value].gender,
-                                        (petPaddock.value.toLong()*60000),
-                                        dogsProfileArray[intentID.value].weight,
-                                        cameraUriToUpdate.value))
+                                            petName.value,
+                                            dogsProfileArray[intentID.value].dateBirth,
+                                            (petPaddock.value.toLong() * 60000),
+                                            dogsProfileArray[intentID.value].lastWalk,
+                                            petNameBreed.value,
+                                            dogsProfileArray[intentID.value].gender,
+                                            (petPaddock.value.toLong() * 60000),
+                                            dogsProfileArray[intentID.value].weight,
+                                            cameraUriToUpdate.value
+                                        )
+                                    )
                                 startActivity(Intent(this@NewPetActivity, MainActivity::class.java))
                                 finish()
                             } else {

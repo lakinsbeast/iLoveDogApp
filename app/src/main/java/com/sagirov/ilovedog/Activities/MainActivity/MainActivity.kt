@@ -52,6 +52,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sagirov.ilovedog.Activities.ArticleChoiceActivity
 import com.sagirov.ilovedog.Activities.Documents.presentation.DocumentActivity
+import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
 import com.sagirov.ilovedog.Activities.MainActivity.domain.utils.CheckDarkModeManager
 import com.sagirov.ilovedog.Activities.MainActivity.domain.utils.CheckFirstLaunchManager
 import com.sagirov.ilovedog.Activities.MainActivity.presentation.DogsInfoViewModel
@@ -60,7 +61,6 @@ import com.sagirov.ilovedog.Activities.WalkLaunchActivity
 import com.sagirov.ilovedog.Activities.currentTimeInMinutes
 import com.sagirov.ilovedog.AddReminderScreen
 import com.sagirov.ilovedog.BottomTabs
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
 import com.sagirov.ilovedog.NavGraphRoutes
 import com.sagirov.ilovedog.R
 import com.sagirov.ilovedog.Screens.AboutAuthorScreen.AboutAuthorScreen

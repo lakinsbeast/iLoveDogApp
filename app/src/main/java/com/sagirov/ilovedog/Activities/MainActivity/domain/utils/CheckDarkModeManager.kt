@@ -6,7 +6,7 @@ import com.sagirov.ilovedog.Utils.PreferencesUtils
 import com.sagirov.ilovedog.ui.theme.CheckDarkMode
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-
+//TODO{ПЕРЕВЕСТИ В STATIC(COMPANION/INNER)}
 class CheckDarkModeManager @Inject constructor(@ApplicationContext ctx: Context) {
     @Inject
     lateinit var newPrefs: PreferencesUtils

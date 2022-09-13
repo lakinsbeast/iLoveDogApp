@@ -50,28 +50,37 @@ import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AddReminderScreen(navController: NavController, viewModel: ReminderViewModel = hiltViewModel()/*, viewModel: ReminderViewModel*/) {
+fun AddReminderScreen(
+    navController: NavController,
+    viewModel: ReminderViewModel = hiltViewModel()
+) {
 
     val mContext = LocalContext.current
     val prefs = PreferencesUtils(mContext)
 
-
-//    var dateForVisitToVet = mutableMapOf<Long, String>()
-    var reason =  remember {mutableStateOf("")}
-    var calendarDayText =  remember {mutableStateOf((Calendar.getInstance().get(Calendar.DAY_OF_MONTH)+1).toString())}
-    var calendarMonthText = remember {mutableStateOf((Calendar.getInstance().get(Calendar.MONTH) + 1).toString())}
-    var calendarYearText =  remember {mutableStateOf(Calendar.getInstance().get(Calendar.YEAR).toString())}
-    var calendarHourText =  remember {mutableStateOf(Calendar.getInstance().get(Calendar.HOUR_OF_DAY))}
-    var calendarMinuteText =  remember {mutableStateOf(Calendar.getInstance().get(Calendar.MINUTE))}
-    var calendarHourTextModified =  remember {mutableStateOf(calendarHourText.value.toString())}
-    var calendarMinuteTextModified = remember {mutableStateOf(calendarMinuteText.value.toString())}
-    if (calendarHourText.value < 10) {calendarHourTextModified.value = "0"+calendarHourText.value.toString()}
-    if (calendarMinuteText.value < 10) {calendarMinuteTextModified.value = "0"+calendarMinuteText.value.toString()}
-
-//    val getArrayFromJson = prefs.getString(PREF_NAME_DATES,"dateForVisitToVet", "")
-//    if (getArrayFromJson != "") {
-//        dateForVisitToVet = (Gson().fromJson(getArrayFromJson, object : TypeToken<Map<Long, String>>() {}.type))
-//    }
+    val reason = remember { mutableStateOf("") }
+    val calendarDayText = remember {
+        mutableStateOf(
+            (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) + 1).toString()
+        )
+    }
+    val calendarMonthText =
+        remember { mutableStateOf((Calendar.getInstance().get(Calendar.MONTH) + 1).toString()) }
+    val calendarYearText =
+        remember { mutableStateOf(Calendar.getInstance().get(Calendar.YEAR).toString()) }
+    val calendarHourText =
+        remember { mutableStateOf(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) }
+    val calendarMinuteText =
+        remember { mutableStateOf(Calendar.getInstance().get(Calendar.MINUTE)) }
+    val calendarHourTextModified = remember { mutableStateOf(calendarHourText.value.toString()) }
+    val calendarMinuteTextModified =
+        remember { mutableStateOf(calendarMinuteText.value.toString()) }
+    if (calendarHourText.value < 10) {
+        calendarHourTextModified.value = "0" + calendarHourText.value.toString()
+    }
+    if (calendarMinuteText.value < 10) {
+        calendarMinuteTextModified.value = "0" + calendarMinuteText.value.toString()
+    }
 
     var createdAt = Date()
     val timestamp = createdAt.time
@@ -84,8 +93,8 @@ fun AddReminderScreen(navController: NavController, viewModel: ReminderViewModel
     val monthFocusRequester = FocusRequester()
     val reasonFocusRequester = FocusRequester()
 
-    var mycal = GregorianCalendar()
-    var days = mycal.getActualMaximum(Calendar.DAY_OF_MONTH)
+    val mycal = GregorianCalendar()
+    val days = mycal.getActualMaximum(Calendar.DAY_OF_MONTH)
 
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val systemUiController = rememberSystemUiController()
@@ -312,7 +321,6 @@ fun AddReminderScreen(navController: NavController, viewModel: ReminderViewModel
                 createdAt = mCalendar.time
                 if (((timestamp / 100) < (createdAt.time / 100))) {
                     var time: Long = (createdAt.time) - timestamp
-//                prefs = getSharedPreferences(PREF_NAME_DATES, ComponentActivity.MODE_PRIVATE)
                     if (checkRepeat.value) {
                         viewModel.insert(
                             ReminderEntity(
@@ -320,7 +328,6 @@ fun AddReminderScreen(navController: NavController, viewModel: ReminderViewModel
                                 mapOf((System.currentTimeMillis() + time).toString() to reason.value + ".Повтор%#%:#%:")
                             )
                         )
-//                        dateForVisitToVet[(System.currentTimeMillis()+time)] = reason.value+".Повтор%#%:#%:"
                     } else {
                         viewModel.insert(
                             ReminderEntity(
@@ -328,30 +335,54 @@ fun AddReminderScreen(navController: NavController, viewModel: ReminderViewModel
                                 mapOf((System.currentTimeMillis() + time).toString() to reason.value)
                             )
                         )
-//                        dateForVisitToVet[(System.currentTimeMillis()+time)] = reason.value
                     }
-//                    val json: String = Gson().toJson(dateForVisitToVet)
-//                    prefs.putString(PreferencesUtils.Companion.PREF_NAME_DATES,"dateForVisitToVet",json)
-//                prefs.edit().putString("dateForVisitToVet", json).apply()
                     when {
-                        checkNotification.value && checkRepeat.value -> {val am = mContext.getSystemService(
-                            Activity.ALARM_SERVICE) as AlarmManager
+                        checkNotification.value && checkRepeat.value -> {
+                            val am = mContext.getSystemService(
+                                Activity.ALARM_SERVICE
+                            ) as AlarmManager
                             val intent = Intent(mContext, NotificationReceiver::class.java)
                             intent.putExtra("notification", reason.value)
-                            val pendingIntent = PendingIntent.getBroadcast(mContext, 1, intent,0)
-                            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, createdAt.time, 86400000, pendingIntent)
-                            Log.d("check", "checkNotification.value && checkRepeat.value")}
-                        checkNotification.value -> {val am = mContext.getSystemService(Activity.ALARM_SERVICE) as AlarmManager
+                            val pendingIntent = PendingIntent.getBroadcast(mContext, 1, intent, 0)
+                            am.setInexactRepeating(
+                                AlarmManager.RTC_WAKEUP,
+                                createdAt.time,
+                                86400000,
+                                pendingIntent
+                            )
+                            Log.d("check", "checkNotification.value && checkRepeat.value")
+                        }
+                        checkNotification.value -> {
+                            val am =
+                                mContext.getSystemService(Activity.ALARM_SERVICE) as AlarmManager
                             val intent = Intent(mContext, NotificationReceiver::class.java)
                             intent.putExtra("notification", reason.value)
-                            val pendingIntent = PendingIntent.getBroadcast(mContext, 1, intent,0)
+                            val pendingIntent = PendingIntent.getBroadcast(mContext, 1, intent, 0)
                             //уведы срабатывают за пол дня до начала
-                            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,(System.currentTimeMillis()+time)-3600000, pendingIntent)
-                            Log.d("check", "checkNotification.value")}
-                        checkRepeat.value -> {val am = mContext.getSystemService(Activity.ALARM_SERVICE) as AlarmManager
-                            val pendingIntent = PendingIntent.getActivity(mContext, 1, Intent(mContext, MainActivity::class.java),0)
-                            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, createdAt.time, 86400000, pendingIntent)
-                            Log.d("check", "checkRepeat.value")}
+                            am.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                (System.currentTimeMillis() + time) - 3600000,
+                                pendingIntent
+                            )
+                            Log.d("check", "checkNotification.value")
+                        }
+                        checkRepeat.value -> {
+                            val am =
+                                mContext.getSystemService(Activity.ALARM_SERVICE) as AlarmManager
+                            val pendingIntent = PendingIntent.getActivity(
+                                mContext,
+                                1,
+                                Intent(mContext, MainActivity::class.java),
+                                0
+                            )
+                            am.setInexactRepeating(
+                                AlarmManager.RTC_WAKEUP,
+                                createdAt.time,
+                                86400000,
+                                pendingIntent
+                            )
+                            Log.d("check", "checkRepeat.value")
+                        }
                     }
                     navController.navigate("health")
 //                startActivity(Intent(mContext, MainActivity::class.java))

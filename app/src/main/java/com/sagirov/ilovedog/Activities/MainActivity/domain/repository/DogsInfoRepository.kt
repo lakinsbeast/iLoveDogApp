@@ -1,6 +1,6 @@
 package com.sagirov.ilovedog.Activities.MainActivity.domain.repository
 
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
+import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 

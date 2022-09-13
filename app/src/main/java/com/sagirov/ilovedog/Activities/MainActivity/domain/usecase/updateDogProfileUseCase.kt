@@ -1,7 +1,7 @@
 package com.sagirov.ilovedog.Activities.MainActivity.domain.usecase
 
+import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
 import com.sagirov.ilovedog.Activities.MainActivity.domain.repository.DogsInfoRepository
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
 
 class updateDogProfileUseCase(
     private val repo: DogsInfoRepository

@@ -2,11 +2,11 @@ package com.sagirov.ilovedog.Activities.Documents.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sagirov.ilovedog.Activities.Documents.domain.model.DocumentsEntity
 import com.sagirov.ilovedog.Activities.Documents.domain.usecase.deleteDocumentUseCase
 import com.sagirov.ilovedog.Activities.Documents.domain.usecase.getAllDocumentsUseCase
 import com.sagirov.ilovedog.Activities.Documents.domain.usecase.insertDocumentUseCase
 import com.sagirov.ilovedog.Activities.Documents.domain.usecase.updateDocumentUseCase
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DocumentsEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

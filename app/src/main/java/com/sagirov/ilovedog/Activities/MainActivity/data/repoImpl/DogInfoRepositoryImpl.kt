@@ -1,8 +1,8 @@
 package com.sagirov.ilovedog.Activities.MainActivity.data.repoImpl
 
 import com.sagirov.ilovedog.Activities.MainActivity.data.dao.DogsInfoDAO
+import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
 import com.sagirov.ilovedog.Activities.MainActivity.domain.repository.DogsInfoRepository
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 

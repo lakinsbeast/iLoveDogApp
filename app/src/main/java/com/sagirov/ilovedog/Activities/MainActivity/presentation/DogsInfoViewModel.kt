@@ -2,8 +2,8 @@ package com.sagirov.ilovedog.Activities.MainActivity.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
 import com.sagirov.ilovedog.Activities.MainActivity.domain.usecase.*
-import com.sagirov.ilovedog.DogsEncyclopediaDatabase.DogsInfoEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.*
