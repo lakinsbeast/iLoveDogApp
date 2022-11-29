@@ -1,9 +1,9 @@
 package com.sagirov.ilovedog.di
 
 import android.content.Context
-import com.sagirov.ilovedog.Activities.MainActivity.domain.utils.CheckDarkModeManager
-import com.sagirov.ilovedog.Activities.MainActivity.domain.utils.CheckFirstLaunchManager
-import com.sagirov.ilovedog.Utils.PreferencesUtils
+import com.sagirov.ilovedog.domain.utils.CheckDarkModeManager
+import com.sagirov.ilovedog.domain.utils.CheckFirstLaunchManager
+import com.sagirov.ilovedog.domain.utils.PreferencesUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

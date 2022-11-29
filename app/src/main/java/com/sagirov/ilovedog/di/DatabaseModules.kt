@@ -2,16 +2,16 @@ package com.sagirov.ilovedog.di
 
 import android.content.Context
 import androidx.room.Room
-import com.sagirov.ilovedog.Activities.Documents.data.dao.DocumentDAO
-import com.sagirov.ilovedog.Activities.Documents.data.database.DocumentDatabase
+import com.sagirov.ilovedog.data.dao.DocumentDAO
+import com.sagirov.ilovedog.data.database.DocumentDatabase
 import com.sagirov.ilovedog.Activities.MainActivity.data.dao.DogsInfoDAO
 import com.sagirov.ilovedog.Activities.MainActivity.data.database.DogsInfoDatabase
-import com.sagirov.ilovedog.Screens.DetailedDog.data.dao.DogsBreedEncyclopediaDAO
-import com.sagirov.ilovedog.Screens.DetailedDog.data.database.DogsBreedEncyclopediaDatabase
-import com.sagirov.ilovedog.Screens.Reminder.data.dao.ReminderDAO
-import com.sagirov.ilovedog.Screens.Reminder.data.database.ReminderDatabase
-import com.sagirov.ilovedog.Screens.Vaccinations.data.dao.VaccinationDAO
-import com.sagirov.ilovedog.Screens.Vaccinations.data.database.VaccinationDatabase
+import com.sagirov.ilovedog.data.dao.DogsBreedEncyclopediaDAO
+import com.sagirov.ilovedog.data.database.DogsBreedEncyclopediaDatabase
+import com.sagirov.ilovedog.data.dao.ReminderDAO
+import com.sagirov.ilovedog.data.database.ReminderDatabase
+import com.sagirov.ilovedog.data.dao.VaccinationDAO
+import com.sagirov.ilovedog.data.database.VaccinationDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,9 +1,9 @@
 package com.sagirov.ilovedog.di
 
-import com.sagirov.ilovedog.analytics.google.GMS
-import com.sagirov.ilovedog.analytics.google.GMSImpl
-import com.sagirov.ilovedog.analytics.huawei.HMS
-import com.sagirov.ilovedog.analytics.huawei.HMSImpl
+import com.sagirov.ilovedog.domain.utils.analytics.google.GMS
+import com.sagirov.ilovedog.domain.utils.analytics.google.GMSImpl
+import com.sagirov.ilovedog.domain.utils.analytics.huawei.HMS
+import com.sagirov.ilovedog.domain.utils.analytics.huawei.HMSImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
