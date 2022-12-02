@@ -965,6 +965,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun ListRowDogs(model: DogsBreedEncyclopediaEntity, navController: NavController) {
+        //r?
         Card(
             onClick = {
                 navController.currentBackStackEntry?.arguments?.putInt("id", model.id)
