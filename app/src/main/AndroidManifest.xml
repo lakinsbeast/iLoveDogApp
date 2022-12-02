@@ -24,11 +24,6 @@
         android:theme="@style/Theme.ILoveDog"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.DogNutritionActivity"
-            android:exported="false"
-            android:label="@string/title_activity_dog_nutrition"
-            android:theme="@style/Theme.ILoveDog" />
-        <activity
             android:name=".presentation.RoadMapActivity"
             android:exported="false"
             android:label="@string/title_activity_road_map"
@@ -52,7 +47,8 @@
         <service
             android:name=".domain.utils.ServicesAndReceivers.TimerService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:permission="TODO" />
 
         <meta-data
             android:name="install_channel"
@@ -82,7 +78,6 @@
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.ILoveDog">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

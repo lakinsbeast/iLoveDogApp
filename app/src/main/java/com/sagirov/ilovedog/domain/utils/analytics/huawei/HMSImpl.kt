@@ -9,7 +9,7 @@ import com.huawei.hms.api.HuaweiApiAvailability
 import javax.inject.Inject
 
 class HMSImpl @Inject constructor() : HMS {
-    lateinit var HMSinstance: HiAnalyticsInstance
+    private lateinit var HMSinstance: HiAnalyticsInstance
 
     override fun checkHuaweiApi(ctx: Context): Boolean {
         return HuaweiApiAvailability.getInstance()

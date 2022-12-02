@@ -45,7 +45,7 @@ fun NewTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable ()
     val colors = CheckDarkMode.isDarkMode(darkTheme)
 
 
-    MaterialTheme() {
+    MaterialTheme {
 
     }
 }

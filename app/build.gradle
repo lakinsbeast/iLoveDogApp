@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId "com.sagirov.ilovedog"
         minSdk 26
-        targetSdk 32
+        targetSdk 33
         versionCode 4
         versionName "1.04"
         //если выскочит ошибка multidexчего-то там, то включить его

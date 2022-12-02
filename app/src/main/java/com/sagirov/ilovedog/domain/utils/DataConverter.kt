@@ -19,7 +19,7 @@ class DataConverter {
 }
 
 class MapStringToStringConverter {
-    val gson = Gson()
+    private val gson = Gson()
 
     @TypeConverter
     @JvmName("toJson1")

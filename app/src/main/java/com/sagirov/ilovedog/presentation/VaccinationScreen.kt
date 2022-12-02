@@ -37,7 +37,7 @@ import java.util.*
 fun VaccinationScreen(navController: NavController, viewModel: VaccinationViewModel = hiltViewModel()) {
     val ctx = LocalContext.current
 
-    var vaccinationList = remember { mutableStateListOf<VaccinationsEntity>() }
+    val vaccinationList = remember { mutableStateListOf<VaccinationsEntity>() }
     var idOfColumn = 0
     var idOfVaccinationCard = 0
     val list = viewModel.vaccination.collectAsState(vaccinationList).value.toMutableList()
@@ -69,7 +69,7 @@ fun VaccinationScreen(navController: NavController, viewModel: VaccinationViewMo
     }) {
         if (dialogDeleteVaccine.value) {
             AlertDialog(onDismissRequest = {dialogDeleteVaccine.value = false}, buttons = {
-                Column() {
+                Column {
                     OutlinedButton(
                         onClick = {
                             viewModel.delete(idOfVaccinationCard)
@@ -114,7 +114,7 @@ fun VaccinationScreen(navController: NavController, viewModel: VaccinationViewMo
                 Modifier
                     .fillMaxSize()
                     .background(mainBackgroundColor), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                LazyColumn() {
+                LazyColumn {
                     itemsIndexed(list) { index, item ->
                         Card(onClick = {
                             dialogDeleteVaccine.value = true; idOfVaccinationCard =
@@ -139,7 +139,7 @@ fun VaccinationScreen(navController: NavController, viewModel: VaccinationViewMo
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(bottom = 5.dp)) {
-                                    Column() {
+                                    Column {
                                         Text(
                                             text = ctx.resources.getString(R.string.vaccination_activity_drug_name), //Название лекарства
                                             color = Color.Gray

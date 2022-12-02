@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="home">Главный экран</string>
-    <string name="knowledges">Знания</string>
-    <string name="dogCards">Карточки собак</string>
-    <string name="health">Здоровье</string>
-    <string name="menu">Меню</string>
 
     <string name="app_name">ILoveDog</string>
     <string name="main_menu_title_text">Питомец</string>
@@ -34,7 +29,6 @@
     <string name="menu_menu_button_about_author">Об авторе</string>
     <string name="menu_menu_button_barf_nutrition">Питание BARF</string>
     <string name="dark_mode_text">Темный режим</string>
-    <string name="coins_count_text">Коины</string>
 
 
     <string name="walk_activity_go_run_text">Давайте погуляем</string>
@@ -64,9 +58,7 @@
     <string name="vaccination_activity_drug_name">Название лекарства</string>
     <string name="vaccination_activity_date_vaccination">Дата вакцинации</string>
 
-    <string-array name="BARFtitles">
-        <item>FUCK</item>
-    </string-array>
+
 
 
 </resources>

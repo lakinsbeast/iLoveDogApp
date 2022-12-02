@@ -61,8 +61,8 @@ fun ArticleScreen() {
         ) {
             LazyColumn {
                 items(currentArticle) {
-                    var stringID = ctx.resources.getIdentifier(it, "string", ctx.packageName)
-                    var stringIDtext =
+                    val stringID = ctx.resources.getIdentifier(it, "string", ctx.packageName)
+                    val stringIDtext =
                         ctx.resources.getIdentifier(it + "_text", "string", ctx.packageName)
                     selectedArticle = stringIDtext
                     Card(

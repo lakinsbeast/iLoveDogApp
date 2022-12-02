@@ -70,7 +70,7 @@ fun ReminderScreen(navController: NavController, viewModel: ReminderViewModel = 
                                 )
                             }
                             it.key.toLong() < System.currentTimeMillis() -> {
-                                pastReminderMap[it.key.toLong()] = it.value;
+                                pastReminderMap[it.key.toLong()] = it.value
                                 pastReminderIds.add(listfeach.id)
                             }
                             System.currentTimeMillis() + 86400000 > it.key.toLong() -> {
@@ -183,7 +183,7 @@ fun OtherReminderLazyColumn(
                 alertDelete.setPositiveButton("Да") { _, _ ->
                     dateForVisitToVet.remove(it.key)
                     otherReminderMapp.remove(it.key)
-                    remindersViewModel.delete(mapOf(it.key.toString() to it.value.toString()))
+                    remindersViewModel.delete(mapOf(it.key.toString() to it.value))
                 }
                 alertDelete.setNegativeButton("Нет") { dialog, _ ->
                     dialog.cancel()
@@ -219,7 +219,7 @@ fun OtherReminderLazyColumn(
                             maxLines = 1,
                             color = mainTextColor
                         )
-                        Column() {
+                        Column {
                             Text(
                                 text = DateFormat.getDateInstance(DateFormat.SHORT)
                                     .format(it.key).toString(), color = mainTextColor
@@ -236,7 +236,6 @@ fun OtherReminderLazyColumn(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RepeatReminderColumn(
     id: List<Int>,
@@ -297,7 +296,7 @@ fun alertDialogsForReminders(forPositiveBtn: () -> Unit, value: Any, key: Any) {
                 maxLines = 1,
                 color = mainTextColor
             )
-            Column() {
+            Column {
                 Text(
                     text = DateFormat.getDateInstance(DateFormat.SHORT)
                         .format(key).toString(), color = mainTextColor
@@ -312,7 +311,6 @@ fun alertDialogsForReminders(forPositiveBtn: () -> Unit, value: Any, key: Any) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DayReminderColumn(
     id: List<Int>,
@@ -324,8 +322,8 @@ fun DayReminderColumn(
         data.forEach {
             item(it.key) {
                 alertDialogsForReminders({
-                    remindersViewModel.delete(mapOf(it.key.toString() to it.value.toString()));
-                    dateForVisitToVet.remove(it.key);
+                    remindersViewModel.delete(mapOf(it.key.toString() to it.value))
+                    dateForVisitToVet.remove(it.key)
                     dayReminderMap.remove(it.key)
                 }, it.value, it.key)
             }
@@ -333,7 +331,6 @@ fun DayReminderColumn(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WeeklyReminderColumn(
     id: List<Int>,
@@ -347,7 +344,7 @@ fun WeeklyReminderColumn(
                 alertDialogsForReminders({
                     dateForVisitToVet.remove(it.key)
                     weeklyReminderMap.remove(it.key)
-                    remindersViewModel.delete(mapOf(it.key.toString() to it.value.toString()))
+                    remindersViewModel.delete(mapOf(it.key.toString() to it.value))
                 }, it.value, it.key)
             }
         }
@@ -372,7 +369,7 @@ fun PastReminderColumn(
                 alertDelete.setPositiveButton("Да") { _, _ ->
                     dateForVisitToVet.remove(it.key)
                     pastReminderMap.remove(it.key)
-                    remindersViewModel.delete(mapOf(it.key.toString() to it.value.toString()))
+                    remindersViewModel.delete(mapOf(it.key.toString() to it.value))
                 }
                 alertDelete.setNegativeButton("Нет") { dialog, _ ->
                     dialog.cancel()
@@ -403,7 +400,7 @@ fun PastReminderColumn(
                             maxLines = 1,
                             color = mainTextColor.copy(alpha = 0.5f)
                         )
-                        Column() {
+                        Column {
                             Text(
                                 text = DateFormat.getDateInstance(DateFormat.SHORT)
                                     .format(it.key).toString(),

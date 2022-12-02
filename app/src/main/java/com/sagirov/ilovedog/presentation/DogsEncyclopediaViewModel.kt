@@ -10,7 +10,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DogsEncyclopediaViewModel @Inject constructor(
     getAllDogsUseCase: getAllDogsUseCase,
-    val getDogByIdUseCase: getDogByIdUseCase
+    private val getDogByIdUseCase: getDogByIdUseCase
 ) : ViewModel() {
 
     val groups = getAllDogsUseCase.invoke()

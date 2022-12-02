@@ -30,7 +30,7 @@ import de.charlex.compose.HtmlText
 val selectedCard =  mutableStateOf(-1)
 @AndroidEntryPoint
 class ArticleChoiceActivity : ComponentActivity() {
-    var selectedArticle: Int = 0
+    private var selectedArticle: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,8 +88,8 @@ class ArticleChoiceActivity : ComponentActivity() {
     fun listDates(data: MutableList<String>) {
         LazyColumn {
             items(data) {
-                var stringID = resources.getIdentifier(it, "string", packageName)
-                var stringIDtext = resources.getIdentifier(it+"_text", "string", packageName)
+                val stringID = resources.getIdentifier(it, "string", packageName)
+                val stringIDtext = resources.getIdentifier(it+"_text", "string", packageName)
                 selectedArticle = stringIDtext
                 Card(onClick = { selectedCard.value = 2 }, modifier = Modifier
                     .fillMaxWidth()

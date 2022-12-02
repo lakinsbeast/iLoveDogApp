@@ -65,7 +65,7 @@ fun AddVaccination(navController: NavController, viewModel: VaccinationViewModel
 
     val datePickerDialog = DatePickerDialog(ctx,
         R.style.light_dialog_theme,
-        DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+        { view, year, month, dayOfMonth ->
             calendarDayText.value = dayOfMonth.toString()
             calendarMonthText.value = (month + 1).toString()
             calendarYearText.value = year.toString()
@@ -140,11 +140,11 @@ fun AddVaccination(navController: NavController, viewModel: VaccinationViewModel
                 label = { Text(text = "Д", fontSize = 17.sp, color = mainTextColor) },
                 value = calendarDayText.value,
                 onValueChange = {
-                    calendarDayText.value = it;
+                    calendarDayText.value = it
                     if (calendarDayText.value.length >= 2) {
                         if (calendarDayText.value.toInt() > days || calendarDayText.value.toInt() < 0) {
                             calendarDayText.value = days.toString()
-                        };
+                        }
                     }
                 })
             TextField(modifier = Modifier

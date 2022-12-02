@@ -36,10 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sagirov.ilovedog.domain.model.DocumentsEntity
 import com.sagirov.ilovedog.R
+import com.sagirov.ilovedog.domain.model.DocumentsEntity
 import com.sagirov.ilovedog.domain.utils.theme.*
-import com.sagirov.ilovedog.ui.theme.*
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -67,7 +66,7 @@ class DocumentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
-            documentViewModel.documents.collect {
+            documentViewModel.documents.collect { it ->
                 allDocs.clear()
                 AllDocsValues.clear()
                 it.forEach {
@@ -280,7 +279,7 @@ class DocumentActivity : ComponentActivity() {
                                         contentColor = Color.Black
                                     ), contentPadding = PaddingValues(0.dp)
                                 ) {
-                                    Row() {
+                                    Row {
                                         TextField(
                                             label = {
                                                 Text(
@@ -452,12 +451,11 @@ class DocumentActivity : ComponentActivity() {
                     }
                 }
             }
-
         }
     }
 
     override fun onBackPressed() {
-        if (isImageOpened.value == true) {
+        if (isImageOpened.value) {
             isImageOpened.value = false
             return
         }

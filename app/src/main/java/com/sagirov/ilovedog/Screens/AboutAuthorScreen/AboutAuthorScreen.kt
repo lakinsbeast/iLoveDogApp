@@ -41,7 +41,7 @@ fun AboutAuthorScreen(navController: NavController) {
             elevation = 0.dp, modifier = Modifier
                 .fillMaxWidth(), backgroundColor = mainBackgroundColor
         ) {
-            Column() {
+            Column {
                 Text(
                     "Это приложение сделано студентом-самоучкой, я занимаюсь андроид-разаботкой в свободное время" +
                             " и мне это очень нравится, приложение я делал с любовью и желанием, планирую в дальнейшем его развивать на благо" +

@@ -67,17 +67,17 @@ class NewPetActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val intentID = mutableStateOf(intent.getIntExtra("id", -543253425))
-        var petName =  mutableStateOf("")
+        val petName =  mutableStateOf("")
         newPrefs = PreferencesUtils(this)
         setContent {
             val systemUiController = rememberSystemUiController()
             systemUiController.setSystemBarsColor(mainBackgroundColor)
             val dialogChooseActive = remember { mutableStateOf(false) }
 
-            var petNameBreed = remember { mutableStateOf("") }
+            val petNameBreed = remember { mutableStateOf("") }
             var petAge = remember { mutableStateOf("") }
             var petAgeMonth = remember { mutableStateOf("") }
-            var petPaddock = remember { mutableStateOf("") }
+            val petPaddock = remember { mutableStateOf("") }
             Column(
                 Modifier
                     .fillMaxSize()
@@ -87,7 +87,7 @@ class NewPetActivity : ComponentActivity() {
             ) {
                 if (cameraUriPhoto.value.isNotBlank() /*&& camera_uri != null*/) {
                     GlideImage(
-                        Uri.parse(cameraUriPhoto.value.toString()),
+                        Uri.parse(cameraUriPhoto.value),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .clip(CircleShape)
@@ -296,7 +296,7 @@ class NewPetActivity : ComponentActivity() {
 //                    }
                     OutlinedButton(
                         onClick = {
-                            if (!cameraUriPhoto.value.isNullOrBlank()) {
+                            if (!cameraUriPhoto.value.isBlank()) {
                                 cameraUriToUpdate.value = cameraUriPhoto.value
                             } else {
                                 cameraUriToUpdate.value = dogsProfileArray[intentID.value].image
@@ -375,10 +375,10 @@ class NewPetActivity : ComponentActivity() {
         }
     }
 
-    val getDogPhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) {
+    private val getDogPhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) {
         cameraUriPhoto.value = camera_uri.toString()
     }
-    val getTakeCameraPhotoPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+    private val getTakeCameraPhotoPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { it ->
         it.entries.forEach {
             if (it.value){
                 try {
@@ -392,7 +392,7 @@ class NewPetActivity : ComponentActivity() {
             }
         }
     }
-    val getImage = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
+    private val getImage = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
         if (it != null) {
             this@NewPetActivity.contentResolver.takePersistableUriPermission(
                 it, Intent.FLAG_GRANT_READ_URI_PERMISSION or

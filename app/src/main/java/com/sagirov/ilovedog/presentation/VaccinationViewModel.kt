@@ -13,8 +13,8 @@ import javax.inject.Inject
 @HiltViewModel
 class VaccinationViewModel @Inject constructor(
     getAllVaccinationsUseCase: getAllVaccinationsUseCase,
-    val insertVaccinationUseCase: insertVaccinationUseCase,
-    val deleteVaccinationUseCase: deleteVaccinationUseCase
+    private val insertVaccinationUseCase: insertVaccinationUseCase,
+    private val deleteVaccinationUseCase: deleteVaccinationUseCase
 ) : ViewModel() {
     val vaccination = getAllVaccinationsUseCase.invoke()
     fun insert(vac: VaccinationsEntity) = viewModelScope.launch {

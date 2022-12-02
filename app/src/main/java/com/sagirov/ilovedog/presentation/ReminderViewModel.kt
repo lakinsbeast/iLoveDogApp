@@ -13,8 +13,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ReminderViewModel @Inject constructor(
     getAllRemindersUseCase: getAllRemindersUseCase,
-    val insertReminderUseCase: insertReminderUseCase,
-    val deleteReminderUseCase: deleteReminderUseCase,
+    private val insertReminderUseCase: insertReminderUseCase,
+    private val deleteReminderUseCase: deleteReminderUseCase,
 ) : ViewModel() {
     val reminders = getAllRemindersUseCase.invoke()
     fun insert(reminder: ReminderEntity) = viewModelScope.launch {

@@ -25,34 +25,23 @@ var textFieldUnFocusedIndicatorColor = Color.Gray
 class ColorPalette(
     var mainTextColor: Color,
     var mainBackgroundColor: Color,
-    var mainSecondColor: Color,
-    var homeButtonColor: Color,
-    var bottomNavBackgroundColor: Color,
-    var healthBarPastReminderColor: Color,
-    var encyclopediaDogBarColor: Color,
-    var circularColor: Color,
-    var switcherColor: Color,
-    var textFieldUnFocusedIndicatorColor: Color
+    var mainSecondColor: Color
 )
 
 val lightColor = ColorPalette(
-    Color(0xFFFFFFFF), Color(0xFFE9E9E9), Color(0xFF000000), Color(0xFF92B4EC),
-    Color(0xFFFFFFFF), Color(0xFFADA9BA), Color(0xFF706F8E), Color(0xFF22222E),
-    Color.Black, Color.Gray
+    Color(0xFFFFFFFF), Color(0xFFE9E9E9), Color(0xFF000000)
 )
 val darkTheme = ColorPalette(
-    Color(0xFF121212), Color(0xFF323232), Color(0xFFFFFFFF), Color(0xFF465164),
-    Color(0xFF121212), Color(0xFFADA9BA), Color(0xFF706F8E), Color(0xFF8A8ABB),
-    Color.White, Color.Gray
+    Color(0xFF121212), Color(0xFF323232), Color(0xFFFFFFFF)
 )
 
 
 @Composable
 fun ApplicationTheme(darkThemeBool: Boolean, content: @Composable () -> Unit) {
     val appTheme = if (darkThemeBool) {
-        compositionLocalOf<ColorPalette> { darkTheme }
+        compositionLocalOf { darkTheme }
     } else {
-        compositionLocalOf<ColorPalette> { lightColor }
+        compositionLocalOf { lightColor }
     }
     CompositionLocalProvider(appTheme provides lightColor) {
         MaterialTheme(
@@ -63,7 +52,7 @@ fun ApplicationTheme(darkThemeBool: Boolean, content: @Composable () -> Unit) {
     }
 }
 
-class CheckDarkMode() {
+class CheckDarkMode {
     companion object {
         fun isDarkMode(state: Boolean) {
             if (!state) {

@@ -142,12 +142,12 @@ fun AddReminderScreen(
                 .fillMaxWidth()
                 .padding(end = 60.dp), textAlign = TextAlign.End, color = mainTextColor
         )
-        Row() {
+        Row {
             Card(
                 onClick = {
                     calendarHourText.value += 1; if (calendarHourText.value > 24) {
                     calendarHourText.value = 0; calendarHourTextModified.value = "00"
-                };
+                }
                     calendarHourTextModified.value =
                         calendarHourText.value.toString();if (calendarHourText.value < 10) {
                     calendarHourTextModified.value = "0" + calendarHourText.value.toString()
@@ -185,7 +185,7 @@ fun AddReminderScreen(
         }
 
         val datePickerDialog = DatePickerDialog(mContext,
-            R.style.light_dialog_theme, DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+            R.style.light_dialog_theme, { view, year, month, dayOfMonth ->
                 calendarDayText.value = dayOfMonth.toString()
                 calendarMonthText.value = (month + 1).toString()
                 calendarYearText.value = year.toString()
@@ -220,7 +220,7 @@ fun AddReminderScreen(
                     monthFocusRequester.requestFocus()
                 }),
                 onValueChange = {
-                    calendarDayText.value = it;
+                    calendarDayText.value = it
                     if (calendarDayText.value.length >= 2) {
                         if (calendarDayText.value.toInt() > days || calendarDayText.value.toInt() < 0) {
                             calendarDayText.value = days.toString()
@@ -252,7 +252,7 @@ fun AddReminderScreen(
                     calendarMonthText.value = it; if (calendarMonthText.value.length >= 2) {
                     if (calendarMonthText.value.toInt() > 13 || calendarMonthText.value.toInt() < 0) {
                         calendarMonthText.value = 12.toString()
-                    };
+                    }
                 }
                 })
             TextField(modifier = Modifier
@@ -314,12 +314,12 @@ fun AddReminderScreen(
                 mCalendar.set(Calendar.DAY_OF_MONTH, calendarDayText.value.toInt())
                 mCalendar.set(Calendar.MONTH, calendarMonthText.value.toInt()-1)
                 mCalendar.set(Calendar.YEAR, calendarYearText.value.toInt())
-                mCalendar.set(Calendar.HOUR_OF_DAY, calendarHourText.value.toInt())
-                mCalendar.set(Calendar.MINUTE, calendarMinuteText.value.toInt())
+                mCalendar.set(Calendar.HOUR_OF_DAY, calendarHourText.value)
+                mCalendar.set(Calendar.MINUTE, calendarMinuteText.value)
 
                 createdAt = mCalendar.time
                 if (((timestamp / 100) < (createdAt.time / 100))) {
-                    var time: Long = (createdAt.time) - timestamp
+                    val time: Long = (createdAt.time) - timestamp
                     if (checkRepeat.value) {
                         viewModel.insert(
                             ReminderEntity(

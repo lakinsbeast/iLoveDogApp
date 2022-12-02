@@ -439,7 +439,7 @@ class MainActivity : ComponentActivity() {
                 )//Dark mode
                 Switch(
                     checked = darkMode.isNightMode.value, onCheckedChange = {
-                        darkMode.setDarkMode(it);
+                        darkMode.setDarkMode(it)
                         newPrefs.putBoolean(
                             PreferencesUtils.PREF_NIGHT_MODE,
                             "isNightModeOn",
@@ -518,7 +518,7 @@ class MainActivity : ComponentActivity() {
                     val intent = Intent(
                         this@MainActivity,
                         ArticleChoiceActivity::class.java
-                    );
+                    )
                     intent.putExtra("Article", "feeding");startActivity(intent)
                 },
                 modifier = Modifier.padding(start = 15.dp, end = 15.dp),
@@ -555,7 +555,7 @@ class MainActivity : ComponentActivity() {
                     val intent = Intent(
                         this@MainActivity,
                         ArticleChoiceActivity::class.java
-                    );
+                    )
                     intent.putExtra("Article", "activity");startActivity(intent)
                 },
                 modifier = Modifier.padding(
@@ -729,7 +729,7 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Column() {
+                Column {
                     Text(
                         text = resources.getString(R.string.main_menu_stats_today_plan_text), //Сегодняшний план
                         fontSize = 24.sp,
@@ -989,7 +989,7 @@ class MainActivity : ComponentActivity() {
                     Modifier.padding(start = 10.dp, top = 10.dp, bottom = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (!model.imageFile.isBlank()) {
+                    if (model.imageFile.isNotBlank()) {
                         Image(
                             painterResource(
                                 resources.getIdentifier(model.imageFile, "drawable", packageName)

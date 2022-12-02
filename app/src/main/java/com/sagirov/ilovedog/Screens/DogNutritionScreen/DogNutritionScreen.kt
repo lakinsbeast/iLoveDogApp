@@ -86,7 +86,7 @@ fun DogNutritionScreen(navController: NavController) {
     )
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(mainBackgroundColor)
-    var pagerState = rememberPagerState()
+    val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
     Column {
         ScrollableTabRow(
