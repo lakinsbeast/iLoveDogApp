@@ -1,4 +1,4 @@
-package com.sagirov.ilovedog.Activities.MainActivity.domain.model
+package com.sagirov.ilovedog.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

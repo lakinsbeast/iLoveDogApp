@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.sagirov.ilovedog.data.dao.DocumentDAO
 import com.sagirov.ilovedog.data.database.DocumentDatabase
-import com.sagirov.ilovedog.Activities.MainActivity.data.dao.DogsInfoDAO
-import com.sagirov.ilovedog.Activities.MainActivity.data.database.DogsInfoDatabase
+import com.sagirov.ilovedog.data.dao.DogsInfoDAO
+import com.sagirov.ilovedog.data.database.DogsInfoDatabase
 import com.sagirov.ilovedog.data.dao.DogsBreedEncyclopediaDAO
 import com.sagirov.ilovedog.data.database.DogsBreedEncyclopediaDatabase
 import com.sagirov.ilovedog.data.dao.ReminderDAO

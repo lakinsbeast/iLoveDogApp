@@ -108,13 +108,6 @@ fun DogNutritionScreen(navController: NavController) {
                     onClick = { scope.launch { pagerState.scrollToPage(index) } })
             }
         }
-//                if (tabRowState.value == 1) {
-//                ScrollableTabRow(selectedTabIndex = tabRowSecondState.value) {
-//                    meatTitles.forEachIndexed { index, s ->
-//                        Tab(text = { Text(s) }, selected = tabRowSecondState.value == index, onClick = { tabRowSecondState.value = index })
-//                    }
-//                }
-//                }
         HorizontalPager(
             count = 5, state = pagerState, modifier = Modifier
                 .fillMaxSize()
@@ -132,13 +125,6 @@ fun DogNutritionScreen(navController: NavController) {
                 4 -> MeatTitle(list = illegalProductsRu)
             }
         }
-//                when (tabRowState.value) {
-//                    0 -> { TitleText() }
-//                    1 -> MeatTitle(list = meat)
-//                    2 -> MeatTitle(list = bone)
-//                    3 -> MeatTitle(list = fruitsAndVegetables)
-//                    4 -> MeatTitle(list = illegalProducts)
-//                }
     }
 }
 

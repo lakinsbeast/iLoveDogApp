@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
+import com.sagirov.ilovedog.domain.model.DogsInfoEntity
 import com.sagirov.ilovedog.domain.utils.PreferencesUtils
 import com.sagirov.ilovedog.domain.utils.theme.mainBackgroundColor
 import com.sagirov.ilovedog.domain.utils.theme.mainSecondColor

@@ -1,10 +1,10 @@
-package com.sagirov.ilovedog.Activities.MainActivity.data.dao
+package com.sagirov.ilovedog.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
+import com.sagirov.ilovedog.domain.model.DogsInfoEntity
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 

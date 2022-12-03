@@ -3,9 +3,9 @@ package com.sagirov.ilovedog.di
 import com.sagirov.ilovedog.data.database.DocumentDatabase
 import com.sagirov.ilovedog.data.repoImpl.DocumentRepositoryImpl
 import com.sagirov.ilovedog.domain.repository.DocumentRepository
-import com.sagirov.ilovedog.Activities.MainActivity.data.database.DogsInfoDatabase
-import com.sagirov.ilovedog.Activities.MainActivity.data.repoImpl.DogInfoRepositoryImpl
-import com.sagirov.ilovedog.Activities.MainActivity.domain.repository.DogsInfoRepository
+import com.sagirov.ilovedog.data.database.DogsInfoDatabase
+import com.sagirov.ilovedog.data.repoImpl.DogInfoRepositoryImpl
+import com.sagirov.ilovedog.domain.repository.DogsInfoRepository
 import com.sagirov.ilovedog.data.database.DogsBreedEncyclopediaDatabase
 import com.sagirov.ilovedog.data.repoImpl.DogsEncyclopediaRepositoryImpl
 import com.sagirov.ilovedog.domain.repository.DogsEncyclopediaRepository

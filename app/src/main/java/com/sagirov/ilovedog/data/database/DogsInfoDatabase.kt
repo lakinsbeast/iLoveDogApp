@@ -1,10 +1,10 @@
-package com.sagirov.ilovedog.Activities.MainActivity.data.database
+package com.sagirov.ilovedog.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.sagirov.ilovedog.Activities.MainActivity.data.dao.DogsInfoDAO
-import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
+import com.sagirov.ilovedog.data.dao.DogsInfoDAO
+import com.sagirov.ilovedog.domain.model.DogsInfoEntity
 import com.sagirov.ilovedog.domain.utils.DataConverter
 
 

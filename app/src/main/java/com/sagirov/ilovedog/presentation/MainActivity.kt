@@ -50,7 +50,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sagirov.ilovedog.Activities.MainActivity.domain.model.DogsInfoEntity
+import com.sagirov.ilovedog.domain.model.DogsInfoEntity
 import com.sagirov.ilovedog.domain.utils.CheckDarkModeManager
 import com.sagirov.ilovedog.domain.utils.CheckFirstLaunchManager
 import com.sagirov.ilovedog.BottomTabs
@@ -794,7 +794,8 @@ class MainActivity : ComponentActivity() {
 //              val viewModel: DogsBreedEncyclopediaViewModel = hiltViewModel()
                 DogsKnowledesScreen(navController = navController/*, viewModel*/)
             }
-            composable(NavGraphRoutes.detailedDogs.route + "/{id}",
+            composable(
+                NavGraphRoutes.detailedDogs.route + "/{id}",
                 arguments = listOf(navArgument("id") {
                     type = NavType.IntType;defaultValue = 0;nullable = false
                 })
@@ -845,14 +846,15 @@ class MainActivity : ComponentActivity() {
         if (currentRoute in routes) {
             BottomNavigation(backgroundColor = mainBackgroundColor) {
                 tabs.forEach { tab ->
-                    BottomNavigationItem(icon = {
-                        Icon(
-                            painterResource(id = tab.icon),
-                            modifier = Modifier.size(25.dp),
-                            contentDescription = "",
-                            tint = mainTextColor
-                        )
-                    },
+                    BottomNavigationItem(
+                        icon = {
+                            Icon(
+                                painterResource(id = tab.icon),
+                                modifier = Modifier.size(25.dp),
+                                contentDescription = "",
+                                tint = mainTextColor
+                            )
+                        },
                         selected = currentRoute == tab.route, onClick = {
                             if (tab.route != currentRoute) {
                                 navController.navigate(tab.route) {

@@ -1,6 +1,6 @@
-package com.sagirov.ilovedog.Activities.MainActivity.domain.usecase
+package com.sagirov.ilovedog.domain.usecase
 
-import com.sagirov.ilovedog.Activities.MainActivity.domain.repository.DogsInfoRepository
+import com.sagirov.ilovedog.domain.repository.DogsInfoRepository
 import java.util.*
 
 class updateDogsDateUseCase(

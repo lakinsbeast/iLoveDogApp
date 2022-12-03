@@ -1,23 +1,11 @@
 package com.sagirov.ilovedog.di
 
 import com.sagirov.ilovedog.domain.repository.DocumentRepository
-import com.sagirov.ilovedog.domain.usecase.deleteDocumentUseCase
-import com.sagirov.ilovedog.domain.usecase.getAllDocumentsUseCase
-import com.sagirov.ilovedog.domain.usecase.insertDocumentUseCase
-import com.sagirov.ilovedog.domain.usecase.updateDocumentUseCase
-import com.sagirov.ilovedog.Activities.MainActivity.domain.repository.DogsInfoRepository
-import com.sagirov.ilovedog.Activities.MainActivity.domain.usecase.*
+import com.sagirov.ilovedog.domain.repository.DogsInfoRepository
 import com.sagirov.ilovedog.domain.repository.DogsEncyclopediaRepository
-import com.sagirov.ilovedog.domain.usecase.getAllDogsUseCase
-import com.sagirov.ilovedog.domain.usecase.getDogByIdUseCase
 import com.sagirov.ilovedog.domain.repository.ReminderRepository
-import com.sagirov.ilovedog.domain.usecase.deleteReminderUseCase
-import com.sagirov.ilovedog.domain.usecase.getAllRemindersUseCase
-import com.sagirov.ilovedog.domain.usecase.insertReminderUseCase
 import com.sagirov.ilovedog.domain.repository.VaccinationRepository
-import com.sagirov.ilovedog.domain.usecase.deleteVaccinationUseCase
-import com.sagirov.ilovedog.domain.usecase.getAllVaccinationsUseCase
-import com.sagirov.ilovedog.domain.usecase.insertVaccinationUseCase
+import com.sagirov.ilovedog.domain.usecase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
